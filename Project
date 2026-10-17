@@ -350,18 +350,19 @@ local Window = Library:CreateWindow({
 
 -- // 4. Create Survivor Tab & Sections
 local SurvivorTab = Window:CreateTab("Survivor", false, false)
-local SkillcheckCard = SurvivorTab:CreateSection("Skillcheck Features")
+local SurvivorPage = SurvivorTab:CreatePage("Home") -- Diperbaiki: Kenz Hub memerlukan Page sebelum membuat Section
+local SkillcheckCard = SurvivorPage:CreateSection("Skillcheck Features")
 
 SkillcheckCard:AddToggle("Auto Skillcheck", false, function(state)
     VD.AutoSkillcheck = state == true
     Library:Notify({
         Title = "Auto Skillcheck",
-        Description = state ? "Enabled" : "Disabled",
+        Description = state and "Enabled" or "Disabled", -- Diperbaiki: Menggunakan operator logika Lua standar (and/or)
         Duration = 2
     })
 end, {
     Title = "Auto Skillcheck",
-    Description = "Sec secara otomatis menyelesaikan skillcheck pada generator atau tindakan survivor."
+    Description = "Secara otomatis menyelesaikan skillcheck pada generator atau tindakan survivor."
 })
 
 SkillcheckCard:AddDropdown("Skillcheck Mode", {"Normal", "Perfect", "Instant"}, false, function(selected)

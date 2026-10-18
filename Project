@@ -334,7 +334,7 @@ end
 f15()
 
 -- // 3. Create Main Window using Kenz Hub Library
-local Library = loadstring(game:HttpGetAsync("https://pastefy.app/4HNLohNy/raw"))()
+local Library = loadstring(game:HttpGet("https://pastefy.app/4HNLohNy/raw"))()
 
 local Window = Library:CreateWindow({
     Title = "Kenz Hub",
@@ -350,14 +350,14 @@ local Window = Library:CreateWindow({
 
 -- // 4. Create Survivor Tab & Sections
 local SurvivorTab = Window:CreateTab("Survivor", false, false)
-local SurvivorPage = SurvivorTab:CreatePage("Home") -- Diperbaiki: Kenz Hub memerlukan Page sebelum membuat Section
+local SurvivorPage = SurvivorTab:CreatePage("Home")
 local SkillcheckCard = SurvivorPage:CreateSection("Skillcheck Features")
 
 SkillcheckCard:AddToggle("Auto Skillcheck", false, function(state)
     VD.AutoSkillcheck = state == true
     Library:Notify({
         Title = "Auto Skillcheck",
-        Description = state and "Enabled" or "Disabled", -- Diperbaiki: Menggunakan operator logika Lua standar (and/or)
+        Description = state and "Enabled" or "Disabled",
         Duration = 2
     })
 end, {
@@ -376,6 +376,6 @@ SkillcheckCard:AddDropdown("Skillcheck Mode", {"Normal", "Perfect", "Instant"}, 
         Duration = 2
     })
 end, {
-    Title = "Skillcheck Mode",
+    Title = "Skillcheck Method",
     Description = "Pilih tingkat presisi penyelesaian skillcheck (Normal, Perfect, atau Instant)."
 })

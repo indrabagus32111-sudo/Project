@@ -54,8 +54,6 @@ v1.VD = getgenv().VD or {
   InstantHealSelf = false,
   AutoHealAll = false,
   Destroyed = false,
-  SURV_GenBoost = false,
-  SURV_DraggableGenBypass = false,
   ESP_LowPerformance = false,
   Fullbright = false,
   NoFog = false,
@@ -66,16 +64,167 @@ v1.VD = getgenv().VD or {
   SURV_AutoPalletSlide = false,
 }
 
--- // 2. Skillcheck Logic Function
+local vd = getgenv().VD
+local localPlayer = players.LocalPlayer
+local currentCamera = workspaceService.CurrentCamera
+local touchEnabled = userInputService.TouchEnabled and not userInputService.KeyboardEnabled
+local v47 = { SCPZombie = {} }
+local fire = nil
+local v48 = nil
+
+-- // 2. Silent Aim Hook Logic Function (Fixed & Secured)
+local function f25()
+  if getgenv().IYAN_AntiFailHooked then
+    return
+  end
+
+  getgenv().IYAN_AntiFailHooked = true
+
+  task.spawn(function()
+    pcall(function()
+      local waitForChild3 = replicatedStorage:WaitForChild("Remotes", 10)
+      replicatedStorage:WaitForChild("Events", 10)
+      local v49 = false
+
+      if not waitForChild3 then
+        return
+      else
+        local items = waitForChild3:FindFirstChild("Items")
+        local twistOfFate = items and items:FindFirstChild("Twist of Fate")
+        fire = twistOfFate and twistOfFate:FindFirstChild("Fire")
+
+        v48 = hookmetamethod(game, "__namecall", function(p48, ...)
+          local v50 = getnamecallmethod()
+          local v51, v52 = ...
+
+          if v49 then
+            return v48(p48, ...)
+          end
+
+          local unit
+
+          if fire and vd.AUTO_ToFAim and p48 == fire and v50 == "FireServer"
+            and not checkcaller() then
+            if typeof(v51) == "Instance" and typeof(v52) == "Vector3" then
+              local character4 = localPlayer.Character
+              local humanoidRootPart = character4 and character4:FindFirstChild("HumanoidRootPart")
+
+              if humanoidRootPart then
+                local v53 = nil
+                local autoToFAimRange = vd.AUTO_ToFAimRange or 90
+                local autoToFTargetMode = vd.AUTO_ToFTargetMode or "Killer"
+                local autoToFAimPart = vd.AUTO_ToFAimPart or "HumanoidRootPart"
+
+                if autoToFTargetMode == "SCP" then
+                  if v47 and v47.SCPZombie then
+                    for key4, value12 in pairs(v47.SCPZombie) do
+                      if key4 and key4.Parent then
+                        local findFirstChild = nil
+
+                        if key4:IsA("Model") then
+                          findFirstChild = key4:FindFirstChild(autoToFAimPart)
+                            or key4.PrimaryPart or key4:FindFirstChildWhichIsA("BasePart")
+                        elseif key4:IsA("BasePart") then
+                          findFirstChild = key4
+                        end
+
+                        local part = findFirstChild or value12 and value12.part
+
+                        if part then
+                          local magnitude = (part.Position - humanoidRootPart.Position).Magnitude
+
+                          if magnitude <= autoToFAimRange then
+                            autoToFAimRange = magnitude
+                            v53 = part
+                          end
+                        end
+                      end
+                    end
+                  end
+                else
+                  for index6, value13 in ipairs(players:GetPlayers()) do
+                    if value13 ~= localPlayer and value13.Character and value13.Team then
+                      if autoToFTargetMode == "Killer" and value13.Team.Name == "Killer"
+                        or autoToFTargetMode == "Survivor"
+                          and value13.Team.Name == "Survivors" then
+                        local findFirstChild2 = value13.Character:FindFirstChild(autoToFAimPart)
+                        local humanoid2 = value13.Character:FindFirstChildOfClass("Humanoid")
+
+                        if findFirstChild2 and humanoid2 and humanoid2.Health > 0 then
+                          local magnitude2 = (findFirstChild2.Position
+                            - humanoidRootPart.Position).Magnitude
+
+                          if magnitude2 <= autoToFAimRange then
+                            v53 = findFirstChild2
+                            autoToFAimRange = magnitude2
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+
+                if v53 then
+                  local position = humanoidRootPart.Position
+                  local position2 = v53.Position
+                  local v54 = position2
+
+                  if vd.AUTO_ToFPredict then
+                    local assemblyLinearVelocity = v53.AssemblyLinearVelocity
+
+                    v54 = position2 + Vector3.new(
+                      assemblyLinearVelocity.X, 0, assemblyLinearVelocity.Z
+                    ) * (autoToFAimRange / (vd.AUTO_ToFBulletSpeed or 200))
+                  end
+
+                  local v55 = v54 - position
+                  unit = v55.Magnitude > 0.01 and v55.Unit or v52
+
+                  if currentCamera.CFrame.LookVector:Dot(unit)
+                    < (vd.AUTO_ToFDotThreshold or 0.5) then
+                    return
+                  end
+
+                  v49 = true
+
+                  task.defer(function()
+                    pcall(function() fire:FireServer(v51, unit) end)
+                    v49 = false
+                  end)
+
+                  return
+                end
+              end
+            end
+
+            if v48 then
+              return v48(p48, ...)
+            end
+
+            return
+          end
+
+          if v48 then
+            return v48(p48, ...)
+          end
+        end)
+
+        getgenv().IYAN_oldNamecall = v48
+        return
+      end
+    end)
+  end)
+end
+
+f25()
+
+-- // 3. Skillcheck Logic Function (Fixed Mobile Touch & Camera Freezing)
 local function f15()
-  local localPlayer, currentCamera, touchEnabled, v176
-  localPlayer = players.LocalPlayer
-  currentCamera = workspaceService.CurrentCamera
-  touchEnabled = userInputService.TouchEnabled and not userInputService.KeyboardEnabled
-
+  local touchEnabled = userInputService.TouchEnabled and not userInputService.KeyboardEnabled
   local playerGui4 = localPlayer:WaitForChild("PlayerGui")
+  local touchIdCounter = 1000
 
-  v176 = {
+  local v176 = {
     LastGoalRotation = nil,
     HasClickedThisGoal = false,
     LastLineRotation = nil,
@@ -110,12 +259,16 @@ local function f15()
         local x = absolutePosition.X + absoluteSize.X / 2 + getGuiInset.X
         local y = absolutePosition.Y + absoluteSize.Y / 2 + getGuiInset.Y
 
+        touchIdCounter = touchIdCounter + 1
+        if touchIdCounter > 99999 then touchIdCounter = 1000 end
+        local currentTouchId = touchIdCounter
+
         pcall(function()
-          virtualInputManager:SendTouchEvent(8822, Enum.UserInputState.Begin.Value, x, y)
+          virtualInputManager:SendTouchEvent(currentTouchId, Enum.UserInputState.Begin.Value, x, y)
         end)
         task.wait(0.01)
         pcall(function()
-          virtualInputManager:SendTouchEvent(8822, Enum.UserInputState.End.Value, x, y)
+          virtualInputManager:SendTouchEvent(currentTouchId, Enum.UserInputState.End.Value, x, y)
         end)
       end
     else
@@ -333,8 +486,8 @@ end
 
 f15()
 
--- // 3. Create Main Window using Kenz Hub Library
-local Library = loadstring(game:HttpGet("https://pastefy.app/4HNLohNy/raw"))()
+-- // 4. Create Main Window using Kenz Hub Library
+local Library = loadstring(game:HttpGetAsync("https://pastefy.app/DKxGha3w/raw"))()
 
 local Window = Library:CreateWindow({
     Title = "Kenz Hub",
@@ -348,9 +501,11 @@ local Window = Library:CreateWindow({
     SphereIconSize = 38
 })
 
--- // 4. Create Survivor Tab & Sections
+-- // 5. Create Survivor Tab & Sections
 local SurvivorTab = Window:CreateTab("Survivor", false, false)
 local SurvivorPage = SurvivorTab:CreatePage("Home")
+
+-- Skillcheck Section
 local SkillcheckCard = SurvivorPage:CreateSection("Skillcheck Features")
 
 SkillcheckCard:AddToggle("Auto Skillcheck", false, function(state)
@@ -378,4 +533,56 @@ SkillcheckCard:AddDropdown("Skillcheck Mode", {"Normal", "Perfect", "Instant"}, 
 end, {
     Title = "Skillcheck Method",
     Description = "Pilih tingkat presisi penyelesaian skillcheck (Normal, Perfect, atau Instant)."
+})
+
+-- Silent Aim Section (Twist of Fate)
+local SilentAimCard = SurvivorPage:CreateSection("Silent Aim Twist Of Fate")
+
+SilentAimCard:AddToggle("Silent Aim Twist Of Fate", false, function(state)
+    VD.AUTO_ToFAim = state == true
+    Library:Notify({
+        Title = "Silent Aim ToF",
+        Description = state and "Enabled" or "Disabled",
+        Duration = 2
+    })
+end, {
+    Title = "Silent Aim Twist Of Fate",
+    Description = "Aktifkan silent aim untuk item Twist of Fate."
+})
+
+SilentAimCard:AddDropdown("ToF Target Mode", {"Killer", "Survivor", "SCP"}, false, function(selected)
+    if type(selected) == "table" then
+        selected = selected[1]
+    end
+    VD.AUTO_ToFTargetMode = selected or "Killer"
+    Library:Notify({
+        Title = "ToF Target Mode",
+        Description = "Target set to: " .. VD.AUTO_ToFTargetMode,
+        Duration = 2
+    })
+end, {
+    Title = "Target Mode",
+    Description = "Pilih target silent aim (Killer, Survivor, atau SCP)."
+})
+
+SilentAimCard:AddDropdown("ToF Aim Part", {"HumanoidRootPart", "Head", "Torso"}, false, function(selected)
+    if type(selected) == "table" then
+        selected = selected[1]
+    end
+    VD.AUTO_ToFAimPart = selected or "HumanoidRootPart"
+    Library:Notify({
+        Title = "ToF Aim Part",
+        Description = "Part set to: " .. VD.AUTO_ToFAimPart,
+        Duration = 2
+    })
+end, {
+    Title = "Aim Part",
+    Description = "Pilih bagian tubuh target yang diincar."
+})
+
+SilentAimCard:AddToggle("ToF Prediction", true, function(state)
+    VD.AUTO_ToFPredict = state == true
+end, {
+    Title = "Prediction",
+    Description = "Aktifkan prediksi pergerakan target."
 })

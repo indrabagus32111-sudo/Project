@@ -441,7 +441,7 @@ local function f15()
       v176.HasClickedThisGoal = false
       v176.LastGoalRotation = v198
       v176.LastLineRotation = v197
-      v176.LastTick = v199
+      v176.LastTick = os.clock()
       return
     end
     if v176.LastGoalRotation and math.abs(f93(v176.LastGoalRotation, v198)) > 5 then
@@ -486,7 +486,521 @@ end
 
 f15()
 
--- // 4. Create Main Window using Kenz Hub Library
+-- // 4. Auto Parry Logic Setup
+local function f23()
+  return coreGui
+end
+
+local iyanParryRange = Instance.new("CylinderHandleAdornment")
+iyanParryRange.Name = "IYAN_ParryRange"
+iyanParryRange.Radius = vd.SURV_ParryRange or 12
+iyanParryRange.InnerRadius = math.max(0.1, (vd.SURV_ParryRange or 12) - 0.15)
+iyanParryRange.Height = 0.01
+iyanParryRange.Color3 = Color3.fromRGB(80, 80, 80)
+iyanParryRange.AlwaysOnTop = false
+iyanParryRange.Adornee = workspaceService:FindFirstChildOfClass("Terrain")
+iyanParryRange.Transparency = 1
+iyanParryRange.Parent = f23()
+
+local function f75()
+  local character10 = localPlayer.Character
+  if not character10 then return false end
+  if character10:FindFirstChild("Parrying Dagger") then return true end
+  for _, value69 in ipairs(character10:GetDescendants()) do
+    if value69.Name == "Parrying Dagger" and (value69:IsA("Tool") or value69:IsA("Accessory") or value69:IsA("Model")) then
+      return true
+    end
+  end
+  return false
+end
+
+local function f76()
+  if not vd.SURV_AutoParry or not vd.SURV_ShowParryCircle then
+    iyanParryRange.Transparency = 1
+    return
+  else
+    local character11 = localPlayer.Character
+    local humanoidRootPart7 = character11 and character11:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart7 then
+      iyanParryRange.Transparency = 1
+      return
+    else
+      local survParryRange = vd.SURV_ParryRange or 12
+      iyanParryRange.Transparency = 0.4
+      iyanParryRange.Radius = survParryRange
+      iyanParryRange.InnerRadius = math.max(0.1, survParryRange - 0.15)
+      local raycastParams = RaycastParams.new()
+      raycastParams.FilterDescendantsInstances = { character11 }
+      raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+      local raycast = workspaceService:Raycast(humanoidRootPart7.Position, Vector3.new(0, -15, 0), raycastParams)
+      local position3 = raycast and raycast.Position or humanoidRootPart7.Position - Vector3.new(0, 3, 0)
+      iyanParryRange.CFrame = CFrame.new(position3 + Vector3.new(0, 0.05, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
+    end
+  end
+end
+
+local v163 = {}
+local v164
+
+local function f77()
+  local playerGui2 = localPlayer:FindFirstChildOfClass("PlayerGui")
+  if not playerGui2 then return end
+  table.clear(v163)
+  v164 = nil
+  for _, value70 in ipairs({ "Survivor", "Survivor-con" }) do
+    local findFirstChild17 = playerGui2:FindFirstChild(value70)
+    if findFirstChild17 then
+      local gen = findFirstChild17:FindFirstChild("Gen")
+      if gen then
+        local itemFrame = gen:FindFirstChild("ItemFrame")
+        if itemFrame then
+          local gui = itemFrame:FindFirstChild("Gui")
+          if gui then
+            local bar = gui:FindFirstChild("Bar")
+            if bar then
+              local uiGradient = bar:FindFirstChild("UIGradient")
+              if uiGradient then table.insert(v163, uiGradient) end
+            end
+          end
+          local icon = itemFrame:FindFirstChild("icon")
+          if icon then v164 = icon end
+        end
+      end
+    end
+  end
+  local survivorMob = playerGui2:FindFirstChild("Survivor-mob")
+  if survivorMob then
+    local controls = survivorMob:FindFirstChild("Controls")
+    if controls then
+      for _, value71 in ipairs(controls:GetChildren()) do
+        if value71:IsA("ImageButton") and value71.Name == "Gui-mob" then
+          local bar2 = value71:FindFirstChild("Bar")
+          if bar2 then
+            local uiGradient2 = bar2:FindFirstChild("UIGradient")
+            if uiGradient2 then table.insert(v163, uiGradient2) end
+          end
+        end
+      end
+    end
+  end
+end
+
+task.spawn(function()
+  local total = 0
+  while #v163 == 0 and total < 10 do
+    task.wait(0.5)
+    f77()
+    total = total + 0.5
+  end
+end)
+
+local v165 = {
+  CooldownToken = 0,
+  IsOnCooldown = false,
+  IsResolving = false,
+  Gradients = v163,
+  Icon = v164,
+  CooldownThread = nil,
+  LockConnection = nil,
+  ParryTrack = nil,
+}
+
+local function f78()
+  local humanoid3 = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+  if not humanoid3 then return true end
+  return humanoid3.Health < humanoid3.MaxHealth * 0.5
+end
+
+local function f79(imageColor3)
+  if #v165.Gradients == 0 then f77() end
+  for _, value73 in ipairs(v165.Gradients) do
+    if value73 and value73.Parent and value73.Parent.Parent then
+      local icon2 = value73.Parent.Parent:FindFirstChild("icon")
+      if icon2 then icon2.ImageColor3 = imageColor3 end
+      local gui2 = value73.Parent.Parent:FindFirstChild("Gui")
+      if gui2 then gui2.ImageColor3 = imageColor3 end
+    end
+  end
+  if v164 then v164.ImageColor3 = imageColor3 end
+end
+
+local function f80()
+  if v165.CooldownThread then
+    task.cancel(v165.CooldownThread)
+    v165.CooldownThread = nil
+  end
+  v165.IsOnCooldown = false
+  v165.IsResolving = false
+  f79(Color3.fromRGB(255, 255, 255))
+  for _, value74 in ipairs(v165.Gradients) do
+    if value74 and value74.Parent then
+      value74.Offset = Vector2.new(0, 0.25)
+    end
+  end
+end
+
+do
+  local function f81()
+    local currentCamera2 = workspaceService.CurrentCamera
+    if not currentCamera2 then return end
+    local v166 = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not v166 or not v166.Parent then return end
+    local lookVector = currentCamera2.CFrame.LookVector
+    local vector = Vector3.new(lookVector.X, 0, lookVector.Z)
+    if vector.Magnitude <= 0 then return end
+    local cframe = CFrame.new(v166.Position, v166.Position + vector.Unit)
+    local create11 = tweenService:Create(v166, TweenInfo.new(0.2, Enum.EasingStyle.Linear), { CFrame = cframe })
+    create11:Play()
+    create11.Completed:Connect(function()
+      local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+      if hum then hum.AutoRotate = true end
+      if v165.LockConnection then v165.LockConnection:Disconnect() end
+      local v167 = tick()
+      v165.LockConnection = runService.Heartbeat:Connect(function()
+        if tick() - v167 >= 0.8 then
+          if v165.LockConnection then v165.LockConnection:Disconnect(); v165.LockConnection = nil end
+          return
+        end
+        if v166 and v166.Parent then
+          v166.CFrame = CFrame.new(v166.Position, v166.Position + vector.Unit)
+        elseif v165.LockConnection then
+          v165.LockConnection:Disconnect()
+          v165.LockConnection = nil
+        end
+      end)
+    end)
+  end
+
+  local function f82()
+    local character12 = localPlayer.Character
+    if not character12 then return true
+    elseif localPlayer:GetAttribute("IsDead") then return true
+    elseif character12:GetAttribute("IsCarried") then return true
+    elseif character12:GetAttribute("IsHooked") then return true
+    elseif collectionService:HasTag(character12:FindFirstChild("HumanoidRootPart"), "doing action") then return true
+    else
+      local checkInterractable = character12:FindFirstChild("CheckInterractable")
+      if checkInterractable then
+        for _, value75 in ipairs({ "isVaulting", "isSliding", "isDroppingPallet", "isRepairing", "isHealing", "isUnhooking", "isExiting" }) do
+          if checkInterractable:GetAttribute(value75) then return true end
+        end
+        return false
+      end
+      return false
+    end
+  end
+
+  local f83
+
+  local function f84(p118)
+    v165.CooldownToken = v165.CooldownToken + 1
+    local cooldownToken = v165.CooldownToken
+    v165.IsResolving = false
+    v165.IsOnCooldown = true
+    f79(Color3.fromRGB(77, 77, 77))
+    f83(p118)
+    if v165.CooldownThread then task.cancel(v165.CooldownThread) end
+    v165.CooldownThread = task.delay(p118, function()
+      if v165.CooldownToken == cooldownToken then
+        v165.IsOnCooldown = false
+        f79(Color3.fromRGB(255, 255, 255))
+        v165.CooldownThread = nil
+      end
+    end)
+  end
+
+  function f83(p119)
+    if #v165.Gradients == 0 then f77() end
+    for _, value76 in ipairs(v165.Gradients) do
+      if value76 and value76.Parent then
+        value76.Offset = Vector2.new(0, 0.75)
+        local create12 = tweenService:Create(value76, TweenInfo.new(p119, Enum.EasingStyle.Linear), { Offset = Vector2.new(0, 0.25) })
+        create12:Play()
+        create12.Completed:Connect(function()
+          if not v165.IsOnCooldown then f79(Color3.fromRGB(255, 255, 255)) end
+        end)
+      end
+    end
+  end
+
+  local function f85()
+    local character13 = localPlayer.Character
+    local humanoid4 = character13 and character13:FindFirstChildOfClass("Humanoid")
+    if not humanoid4 then return end
+    local animator = humanoid4:FindFirstChildOfClass("Animator")
+    if not animator then return end
+    local survParryAnimId = vd.SURV_ParryAnimId or "rbxassetid://109133187196613"
+    local animation = Instance.new("Animation")
+    animation.AnimationId = survParryAnimId
+    local loadAnimation = animator:LoadAnimation(animation)
+    if loadAnimation then
+      loadAnimation.Priority = Enum.AnimationPriority.Action
+      loadAnimation:Play()
+      v165.ParryTrack = loadAnimation
+      task.delay(1.5, function()
+        if loadAnimation and loadAnimation.IsPlaying then loadAnimation:Stop() end
+        v165.ParryTrack = nil
+      end)
+    end
+  end
+
+  local function f86()
+    if not vd.SURV_AutoParry then return false
+    elseif not f75() then return false
+    elseif v165.IsOnCooldown then return false
+    elseif v165.IsResolving then return false
+    elseif f82() then return false
+    elseif f78() then return false
+    else return true end
+  end
+
+  local f87
+
+  local function f88()
+    if not f86() then return end
+    v165.IsResolving = true
+    f79(Color3.fromRGB(77, 77, 77))
+    local parry = replicatedStorage:FindFirstChild("Remotes"):FindFirstChild("Items"):FindFirstChild("Parrying Dagger"):FindFirstChild("parry")
+    if parry then pcall(function() parry:FireServer() end) end
+    f81()
+    local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.AutoRotate = false end
+    f85()
+    local rootPart = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if rootPart then collectionService:AddTag(rootPart, "doing action") end
+    local slow = replicatedStorage:FindFirstChild("Remotes"):FindFirstChild("Mechanics"):FindFirstChild("Slow")
+    if slow then pcall(function() slow:Fire(0, 1, 0) end) end
+    task.spawn(f87)
+    task.delay(2, function()
+      if v165.IsResolving then
+        v165.IsResolving = false
+        f84(60)
+        if rootPart then collectionService:RemoveTag(rootPart, "doing action") end
+      end
+    end)
+  end
+
+  function f87()
+    local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    for _, value77 in ipairs({ { speed = 0, duration = 2 }, { speed = 19, duration = 2 }, { speed = 18, duration = 1 }, { speed = 17, duration = math.huge } }) do
+      if not hum.Parent then break end
+      hum.WalkSpeed = value77.speed
+      if value77.duration == math.huge then break end
+      task.wait(value77.duration)
+    end
+  end
+
+  local function f89()
+    task.spawn(function()
+      local remotes = replicatedStorage:FindFirstChild("Remotes")
+      if not remotes then return end
+      local parryingDagger = remotes:FindFirstChild("Items"):FindFirstChild("Parrying Dagger")
+      if not parryingDagger then return end
+      local parryResult = parryingDagger:FindFirstChild("parryResult")
+      if not parryResult then return end
+      parryResult.OnClientEvent:Connect(function(p120, p121)
+        if not v165.IsResolving then return end
+        v165.IsResolving = false
+        local v170 = tonumber(p121)
+        if v170 and v170 > 0 then f84(v170)
+        elseif p120 == true then f84(90)
+        else f84(60) end
+        local rootPart = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if rootPart then collectionService:RemoveTag(rootPart, "doing action") end
+      end)
+    end)
+  end
+
+  f89()
+
+  local v172 = {
+    ["rbxassetid://113255068724446"] = true,
+    ["rbxassetid://74968262036854"] = true,
+    ["rbxassetid://110355011987939"] = true,
+    ["rbxassetid://139369275981139"] = true,
+    ["rbxassetid://132817836308238"] = true,
+    ["rbxassetid://129784271201071"] = true,
+    ["rbxassetid://133963973694098"] = true,
+    ["rbxassetid://117042998468241"] = true,
+    ["rbxassetid://105374834496520"] = true,
+    ["rbxassetid://111920872708571"] = true,
+    ["rbxassetid://78432063483146"] = true,
+    ["rbxassetid://118907603246885"] = true,
+    ["rbxassetid://138720291317243"] = true,
+    ["rbxassetid://115244153053858"] = true,
+    ["rbxassetid://130593238885843"] = true,
+    ["rbxassetid://122812055447896"] = true,
+    ["rbxassetid://78935059863801"] = true,
+    ["rbxassetid://135002183282873"] = true,
+    ["rbxassetid://121216847022485"] = true,
+  }
+
+  local v173 = {}
+
+  local function f90(p122)
+    if not p122 or v173[p122] then return end
+    v173[p122] = true
+    local humanoid5 = p122:FindFirstChild("Humanoid")
+    if not humanoid5 then
+      humanoid5 = p122:WaitForChild("Humanoid", 5)
+      if not humanoid5 then return end
+    end
+    local animator2 = humanoid5:FindFirstChildOfClass("Animator")
+    if not animator2 then
+      animator2 = humanoid5:WaitForChild("Animator", 5)
+      if not animator2 then return end
+    end
+    humanoid5.ChildAdded:Connect(function(child3)
+      if child3:IsA("Animator") then
+        v173[p122] = nil
+        f90(p122)
+      end
+    end)
+    p122.AncestryChanged:Connect(function(_, p124)
+      if not p124 then v173[p122] = nil end
+    end)
+    animator2.AnimationPlayed:Connect(function(p125)
+      local animationId = p125.Animation and p125.Animation.AnimationId or ""
+      if not v172[animationId] then return end
+      if not vd.SURV_AutoParry then return end
+      if not f75() then return end
+      if v165.IsOnCooldown or v165.IsResolving then return end
+      local character14 = localPlayer.Character
+      if not character14 then return end
+      local humanoidRootPart8 = character14:FindFirstChild("HumanoidRootPart")
+      local humanoidRootPart9 = p122:FindFirstChild("HumanoidRootPart")
+      if not humanoidRootPart8 or not humanoidRootPart9 then return end
+      local magnitude3 = (humanoidRootPart8.Position - humanoidRootPart9.Position).Magnitude
+      local survParryMode = vd.SURV_ParryMode or "Legit"
+      local survParryRange2 = vd.SURV_ParryRange or 12
+
+      if survParryMode == "Aggressive" then
+        if magnitude3 > survParryRange2 + 3 then return end
+        if magnitude3 <= survParryRange2 then
+          f88()
+        else
+          local connect = nil
+          local v174 = os.clock()
+          connect = runService.Heartbeat:Connect(function()
+            if os.clock() - v174 >= 1.5 or v165.IsOnCooldown or v165.IsResolving or not humanoidRootPart8 or not humanoidRootPart9 then
+              if connect then connect:Disconnect() end
+              return
+            end
+            if (humanoidRootPart8.Position - humanoidRootPart9.Position).Magnitude <= survParryRange2 then
+              f88()
+              if connect then connect:Disconnect() end
+            end
+          end)
+        end
+        return
+      elseif magnitude3 > survParryRange2 then
+        return
+      else
+        local v175 = Vector3.new(humanoidRootPart8.Position.X, 0, humanoidRootPart8.Position.Z) - Vector3.new(humanoidRootPart9.Position.X, 0, humanoidRootPart9.Position.Z)
+        if v175.Magnitude > 0 then
+          if Vector3.new(humanoidRootPart9.CFrame.LookVector.X, 0, humanoidRootPart9.CFrame.LookVector.Z).Unit:Dot(v175.Unit) < 0.6 then
+            return
+          end
+          f88()
+          return
+        end
+        f88()
+        return
+      end
+    end)
+  end
+
+  local function f91(p126)
+    if p126 ~= localPlayer and p126.Team and p126.Team.Name == "Killer" and p126.Character then
+      f90(p126.Character)
+    end
+  end
+
+  local function f92(p127)
+    if p127 == localPlayer then return end
+    p127.CharacterAdded:Connect(function() f91(p127) end)
+    p127:GetPropertyChangedSignal("Team"):Connect(function() f91(p127) end)
+    if p127.Character then f91(p127) end
+  end
+
+  for _, value78 in pairs(players:GetPlayers()) do
+    f92(value78)
+  end
+
+  players.PlayerAdded:Connect(f92)
+
+  task.spawn(function()
+    while true do
+      task.wait(5)
+      for _, value79 in pairs(players:GetPlayers()) do
+        f91(value79)
+      end
+    end
+  end)
+end
+
+runService.RenderStepped:Connect(function() f76() end)
+
+-- // 5. Flee Killer Logic Function
+local function f141()
+  if not localPlayer.Team then
+    return "Unknown"
+  else
+    local name8 = localPlayer.Team.Name
+
+    if name8 == "Killer" then
+      return "Killer"
+    end
+
+    if name8 == "Survivors" then
+      return "Survivor"
+    end
+
+    return "Lobby"
+  end
+end
+
+local function f142(p187)
+  return p187 and p187.Team and p187.Team.Name == "Killer"
+end
+
+runService.Heartbeat:Connect(function()
+  if vd.SURV_FleeKiller then
+    pcall(function()
+      local character = localPlayer.Character
+      local v348 = character and character:FindFirstChild("HumanoidRootPart")
+
+      if not v348 then
+        return
+      elseif f141() == "Killer" then
+        return
+      else
+        for index56, value181 in ipairs(players:GetPlayers()) do
+          if value181 ~= localPlayer and f142(value181) then
+            local character31 = value181.Character
+            local humanoidRootPart22 = character31 and value181.Character:FindFirstChild("HumanoidRootPart")
+
+            if humanoidRootPart22 and (humanoidRootPart22.Position - v348.Position).Magnitude <= (vd.SURV_FleeDistance or 40) then
+              local unit5 = (v348.Position - humanoidRootPart22.Position).Unit
+
+              v348.CFrame = CFrame.new(
+                v348.Position + unit5 * ((vd.SURV_FleeDistance or 40) + 15),
+                v348.Position + unit5 * 100
+              )
+
+              break
+            end
+          end
+        end
+
+        return
+      end
+    end)
+  end
+end)
+
+-- // 6. Create Main Window using Kenz Hub Library
 local Library = loadstring(game:HttpGetAsync("https://pastefy.app/DKxGha3w/raw"))()
 
 local Window = Library:CreateWindow({
@@ -501,7 +1015,7 @@ local Window = Library:CreateWindow({
     SphereIconSize = 38
 })
 
--- // 5. Create Survivor Tab & Sections
+-- // 7. Create Survivor Tab & Sections
 local SurvivorTab = Window:CreateTab("Survivor", false, false)
 local SurvivorPage = SurvivorTab:CreatePage("Home")
 
@@ -585,4 +1099,102 @@ SilentAimCard:AddToggle("ToF Prediction", true, function(state)
 end, {
     Title = "Prediction",
     Description = "Aktifkan prediksi pergerakan target."
+})
+
+-- Auto Parry Section (Ditambahkan di bawah Silent Aim)
+local AutoParryCard = SurvivorPage:CreateSection("Auto Parry Features")
+
+AutoParryCard:AddToggle("Enable Auto Parry", false, function(state)
+    VD.SURV_AutoParry = state == true
+    if not state then
+        iyanParryRange.Transparency = 1
+        f80()
+    end
+    Library:Notify({
+        Title = "Auto Parry",
+        Description = state and "Enabled" or "Disabled",
+        Duration = 2
+    })
+end, {
+    Title = "Enable Auto Parry",
+    Description = "Secara otomatis menangkis serangan killer menggunakan Parrying Dagger."
+})
+
+AutoParryCard:AddDropdown("Parry Mode", {"Legit", "Aggressive"}, false, function(selected)
+    if type(selected) == "table" then
+        selected = selected[1]
+    end
+    VD.SURV_ParryMode = selected or "Legit"
+    Library:Notify({
+        Title = "Parry Mode",
+        Description = "Mode set to: " .. VD.SURV_ParryMode,
+        Duration = 2
+    })
+end, {
+    Title = "Parry Mode",
+    Description = "Pilih mode parry (Legit atau Aggressive)."
+})
+
+AutoParryCard:AddDropdown("Parry Animation", {"Default", "Shield", "Robot", "Katana", "Fish", "Watcher"}, false, function(selected)
+    if type(selected) == "table" then
+        selected = selected[1]
+    end
+    local animMap = {
+        Default = "rbxassetid://109133187196613",
+        Shield = "rbxassetid://75939529748815",
+        Robot = "rbxassetid://126894569253341",
+        Katana = "rbxassetid://127096285501517",
+        Fish = "rbxassetid://123307242865945",
+        Watcher = "rbxassetid://81793464499285",
+    }
+    VD.SURV_ParryAnimId = animMap[selected or "Default"] or animMap.Default
+    Library:Notify({
+        Title = "Parry Animation",
+        Description = "Animation set to: " .. (selected or "Default"),
+        Duration = 2
+    })
+end, {
+    Title = "Parry Animation",
+    Description = "Pilih animasi saat melakukan parry."
+})
+
+AutoParryCard:AddSlider("Parry Range", 2, 20, VD.SURV_ParryRange or 12, 0.5, function(value)
+    VD.SURV_ParryRange = value
+    iyanParryRange.Radius = value
+    iyanParryRange.InnerRadius = math.max(0.1, value - 0.15)
+end, {
+    Title = "Parry Range (Studs)",
+    Description = "Atur jangkauan deteksi parry (2 - 20 Studs)."
+})
+
+AutoParryCard:AddToggle("Show Parry Range Circle", true, function(state)
+    VD.SURV_ShowParryCircle = state == true
+    if not state then
+        iyanParryRange.Transparency = 1
+    end
+end, {
+    Title = "Show Parry Range Circle",
+    Description = "Menampilkan lingkaran indikator jangkauan parry di tanah."
+})
+
+-- Flee Killer Section
+local FleeKillerCard = SurvivorPage:CreateSection("Flee Killer Features")
+
+FleeKillerCard:AddToggle("Flee Killer", false, function(state)
+    VD.SURV_FleeKiller = state == true
+    Library:Notify({
+        Title = "Flee Killer",
+        Description = state and "Enabled" or "Disabled",
+        Duration = 2
+    })
+end, {
+    Title = "Flee Killer",
+    Description = "Menghindar otomatis ketika Killer berada dalam jarak tertentu."
+})
+
+FleeKillerCard:AddSlider("Flee Distance", 10, 40, VD.SURV_FleeDistance or 40, 1, function(value)
+    VD.SURV_FleeDistance = value
+end, {
+    Title = "Jarak Menghindar (Studs)",
+    Description = "Atur jarak minimal Killer agar fitur Flee Killer aktif (10 - 40 Studs)."
 })

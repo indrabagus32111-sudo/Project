@@ -1,4 +1,7 @@
--- // 1. Services & Environment Setup
+-- ==========================================
+-- Kenz Hub - Violence District Complete Script
+-- ==========================================
+
 local tweenService = game:GetService("TweenService")
 local coreGui = game:GetService("CoreGui")
 local players = game:GetService("Players")
@@ -72,7 +75,7 @@ local v47 = { SCPZombie = {} }
 local fire = nil
 local v48 = nil
 
--- // 2. Silent Aim Hook Logic Function (Fixed & Secured)
+-- Hooking / Silent Aim Twist of Fate
 local function f25()
   if getgenv().IYAN_AntiFailHooked then
     return
@@ -218,7 +221,7 @@ end
 
 f25()
 
--- // 3. Skillcheck Logic Function (Fixed Mobile Touch & Camera Freezing)
+-- Auto Skillcheck (Optimized & Non-Freezing)
 local function f15()
   local touchEnabled = userInputService.TouchEnabled and not userInputService.KeyboardEnabled
   local playerGui4 = localPlayer:WaitForChild("PlayerGui")
@@ -486,7 +489,7 @@ end
 
 f15()
 
--- // 4. Auto Parry Logic Setup
+-- Auto Parry Setup
 local function f23()
   return coreGui
 end
@@ -496,7 +499,7 @@ iyanParryRange.Name = "IYAN_ParryRange"
 iyanParryRange.Radius = vd.SURV_ParryRange or 12
 iyanParryRange.InnerRadius = math.max(0.1, (vd.SURV_ParryRange or 12) - 0.15)
 iyanParryRange.Height = 0.01
-iyanParryRange.Color3 = Color3.fromRGB(80, 80, 80)
+iyanParryRange.Color3 = (vd.SURV_ParryMode == "Aggressive") and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(50, 150, 255)
 iyanParryRange.AlwaysOnTop = false
 iyanParryRange.Adornee = workspaceService:FindFirstChildOfClass("Terrain")
 iyanParryRange.Transparency = 1
@@ -529,6 +532,8 @@ local function f76()
       iyanParryRange.Transparency = 0.4
       iyanParryRange.Radius = survParryRange
       iyanParryRange.InnerRadius = math.max(0.1, survParryRange - 0.15)
+      iyanParryRange.Color3 = (vd.SURV_ParryMode == "Aggressive") and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(50, 150, 255)
+      
       local raycastParams = RaycastParams.new()
       raycastParams.FilterDescendantsInstances = { character11 }
       raycastParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -942,7 +947,6 @@ end
 
 runService.RenderStepped:Connect(function() f76() end)
 
--- // 5. Flee Killer Logic Function
 local function f141()
   if not localPlayer.Team then
     return "Unknown"
@@ -965,6 +969,7 @@ local function f142(p187)
   return p187 and p187.Team and p187.Team.Name == "Killer"
 end
 
+-- Flee Killer Loop
 runService.Heartbeat:Connect(function()
   if vd.SURV_FleeKiller then
     pcall(function()
@@ -1000,8 +1005,97 @@ runService.Heartbeat:Connect(function()
   end
 end)
 
--- // 6. Create Main Window using Kenz Hub Library
-local Library = loadstring(game:HttpGetAsync("https://pastefy.app/DKxGha3w/raw"))()
+-- Auto Drop Pallet Loop & Logic
+local v382 = 0
+local droppedPalletsCache = {}
+
+runService.Heartbeat:Connect(function()
+  if not vd.SURV_AutoDropPallet or f141() ~= "Survivor" then
+    return
+  end
+
+  if tick() - v382 < 0.2 then
+    return
+  end
+
+  v382 = tick()
+
+  pcall(function()
+    local character = localPlayer.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return end
+
+    local killerNearby = false
+    local maxDist = vd.SURV_AutoDropPalletDist or 20
+
+    for _, p in ipairs(players:GetPlayers()) do
+      if p ~= localPlayer and p.Team and p.Team.Name == "Killer" and p.Character then
+        local kRoot = p.Character:FindFirstChild("HumanoidRootPart")
+        if kRoot and (kRoot.Position - rootPart.Position).Magnitude <= maxDist then
+          killerNearby = true
+          break
+        end
+      end
+    end
+
+    if killerNearby then
+      local remotes = replicatedStorage:FindFirstChild("Remotes")
+      local palletRemote = remotes and remotes:FindFirstChild("Pallet")
+      local dropEvent = palletRemote and (palletRemote:FindFirstChild("PalletDropEvent") or palletRemote:FindFirstChild("DropPallet") or palletRemote:FindFirstChild("palletDrop"))
+
+      for _, obj in ipairs(collectionService:GetTagged("PalletPoint") or {}) do
+        if obj:IsA("BasePart") and (obj.Position - rootPart.Position).Magnitude <= 12 then
+          if not droppedPalletsCache[obj] then
+            droppedPalletsCache[obj] = true
+            if dropEvent and dropEvent:IsA("RemoteEvent") then
+              dropEvent:FireServer(obj)
+            end
+            task.delay(4, function() droppedPalletsCache[obj] = nil end)
+          end
+        end
+      end
+    end
+  end)
+end)
+
+local connect6 = nil
+
+local function setAntiKnock(state)
+    VD.SURV_AntiKnock = state
+    local humanoid11
+    if state then
+        if connect6 then
+            connect6:Disconnect()
+            connect6 = nil
+        end
+        local character28 = localPlayer.Character
+        if character28 then
+            humanoid11 = character28:FindFirstChildOfClass("Humanoid")
+            if humanoid11 then
+                connect6 = humanoid11.HealthChanged:Connect(function()
+                    if VD.SURV_AntiKnock then
+                        humanoid11.Health = 100
+                    end
+                end)
+            end
+        end
+    else
+        if connect6 then
+            connect6:Disconnect()
+            connect6 = nil
+        end
+    end
+end
+
+localPlayer.CharacterAdded:Connect(function(character)
+    task.wait(0.5)
+    if VD.SURV_AntiKnock then
+        setAntiKnock(true)
+    end
+end)
+
+-- UI Library Initialization
+local Library = loadstring(game:HttpGetAsync("https://pastefy.app/EeGhd4aA/raw"))()
 
 local Window = Library:CreateWindow({
     Title = "Kenz Hub",
@@ -1015,12 +1109,10 @@ local Window = Library:CreateWindow({
     SphereIconSize = 38
 })
 
--- // 7. Create Survivor Tab & Sections
 local SurvivorTab = Window:CreateTab("Survivor", false, false)
-local SurvivorPage = SurvivorTab:CreatePage("Home")
+local SurvivorPage = SurvivorTab:CreatePage("Survivor")
 
--- Skillcheck Section
-local SkillcheckCard = SurvivorPage:CreateSection("Skillcheck Features")
+local SkillcheckCard = SurvivorPage:CreateSection("Skillcheck")
 
 SkillcheckCard:AddToggle("Auto Skillcheck", false, function(state)
     VD.AutoSkillcheck = state == true
@@ -1031,7 +1123,7 @@ SkillcheckCard:AddToggle("Auto Skillcheck", false, function(state)
     })
 end, {
     Title = "Auto Skillcheck",
-    Description = "Secara otomatis menyelesaikan skillcheck pada generator atau tindakan survivor."
+    Description = "Automatically completes skillchecks on generator or survivor actions"
 })
 
 SkillcheckCard:AddDropdown("Skillcheck Mode", {"Normal", "Perfect", "Instant"}, false, function(selected)
@@ -1046,10 +1138,9 @@ SkillcheckCard:AddDropdown("Skillcheck Mode", {"Normal", "Perfect", "Instant"}, 
     })
 end, {
     Title = "Skillcheck Method",
-    Description = "Pilih tingkat presisi penyelesaian skillcheck (Normal, Perfect, atau Instant)."
+    Description = "Select the skillcheck completion precision level (Normal, Perfect, or Instant)"
 })
 
--- Silent Aim Section (Twist of Fate)
 local SilentAimCard = SurvivorPage:CreateSection("Silent Aim Twist Of Fate")
 
 SilentAimCard:AddToggle("Silent Aim Twist Of Fate", false, function(state)
@@ -1061,7 +1152,7 @@ SilentAimCard:AddToggle("Silent Aim Twist Of Fate", false, function(state)
     })
 end, {
     Title = "Silent Aim Twist Of Fate",
-    Description = "Aktifkan silent aim untuk item Twist of Fate."
+    Description = "Enable silent aim for Twist of Fate item"
 })
 
 SilentAimCard:AddDropdown("ToF Target Mode", {"Killer", "Survivor", "SCP"}, false, function(selected)
@@ -1076,7 +1167,7 @@ SilentAimCard:AddDropdown("ToF Target Mode", {"Killer", "Survivor", "SCP"}, fals
     })
 end, {
     Title = "Target Mode",
-    Description = "Pilih target silent aim (Killer, Survivor, atau SCP)."
+    Description = "Select silent aim target (Killer, Survivor, or SCP)."
 })
 
 SilentAimCard:AddDropdown("ToF Aim Part", {"HumanoidRootPart", "Head", "Torso"}, false, function(selected)
@@ -1091,18 +1182,17 @@ SilentAimCard:AddDropdown("ToF Aim Part", {"HumanoidRootPart", "Head", "Torso"},
     })
 end, {
     Title = "Aim Part",
-    Description = "Pilih bagian tubuh target yang diincar."
+    Description = "Select the target body part you want to target"
 })
 
 SilentAimCard:AddToggle("ToF Prediction", true, function(state)
     VD.AUTO_ToFPredict = state == true
 end, {
     Title = "Prediction",
-    Description = "Aktifkan prediksi pergerakan target."
+    Description = "Enable target movement prediction"
 })
 
--- Auto Parry Section (Ditambahkan di bawah Silent Aim)
-local AutoParryCard = SurvivorPage:CreateSection("Auto Parry Features")
+local AutoParryCard = SurvivorPage:CreateSection("Auto Parry")
 
 AutoParryCard:AddToggle("Enable Auto Parry", false, function(state)
     VD.SURV_AutoParry = state == true
@@ -1117,7 +1207,7 @@ AutoParryCard:AddToggle("Enable Auto Parry", false, function(state)
     })
 end, {
     Title = "Enable Auto Parry",
-    Description = "Secara otomatis menangkis serangan killer menggunakan Parrying Dagger."
+    Description = "Automatically parry killer attacks using Parrying Dagger"
 })
 
 AutoParryCard:AddDropdown("Parry Mode", {"Legit", "Aggressive"}, false, function(selected)
@@ -1125,6 +1215,7 @@ AutoParryCard:AddDropdown("Parry Mode", {"Legit", "Aggressive"}, false, function
         selected = selected[1]
     end
     VD.SURV_ParryMode = selected or "Legit"
+    iyanParryRange.Color3 = (VD.SURV_ParryMode == "Aggressive") and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(50, 150, 255)
     Library:Notify({
         Title = "Parry Mode",
         Description = "Mode set to: " .. VD.SURV_ParryMode,
@@ -1132,39 +1223,16 @@ AutoParryCard:AddDropdown("Parry Mode", {"Legit", "Aggressive"}, false, function
     })
 end, {
     Title = "Parry Mode",
-    Description = "Pilih mode parry (Legit atau Aggressive)."
+    Description = "Select parry mode (Legit or Aggressive)"
 })
 
-AutoParryCard:AddDropdown("Parry Animation", {"Default", "Shield", "Robot", "Katana", "Fish", "Watcher"}, false, function(selected)
-    if type(selected) == "table" then
-        selected = selected[1]
-    end
-    local animMap = {
-        Default = "rbxassetid://109133187196613",
-        Shield = "rbxassetid://75939529748815",
-        Robot = "rbxassetid://126894569253341",
-        Katana = "rbxassetid://127096285501517",
-        Fish = "rbxassetid://123307242865945",
-        Watcher = "rbxassetid://81793464499285",
-    }
-    VD.SURV_ParryAnimId = animMap[selected or "Default"] or animMap.Default
-    Library:Notify({
-        Title = "Parry Animation",
-        Description = "Animation set to: " .. (selected or "Default"),
-        Duration = 2
-    })
-end, {
-    Title = "Parry Animation",
-    Description = "Pilih animasi saat melakukan parry."
-})
-
-AutoParryCard:AddSlider("Parry Range", 2, 20, VD.SURV_ParryRange or 12, 0.5, function(value)
+AutoParryCard:AddSlider("Parry Range", 2, 30, VD.SURV_ParryRange or 12, function(value)
     VD.SURV_ParryRange = value
     iyanParryRange.Radius = value
     iyanParryRange.InnerRadius = math.max(0.1, value - 0.15)
 end, {
     Title = "Parry Range (Studs)",
-    Description = "Atur jangkauan deteksi parry (2 - 20 Studs)."
+    Description = "Set parry detection range (2 - 30 Studs)."
 })
 
 AutoParryCard:AddToggle("Show Parry Range Circle", true, function(state)
@@ -1174,11 +1242,10 @@ AutoParryCard:AddToggle("Show Parry Range Circle", true, function(state)
     end
 end, {
     Title = "Show Parry Range Circle",
-    Description = "Menampilkan lingkaran indikator jangkauan parry di tanah."
+    Description = "Displays a parry range indicator circle on the ground"
 })
 
--- Flee Killer Section
-local FleeKillerCard = SurvivorPage:CreateSection("Flee Killer Features")
+local FleeKillerCard = SurvivorPage:CreateSection("Flee Killer")
 
 FleeKillerCard:AddToggle("Flee Killer", false, function(state)
     VD.SURV_FleeKiller = state == true
@@ -1189,12 +1256,63 @@ FleeKillerCard:AddToggle("Flee Killer", false, function(state)
     })
 end, {
     Title = "Flee Killer",
-    Description = "Menghindar otomatis ketika Killer berada dalam jarak tertentu."
+    Description = "Automatically dodge when Killer is within a certain distance"
 })
 
-FleeKillerCard:AddSlider("Flee Distance", 10, 40, VD.SURV_FleeDistance or 40, 1, function(value)
+FleeKillerCard:AddSlider("Flee Distance", 10, 40, VD.SURV_FleeDistance or 40, function(value)
     VD.SURV_FleeDistance = value
 end, {
-    Title = "Jarak Menghindar (Studs)",
-    Description = "Atur jarak minimal Killer agar fitur Flee Killer aktif (10 - 40 Studs)."
+    Title = "Evasion Distance (Studs)",
+    Description = "Set the minimum Killer distance for the Flee Killer feature to be active (10 - 40 Studs)"
+})
+
+-- Auto Drop Pallet UI Section
+local PalletCard = SurvivorPage:CreateSection("Auto Drop Pallet")
+
+PalletCard:AddToggle("Auto Drop Pallet", false, function(state)
+    VD.SURV_AutoDropPallet = state == true
+    Library:Notify({
+        Title = "Auto Drop Pallet",
+        Description = state and "Enabled" or "Disabled",
+        Duration = 2
+    })
+end, {
+    Title = "Auto Drop Pallet",
+    Description = "Automatically drops pallets when the Killer is within range"
+})
+
+PalletCard:AddSlider("Killer Detection Range", 5, 50, VD.SURV_AutoDropPalletDist or 20, function(value)
+    VD.SURV_AutoDropPalletDist = value
+end, {
+    Title = "Detection Range (Studs)",
+    Description = "Set the distance threshold for dropping pallets"
+})
+
+PalletCard:AddDropdown("Pallet Mode", {"Aggressive", "Safe"}, false, function(selected)
+    if type(selected) == "table" then
+        selected = selected[1]
+    end
+    VD.SURV_AutoDropPalletMode = selected or "Aggressive"
+    Library:Notify({
+        Title = "Pallet Mode",
+        Description = "Mode set to: " .. VD.SURV_AutoDropPalletMode,
+        Duration = 2
+    })
+end, {
+    Title = "Pallet Drop Mode",
+    Description = "Select pallet drop behavior mode"
+})
+
+local AntiKnockCard = SurvivorPage:CreateSection("Anti Knock")
+
+AntiKnockCard:AddToggle("Anti Knock", false, function(state)
+    setAntiKnock(state)
+    Library:Notify({
+        Title = "Anti Knock",
+        Description = state and "Enabled" or "Disabled",
+        Duration = 2
+    })
+end, {
+    Title = "Anti Knock",
+    Description = "Automatically restores health to prevent being knocked down"
 })

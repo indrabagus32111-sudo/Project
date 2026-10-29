@@ -1,1318 +1,2154 @@
--- ==========================================
--- Kenz Hub - Violence District Complete Script
--- ==========================================
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local TextService = game:GetService("TextService")
 
-local tweenService = game:GetService("TweenService")
-local coreGui = game:GetService("CoreGui")
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local userInputService = game:GetService("UserInputService")
-local lighting = game:GetService("Lighting")
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local workspaceService = game:GetService("Workspace")
-local guiService = game:GetService("GuiService")
-local virtualInputManager = game:GetService("VirtualInputManager")
-local collectionService = game:GetService("CollectionService")
-local httpService = game:GetService("HttpService")
-local teams = game:GetService("Teams")
-
-local v1 = getgenv()
-
-v1.VD = getgenv().VD or {
-  AutoSkillcheck = false,
-  AutoSkillcheckMode = "Normal",
-  SURV_FleeKiller = false,
-  SURV_FleeDistance = 40,
-  SURV_AutoParry = false,
-  SURV_ParryMode = "Legit",
-  SURV_ParryAnimId = "rbxassetid://109133187196613",
-  SURV_ParryRange = 12,
-  SURV_ShowParryCircle = true,
-  Parry_Keybind = "F3",
-  SURV_AntiKnock = false,
-  SURV_FirstPerson = false,
-  AUTO_ToFAim = false,
-  AUTO_ToFAimRange = 90,
-  AUTO_ToFDotThreshold = 0.5,
-  AUTO_ToFTargetMode = "Killer",
-  AUTO_ToFAimPart = "HumanoidRootPart",
-  AUTO_ToFPredict = true,
-  AUTO_ToFBulletSpeed = 200,
-  AUTO_Attack = false,
-  AUTO_AttackRange = 12,
-  KILLER_DestroyPallets = false,
-  KILLER_AutoBreakGene = false,
-  KILLER_BlockVaults = false,
-  KILLER_AntiBlind = false,
-  KILLER_DoubleTap = false,
-  SPEAR_Aimbot = false,
-  SPEAR_Gravity = 50,
-  SPEAR_Speed = 100,
-  KILLER_CustomMasked = "Richard",
-  DRAWING_ESP = false,
-  ESP_Skeleton = false,
-  ESP_Offscreen = false,
-  ESP_Velocity = false,
-  MaxDistance = 2000,
-  InstantHealSelf = false,
-  AutoHealAll = false,
-  Destroyed = false,
-  ESP_LowPerformance = false,
-  Fullbright = false,
-  NoFog = false,
-  SURV_AutoDropPallet = false,
-  SURV_AutoDropPalletDist = 20,
-  SURV_AutoDropPalletMode = "Aggressive",
-  SURV_AutoVault = false,
-  SURV_AutoPalletSlide = false,
+local Library = {
+    WhitelistedUsers = {},
+    -- Kumpulan kamus ID gambar yang bisa ditambah sebanyak apa pun
+    Icons = {
+			["accessibility"] = "rbxassetid://10709751939",
+			["activity"] = "rbxassetid://10709752035",
+			["airvent"] = "rbxassetid://10709752131",
+			["airplay"] = "rbxassetid://10709752254",
+			["alarmcheck"] = "rbxassetid://10709752405",
+			["alarmclock"] = "rbxassetid://10709752630",
+			["alarmclockoff"] = "rbxassetid://10709752508",
+			["alarmminus"] = "rbxassetid://10709752732",
+			["alarmplus"] = "rbxassetid://10709752825",
+			["album"] = "rbxassetid://10709752906",
+			["alertcircle"] = "rbxassetid://10709752996",
+			["alertoctagon"] = "rbxassetid://10709753064",
+			["alerttriangle"] = "rbxassetid://10709753149",
+			["aligncenter"] = "rbxassetid://10709753570",
+			["aligncenterhorizontal"] = "rbxassetid://10709753272",
+			["aligncentervertical"] = "rbxassetid://10709753421",
+			["alignendhorizontal"] = "rbxassetid://10709753692",
+			["alignendvertical"] = "rbxassetid://10709753808",
+			["alignhorizontaldistributecenter"] = "rbxassetid://10747779791",
+			["alignhorizontaldistributeend"] = "rbxassetid://10747784534",
+			["alignhorizontaldistributestart"] = "rbxassetid://10709754118",
+			["alignhorizontaljustifycenter"] = "rbxassetid://10709754204",
+			["alignhorizontaljustifyend"] = "rbxassetid://10709754317",
+			["alignhorizontaljustifystart"] = "rbxassetid://10709754436",
+			["alignhorizontalspacearound"] = "rbxassetid://10709754590",
+			["alignhorizontalspacebetween"] = "rbxassetid://10709754749",
+			["alignjustify"] = "rbxassetid://10709759610",
+			["alignleft"] = "rbxassetid://10709759764",
+			["alignright"] = "rbxassetid://10709759895",
+			["alignstarthorizontal"] = "rbxassetid://10709760051",
+			["alignstartvertical"] = "rbxassetid://10709760244",
+			["alignverticaldistributecenter"] = "rbxassetid://10709760351",
+			["alignverticaldistributeend"] = "rbxassetid://10709760434",
+			["alignverticaldistributestart"] = "rbxassetid://10709760612",
+			["alignverticaljustifycenter"] = "rbxassetid://10709760814",
+			["alignverticaljustifyend"] = "rbxassetid://10709761003",
+			["alignverticaljustifystart"] = "rbxassetid://10709761176",
+			["alignverticalspacearound"] = "rbxassetid://10709761324",
+			["alignverticalspacebetween"] = "rbxassetid://10709761434",
+			["anchor"] = "rbxassetid://10709761530",
+			["angry"] = "rbxassetid://10709761629",
+			["annoyed"] = "rbxassetid://10709761722",
+			["aperture"] = "rbxassetid://10709761813",
+			["apple"] = "rbxassetid://10709761889",
+			["archive"] = "rbxassetid://10709762233",
+			["archiverestore"] = "rbxassetid://10709762058",
+			["armchair"] = "rbxassetid://10709762327",
+			["arrowbigdown"] = "rbxassetid://10747796644",
+			["arrowbigleft"] = "rbxassetid://10709762574",
+			["arrowbigright"] = "rbxassetid://10709762727",
+			["arrowbigup"] = "rbxassetid://10709762879",
+			["arrowdown"] = "rbxassetid://10709767827",
+			["arrowdowncircle"] = "rbxassetid://10709763034",
+			["arrowdownleft"] = "rbxassetid://10709767656",
+			["arrowdownright"] = "rbxassetid://10709767750",
+			["arrowleft"] = "rbxassetid://10709768114",
+			["arrowleftcircle"] = "rbxassetid://10709767936",
+			["arrowleftright"] = "rbxassetid://10709768019",
+			["arrowright"] = "rbxassetid://10709768347",
+			["arrowrightcircle"] = "rbxassetid://10709768226",
+			["arrowup"] = "rbxassetid://10709768939",
+			["arrowupcircle"] = "rbxassetid://10709768432",
+			["arrowupdown"] = "rbxassetid://10709768538",
+			["arrowupleft"] = "rbxassetid://10709768661",
+			["arrowupright"] = "rbxassetid://10709768787",
+			["asterisk"] = "rbxassetid://10709769095",
+			["atsign"] = "rbxassetid://10709769286",
+			["award"] = "rbxassetid://10709769406",
+			["axe"] = "rbxassetid://10709769508",
+			["axis3d"] = "rbxassetid://10709769598",
+			["baby"] = "rbxassetid://10709769732",
+			["backpack"] = "rbxassetid://10709769841",
+			["baggageclaim"] = "rbxassetid://10709769935",
+			["banana"] = "rbxassetid://10709770005",
+			["banknote"] = "rbxassetid://10709770178",
+			["barchart"] = "rbxassetid://10709773755",
+			["barchart2"] = "rbxassetid://10709770317",
+			["barchart3"] = "rbxassetid://10709770431",
+			["barchart4"] = "rbxassetid://10709770560",
+			["barcharthorizontal"] = "rbxassetid://10709773669",
+			["barcode"] = "rbxassetid://10747360675",
+			["baseline"] = "rbxassetid://10709773863",
+			["bath"] = "rbxassetid://10709773963",
+			["battery"] = "rbxassetid://10709774640",
+			["batterycharging"] = "rbxassetid://10709774068",
+			["batteryfull"] = "rbxassetid://10709774206",
+			["batterylow"] = "rbxassetid://10709774370",
+			["batterymedium"] = "rbxassetid://10709774513",
+			["beaker"] = "rbxassetid://10709774756",
+			["bed"] = "rbxassetid://10709775036",
+			["beddouble"] = "rbxassetid://10709774864",
+			["bedsingle"] = "rbxassetid://10709774968",
+			["beer"] = "rbxassetid://10709775167",
+			["bell"] = "rbxassetid://10709775704",
+			["bellminus"] = "rbxassetid://10709775241",
+			["belloff"] = "rbxassetid://10709775320",
+			["bellplus"] = "rbxassetid://10709775448",
+			["bellring"] = "rbxassetid://10709775560",
+			["bike"] = "rbxassetid://10709775894",
+			["binary"] = "rbxassetid://10709776050",
+			["bitcoin"] = "rbxassetid://10709776126",
+			["bluetooth"] = "rbxassetid://10709776655",
+			["bluetoothconnected"] = "rbxassetid://10709776240",
+			["bluetoothoff"] = "rbxassetid://10709776344",
+			["bluetoothsearching"] = "rbxassetid://10709776501",
+			["bold"] = "rbxassetid://10747813908",
+			["bomb"] = "rbxassetid://10709781460",
+			["bone"] = "rbxassetid://10709781605",
+			["book"] = "rbxassetid://10709781824",
+			["bookopen"] = "rbxassetid://10709781717",
+			["bookmark"] = "rbxassetid://10709782154",
+			["bookmarkminus"] = "rbxassetid://10709781919",
+			["bookmarkplus"] = "rbxassetid://10709782044",
+			["bot"] = "rbxassetid://10709782230",
+			["box"] = "rbxassetid://10709782497",
+			["boxselect"] = "rbxassetid://10709782342",
+			["boxes"] = "rbxassetid://10709782582",
+			["briefcase"] = "rbxassetid://10709782662",
+			["brush"] = "rbxassetid://10709782758",
+			["bug"] = "rbxassetid://10709782845",
+			["building"] = "rbxassetid://10709783051",
+			["building2"] = "rbxassetid://10709782939",
+			["bus"] = "rbxassetid://10709783137",
+			["cake"] = "rbxassetid://10709783217",
+			["calculator"] = "rbxassetid://10709783311",
+			["calendar"] = "rbxassetid://10709789505",
+			["calendarcheck"] = "rbxassetid://10709783474",
+			["calendarcheck2"] = "rbxassetid://10709783392",
+			["calendarclock"] = "rbxassetid://10709783577",
+			["calendardays"] = "rbxassetid://10709783673",
+			["calendarheart"] = "rbxassetid://10709783835",
+			["calendarminus"] = "rbxassetid://10709783959",
+			["calendaroff"] = "rbxassetid://10709788784",
+			["calendarplus"] = "rbxassetid://10709788937",
+			["calendarrange"] = "rbxassetid://10709789053",
+			["calendarsearch"] = "rbxassetid://10709789200",
+			["calendarx"] = "rbxassetid://10709789407",
+			["calendarx2"] = "rbxassetid://10709789329",
+			["camera"] = "rbxassetid://10709789686",
+			["cameraoff"] = "rbxassetid://10747822677",
+			["car"] = "rbxassetid://10709789810",
+			["carrot"] = "rbxassetid://10709789960",
+			["cast"] = "rbxassetid://10709790097",
+			["charge"] = "rbxassetid://10709790202",
+			["check"] = "rbxassetid://10709790644",
+			["checkcircle"] = "rbxassetid://10709790387",
+			["checkcircle2"] = "rbxassetid://10709790298",
+			["checksquare"] = "rbxassetid://10709790537",
+			["chefhat"] = "rbxassetid://10709790757",
+			["cherry"] = "rbxassetid://10709790875",
+			["chevrondown"] = "rbxassetid://10709790948",
+			["chevronfirst"] = "rbxassetid://10709791015",
+			["chevronlast"] = "rbxassetid://10709791130",
+			["chevronleft"] = "rbxassetid://10709791281",
+			["chevronright"] = "rbxassetid://10709791437",
+			["chevronup"] = "rbxassetid://10709791523",
+			["chevronsdown"] = "rbxassetid://10709796864",
+			["chevronsdownup"] = "rbxassetid://10709791632",
+			["chevronsleft"] = "rbxassetid://10709797151",
+			["chevronsleftright"] = "rbxassetid://10709797006",
+			["chevronsright"] = "rbxassetid://10709797382",
+			["chevronsrightleft"] = "rbxassetid://10709797274",
+			["chevronsup"] = "rbxassetid://10709797622",
+			["chevronsupdown"] = "rbxassetid://10709797508",
+			["chrome"] = "rbxassetid://10709797725",
+			["circle"] = "rbxassetid://10709798174",
+			["circledot"] = "rbxassetid://10709797837",
+			["circleellipsis"] = "rbxassetid://10709797985",
+			["circleslashed"] = "rbxassetid://10709798100",
+			["citrus"] = "rbxassetid://10709798276",
+			["clapperboard"] = "rbxassetid://10709798350",
+			["clipboard"] = "rbxassetid://10709799288",
+			["clipboardcheck"] = "rbxassetid://10709798443",
+			["clipboardcopy"] = "rbxassetid://10709798574",
+			["clipboardedit"] = "rbxassetid://10709798682",
+			["clipboardlist"] = "rbxassetid://10709798792",
+			["clipboardsignature"] = "rbxassetid://10709798890",
+			["clipboardtype"] = "rbxassetid://10709798999",
+			["clipboardx"] = "rbxassetid://10709799124",
+			["clock"] = "rbxassetid://10709805144",
+			["clock1"] = "rbxassetid://10709799535",
+			["clock10"] = "rbxassetid://10709799718",
+			["clock11"] = "rbxassetid://10709799818",
+			["clock12"] = "rbxassetid://10709799962",
+			["clock2"] = "rbxassetid://10709803876",
+			["clock3"] = "rbxassetid://10709803989",
+			["clock4"] = "rbxassetid://10709804164",
+			["clock5"] = "rbxassetid://10709804291",
+			["clock6"] = "rbxassetid://10709804435",
+			["clock7"] = "rbxassetid://10709804599",
+			["clock8"] = "rbxassetid://10709804784",
+			["clock9"] = "rbxassetid://10709804996",
+			["cloud"] = "rbxassetid://10709806740",
+			["cloudcog"] = "rbxassetid://10709805262",
+			["clouddrizzle"] = "rbxassetid://10709805371",
+			["cloudfog"] = "rbxassetid://10709805477",
+			["cloudhail"] = "rbxassetid://10709805596",
+			["cloudlightning"] = "rbxassetid://10709805727",
+			["cloudmoon"] = "rbxassetid://10709805942",
+			["cloudmoonrain"] = "rbxassetid://10709805838",
+			["cloudoff"] = "rbxassetid://10709806060",
+			["cloudrain"] = "rbxassetid://10709806277",
+			["cloudrainwind"] = "rbxassetid://10709806166",
+			["cloudsnow"] = "rbxassetid://10709806374",
+			["cloudsun"] = "rbxassetid://10709806631",
+			["cloudsunrain"] = "rbxassetid://10709806475",
+			["cloudy"] = "rbxassetid://10709806859",
+			["clover"] = "rbxassetid://10709806995",
+			["code"] = "rbxassetid://10709810463",
+			["code2"] = "rbxassetid://10709807111",
+			["codepen"] = "rbxassetid://10709810534",
+			["codesandbox"] = "rbxassetid://10709810676",
+			["coffee"] = "rbxassetid://10709810814",
+			["cog"] = "rbxassetid://10709810948",
+			["coins"] = "rbxassetid://10709811110",
+			["columns"] = "rbxassetid://10709811261",
+			["command"] = "rbxassetid://10709811365",
+			["compass"] = "rbxassetid://10709811445",
+			["component"] = "rbxassetid://10709811595",
+			["conciergebell"] = "rbxassetid://10709811706",
+			["connection"] = "rbxassetid://10747361219",
+			["contact"] = "rbxassetid://10709811834",
+			["contrast"] = "rbxassetid://10709811939",
+			["cookie"] = "rbxassetid://10709812067",
+			["copy"] = "rbxassetid://10709812159",
+			["copyleft"] = "rbxassetid://10709812251",
+			["copyright"] = "rbxassetid://10709812311",
+			["cornerdownleft"] = "rbxassetid://10709812396",
+			["cornerdownright"] = "rbxassetid://10709812485",
+			["cornerleftdown"] = "rbxassetid://10709812632",
+			["cornerleftup"] = "rbxassetid://10709812784",
+			["cornerrightdown"] = "rbxassetid://10709812939",
+			["cornerrightup"] = "rbxassetid://10709813094",
+			["cornerupleft"] = "rbxassetid://10709813185",
+			["cornerupright"] = "rbxassetid://10709813281",
+			["cpu"] = "rbxassetid://10709813383",
+			["croissant"] = "rbxassetid://10709818125",
+			["crop"] = "rbxassetid://10709818245",
+			["cross"] = "rbxassetid://10709818399",
+			["crosshair"] = "rbxassetid://10709818534",
+			["crown"] = "rbxassetid://10709818626",
+			["cupsoda"] = "rbxassetid://10709818763",
+			["curlybraces"] = "rbxassetid://10709818847",
+			["currency"] = "rbxassetid://10709818931",
+			["database"] = "rbxassetid://10709818996",
+			["delete"] = "rbxassetid://10709819059",
+			["diamond"] = "rbxassetid://10709819149",
+			["dice1"] = "rbxassetid://10709819266",
+			["dice2"] = "rbxassetid://10709819361",
+			["dice3"] = "rbxassetid://10709819508",
+			["dice4"] = "rbxassetid://10709819670",
+			["dice5"] = "rbxassetid://10709819801",
+			["dice6"] = "rbxassetid://10709819896",
+			["dices"] = "rbxassetid://10723343321",
+			["diff"] = "rbxassetid://10723343416",
+			["disc"] = "rbxassetid://10723343537",
+			["divide"] = "rbxassetid://10723343805",
+			["dividecircle"] = "rbxassetid://10723343636",
+			["dividesquare"] = "rbxassetid://10723343737",
+			["dollarsign"] = "rbxassetid://10723343958",
+			["download"] = "rbxassetid://10723344270",
+			["downloadcloud"] = "rbxassetid://10723344088",
+			["droplet"] = "rbxassetid://10723344432",
+			["droplets"] = "rbxassetid://10734883356",
+			["drumstick"] = "rbxassetid://10723344737",
+			["edit"] = "rbxassetid://10734883598",
+			["edit2"] = "rbxassetid://10723344885",
+			["edit3"] = "rbxassetid://10723345088",
+			["egg"] = "rbxassetid://10723345518",
+			["eggfried"] = "rbxassetid://10723345347",
+			["electricity"] = "rbxassetid://10723345749",
+			["electricityoff"] = "rbxassetid://10723345643",
+			["equal"] = "rbxassetid://10723345990",
+			["equalnot"] = "rbxassetid://10723345866",
+			["eraser"] = "rbxassetid://10723346158",
+			["euro"] = "rbxassetid://10723346372",
+			["expand"] = "rbxassetid://10723346553",
+			["externallink"] = "rbxassetid://10723346684",
+			["eye"] = "rbxassetid://10723346959",
+			["eyeoff"] = "rbxassetid://10723346871",
+			["factory"] = "rbxassetid://10723347051",
+			["fan"] = "rbxassetid://10723354359",
+			["fastforward"] = "rbxassetid://10723354521",
+			["feather"] = "rbxassetid://10723354671",
+			["figma"] = "rbxassetid://10723354801",
+			["file"] = "rbxassetid://10723374641",
+			["filearchive"] = "rbxassetid://10723354921",
+			["fileaudio"] = "rbxassetid://10723355148",
+			["fileaudio2"] = "rbxassetid://10723355026",
+			["fileaxis3d"] = "rbxassetid://10723355272",
+			["filebadge"] = "rbxassetid://10723355622",
+			["filebadge2"] = "rbxassetid://10723355451",
+			["filebarchart"] = "rbxassetid://10723355887",
+			["filebarchart2"] = "rbxassetid://10723355746",
+			["filebox"] = "rbxassetid://10723355989",
+			["filecheck"] = "rbxassetid://10723356210",
+			["filecheck2"] = "rbxassetid://10723356100",
+			["fileclock"] = "rbxassetid://10723356329",
+			["filecode"] = "rbxassetid://10723356507",
+			["filecog"] = "rbxassetid://10723356830",
+			["filecog2"] = "rbxassetid://10723356676",
+			["filediff"] = "rbxassetid://10723357039",
+			["filedigit"] = "rbxassetid://10723357151",
+			["filedown"] = "rbxassetid://10723357322",
+			["fileedit"] = "rbxassetid://10723357495",
+			["fileheart"] = "rbxassetid://10723357637",
+			["fileimage"] = "rbxassetid://10723357790",
+			["fileinput"] = "rbxassetid://10723357933",
+			["filejson"] = "rbxassetid://10723364435",
+			["filejson2"] = "rbxassetid://10723364361",
+			["filekey"] = "rbxassetid://10723364605",
+			["filekey2"] = "rbxassetid://10723364515",
+			["filelinechart"] = "rbxassetid://10723364725",
+			["filelock"] = "rbxassetid://10723364957",
+			["filelock2"] = "rbxassetid://10723364861",
+			["fileminus"] = "rbxassetid://10723365254",
+			["fileminus2"] = "rbxassetid://10723365086",
+			["fileoutput"] = "rbxassetid://10723365457",
+			["filepiechart"] = "rbxassetid://10723365598",
+			["fileplus"] = "rbxassetid://10723365877",
+			["fileplus2"] = "rbxassetid://10723365766",
+			["filequestion"] = "rbxassetid://10723365987",
+			["filescan"] = "rbxassetid://10723366167",
+			["filesearch"] = "rbxassetid://10723366550",
+			["filesearch2"] = "rbxassetid://10723366340",
+			["filesignature"] = "rbxassetid://10723366741",
+			["filespreadsheet"] = "rbxassetid://10723366962",
+			["filesymlink"] = "rbxassetid://10723367098",
+			["fileterminal"] = "rbxassetid://10723367244",
+			["filetext"] = "rbxassetid://10723367380",
+			["filetype"] = "rbxassetid://10723367606",
+			["filetype2"] = "rbxassetid://10723367509",
+			["fileup"] = "rbxassetid://10723367734",
+			["filevideo"] = "rbxassetid://10723373884",
+			["filevideo2"] = "rbxassetid://10723367834",
+			["filevolume"] = "rbxassetid://10723374172",
+			["filevolume2"] = "rbxassetid://10723374030",
+			["filewarning"] = "rbxassetid://10723374276",
+			["filex"] = "rbxassetid://10723374544",
+			["filex2"] = "rbxassetid://10723374378",
+			["files"] = "rbxassetid://10723374759",
+			["film"] = "rbxassetid://10723374981",
+			["filter"] = "rbxassetid://10723375128",
+			["fingerprint"] = "rbxassetid://10723375250",
+			["flag"] = "rbxassetid://10723375890",
+			["flagoff"] = "rbxassetid://10723375443",
+			["flagtriangleleft"] = "rbxassetid://10723375608",
+			["flagtriangleright"] = "rbxassetid://10723375727",
+			["flame"] = "rbxassetid://10723376114",
+			["flashlight"] = "rbxassetid://10723376471",
+			["flashlightoff"] = "rbxassetid://10723376365",
+			["flaskconical"] = "rbxassetid://10734883986",
+			["flaskround"] = "rbxassetid://10723376614",
+			["fliphorizontal"] = "rbxassetid://10723376884",
+			["fliphorizontal2"] = "rbxassetid://10723376745",
+			["flipvertical"] = "rbxassetid://10723377138",
+			["flipvertical2"] = "rbxassetid://10723377026",
+			["flower"] = "rbxassetid://10747830374",
+			["flower2"] = "rbxassetid://10723377305",
+			["focus"] = "rbxassetid://10723377537",
+			["folder"] = "rbxassetid://10723387563",
+			["folderarchive"] = "rbxassetid://10723384478",
+			["foldercheck"] = "rbxassetid://10723384605",
+			["folderclock"] = "rbxassetid://10723384731",
+			["folderclosed"] = "rbxassetid://10723384893",
+			["foldercog"] = "rbxassetid://10723385213",
+			["foldercog2"] = "rbxassetid://10723385036",
+			["folderdown"] = "rbxassetid://10723385338",
+			["folderedit"] = "rbxassetid://10723385445",
+			["folderheart"] = "rbxassetid://10723385545",
+			["folderinput"] = "rbxassetid://10723385721",
+			["folderkey"] = "rbxassetid://10723385848",
+			["folderlock"] = "rbxassetid://10723386005",
+			["folderminus"] = "rbxassetid://10723386127",
+			["folderopen"] = "rbxassetid://10723386277",
+			["folderoutput"] = "rbxassetid://10723386386",
+			["folderplus"] = "rbxassetid://10723386531",
+			["foldersearch"] = "rbxassetid://10723386787",
+			["foldersearch2"] = "rbxassetid://10723386674",
+			["foldersymlink"] = "rbxassetid://10723386930",
+			["foldertree"] = "rbxassetid://10723387085",
+			["folderup"] = "rbxassetid://10723387265",
+			["folderx"] = "rbxassetid://10723387448",
+			["folders"] = "rbxassetid://10723387721",
+			["forminput"] = "rbxassetid://10723387841",
+			["forward"] = "rbxassetid://10723388016",
+			["frame"] = "rbxassetid://10723394389",
+			["framer"] = "rbxassetid://10723394565",
+			["frown"] = "rbxassetid://10723394681",
+			["fuel"] = "rbxassetid://10723394846",
+			["functionsquare"] = "rbxassetid://10723395041",
+			["gamepad"] = "rbxassetid://10723395457",
+			["gamepad2"] = "rbxassetid://10723395215",
+			["gauge"] = "rbxassetid://10723395708",
+			["gavel"] = "rbxassetid://10723395896",
+			["gem"] = "rbxassetid://10723396000",
+			["ghost"] = "rbxassetid://10723396107",
+			["gift"] = "rbxassetid://10723396402",
+			["giftcard"] = "rbxassetid://10723396225",
+			["gitbranch"] = "rbxassetid://10723396676",
+			["gitbranchplus"] = "rbxassetid://10723396542",
+			["gitcommit"] = "rbxassetid://10723396812",
+			["gitcompare"] = "rbxassetid://10723396954",
+			["gitfork"] = "rbxassetid://10723397049",
+			["gitmerge"] = "rbxassetid://10723397165",
+			["gitpullrequest"] = "rbxassetid://10723397431",
+			["gitpullrequestclosed"] = "rbxassetid://10723397268",
+			["gitpullrequestdraft"] = "rbxassetid://10734884302",
+			["glass"] = "rbxassetid://10723397788",
+			["glass2"] = "rbxassetid://10723397529",
+			["glasswater"] = "rbxassetid://10723397678",
+			["glasses"] = "rbxassetid://10723397895",
+			["globe"] = "rbxassetid://10723404337",
+			["globe2"] = "rbxassetid://10723398002",
+			["grab"] = "rbxassetid://10723404472",
+			["graduationcap"] = "rbxassetid://10723404691",
+			["grape"] = "rbxassetid://10723404822",
+			["grid"] = "rbxassetid://10723404936",
+			["griphorizontal"] = "rbxassetid://10723405089",
+			["gripvertical"] = "rbxassetid://10723405236",
+			["hammer"] = "rbxassetid://10723405360",
+			["hand"] = "rbxassetid://10723405649",
+			["handmetal"] = "rbxassetid://10723405508",
+			["harddrive"] = "rbxassetid://10723405749",
+			["hardhat"] = "rbxassetid://10723405859",
+			["hash"] = "rbxassetid://10723405975",
+			["haze"] = "rbxassetid://10723406078",
+			["headphones"] = "rbxassetid://10723406165",
+			["heart"] = "rbxassetid://10723406885",
+			["heartcrack"] = "rbxassetid://10723406299",
+			["hearthandshake"] = "rbxassetid://10723406480",
+			["heartoff"] = "rbxassetid://10723406662",
+			["heartpulse"] = "rbxassetid://10723406795",
+			["helpcircle"] = "rbxassetid://10723406988",
+			["hexagon"] = "rbxassetid://10723407092",
+			["highlighter"] = "rbxassetid://10723407192",
+			["history"] = "rbxassetid://10723407335",
+			["home"] = "rbxassetid://10723407389",
+			["hourglass"] = "rbxassetid://10723407498",
+			["icecream"] = "rbxassetid://10723414308",
+			["image"] = "rbxassetid://10723415040",
+			["imageminus"] = "rbxassetid://10723414487",
+			["imageoff"] = "rbxassetid://10723414677",
+			["imageplus"] = "rbxassetid://10723414827",
+			["import"] = "rbxassetid://10723415205",
+			["inbox"] = "rbxassetid://10723415335",
+			["indent"] = "rbxassetid://10723415494",
+			["indianrupee"] = "rbxassetid://10723415642",
+			["infinity"] = "rbxassetid://10723415766",
+			["info"] = "rbxassetid://10723415903",
+			["inspect"] = "rbxassetid://10723416057",
+			["italic"] = "rbxassetid://10723416195",
+			["japaneseyen"] = "rbxassetid://10723416363",
+			["joystick"] = "rbxassetid://10723416527",
+			["key"] = "rbxassetid://10723416652",
+			["keyboard"] = "rbxassetid://10723416765",
+			["lamp"] = "rbxassetid://10723417513",
+			["lampceiling"] = "rbxassetid://10723416922",
+			["lampdesk"] = "rbxassetid://10723417016",
+			["lampfloor"] = "rbxassetid://10723417131",
+			["lampwalldown"] = "rbxassetid://10723417240",
+			["lampwallup"] = "rbxassetid://10723417356",
+			["landmark"] = "rbxassetid://10723417608",
+			["languages"] = "rbxassetid://10723417703",
+			["laptop"] = "rbxassetid://10723423881",
+			["laptop2"] = "rbxassetid://10723417797",
+			["lasso"] = "rbxassetid://10723424235",
+			["lassoselect"] = "rbxassetid://10723424058",
+			["laugh"] = "rbxassetid://10723424372",
+			["layers"] = "rbxassetid://10723424505",
+			["layout"] = "rbxassetid://10723425376",
+			["layoutdashboard"] = "rbxassetid://10723424646",
+			["layoutgrid"] = "rbxassetid://10723424838",
+			["layoutlist"] = "rbxassetid://10723424963",
+			["layouttemplate"] = "rbxassetid://10723425187",
+			["leaf"] = "rbxassetid://10723425539",
+			["library"] = "rbxassetid://10723425615",
+			["lifebuoy"] = "rbxassetid://10723425685",
+			["lightbulb"] = "rbxassetid://10723425852",
+			["lightbulboff"] = "rbxassetid://10723425762",
+			["linechart"] = "rbxassetid://10723426393",
+			["link"] = "rbxassetid://10723426722",
+			["link2"] = "rbxassetid://10723426595",
+			["link2off"] = "rbxassetid://10723426513",
+			["list"] = "rbxassetid://10723433811",
+			["listchecks"] = "rbxassetid://10734884548",
+			["listend"] = "rbxassetid://10723426886",
+			["listminus"] = "rbxassetid://10723426986",
+			["listmusic"] = "rbxassetid://10723427081",
+			["listordered"] = "rbxassetid://10723427199",
+			["listplus"] = "rbxassetid://10723427334",
+			["liststart"] = "rbxassetid://10723427494",
+			["listvideo"] = "rbxassetid://10723427619",
+			["listx"] = "rbxassetid://10723433655",
+			["loader"] = "rbxassetid://10723434070",
+			["loader2"] = "rbxassetid://10723433935",
+			["locate"] = "rbxassetid://10723434557",
+			["locatefixed"] = "rbxassetid://10723434236",
+			["locateoff"] = "rbxassetid://10723434379",
+			["lock"] = "rbxassetid://10723434711",
+			["login"] = "rbxassetid://10723434830",
+			["logout"] = "rbxassetid://10723434906",
+			["luggage"] = "rbxassetid://10723434993",
+			["magnet"] = "rbxassetid://10723435069",
+			["mail"] = "rbxassetid://10734885430",
+			["mailcheck"] = "rbxassetid://10723435182",
+			["mailminus"] = "rbxassetid://10723435261",
+			["mailopen"] = "rbxassetid://10723435342",
+			["mailplus"] = "rbxassetid://10723435443",
+			["mailquestion"] = "rbxassetid://10723435515",
+			["mailsearch"] = "rbxassetid://10734884739",
+			["mailwarning"] = "rbxassetid://10734885015",
+			["mailx"] = "rbxassetid://10734885247",
+			["mails"] = "rbxassetid://10734885614",
+			["map"] = "rbxassetid://10734886202",
+			["mappin"] = "rbxassetid://10734886004",
+			["mappinoff"] = "rbxassetid://10734885803",
+			["maximize"] = "rbxassetid://10734886735",
+			["maximize2"] = "rbxassetid://10734886496",
+			["medal"] = "rbxassetid://10734887072",
+			["megaphone"] = "rbxassetid://10734887454",
+			["megaphoneoff"] = "rbxassetid://10734887311",
+			["meh"] = "rbxassetid://10734887603",
+			["menu"] = "rbxassetid://10734887784",
+			["messagecircle"] = "rbxassetid://10734888000",
+			["messagesquare"] = "rbxassetid://10734888228",
+			["mic"] = "rbxassetid://10734888864",
+			["mic2"] = "rbxassetid://10734888430",
+			["micoff"] = "rbxassetid://10734888646",
+			["microscope"] = "rbxassetid://10734889106",
+			["microwave"] = "rbxassetid://10734895076",
+			["milestone"] = "rbxassetid://10734895310",
+			["minimize"] = "rbxassetid://10734895698",
+			["minimize2"] = "rbxassetid://10734895530",
+			["minus"] = "rbxassetid://10734896206",
+			["minuscircle"] = "rbxassetid://10734895856",
+			["minussquare"] = "rbxassetid://10734896029",
+			["monitor"] = "rbxassetid://10734896881",
+			["monitoroff"] = "rbxassetid://10734896360",
+			["monitorspeaker"] = "rbxassetid://10734896512",
+			["moon"] = "rbxassetid://10734897102",
+			["morehorizontal"] = "rbxassetid://10734897250",
+			["morevertical"] = "rbxassetid://10734897387",
+			["mountain"] = "rbxassetid://10734897956",
+			["mountainsnow"] = "rbxassetid://10734897665",
+			["mouse"] = "rbxassetid://10734898592",
+			["mousepointer"] = "rbxassetid://10734898476",
+			["mousepointer2"] = "rbxassetid://10734898194",
+			["mousepointerclick"] = "rbxassetid://10734898355",
+			["move"] = "rbxassetid://10734900011",
+			["move3d"] = "rbxassetid://10734898756",
+			["movediagonal"] = "rbxassetid://10734899164",
+			["movediagonal2"] = "rbxassetid://10734898934",
+			["movehorizontal"] = "rbxassetid://10734899414",
+			["movevertical"] = "rbxassetid://10734899821",
+			["music"] = "rbxassetid://10734905958",
+			["music2"] = "rbxassetid://10734900215",
+			["music3"] = "rbxassetid://10734905665",
+			["music4"] = "rbxassetid://10734905823",
+			["navigation"] = "rbxassetid://10734906744",
+			["navigation2"] = "rbxassetid://10734906332",
+			["navigation2off"] = "rbxassetid://10734906144",
+			["navigationoff"] = "rbxassetid://10734906580",
+			["network"] = "rbxassetid://10734906975",
+			["newspaper"] = "rbxassetid://10734907168",
+			["octagon"] = "rbxassetid://10734907361",
+			["option"] = "rbxassetid://10734907649",
+			["outdent"] = "rbxassetid://10734907933",
+			["package"] = "rbxassetid://10734909540",
+			["package2"] = "rbxassetid://10734908151",
+			["packagecheck"] = "rbxassetid://10734908384",
+			["packageminus"] = "rbxassetid://10734908626",
+			["packageopen"] = "rbxassetid://10734908793",
+			["packageplus"] = "rbxassetid://10734909016",
+			["packagesearch"] = "rbxassetid://10734909196",
+			["packagex"] = "rbxassetid://10734909375",
+			["paintbucket"] = "rbxassetid://10734909847",
+			["paintbrush"] = "rbxassetid://10734910187",
+			["paintbrush2"] = "rbxassetid://10734910030",
+			["palette"] = "rbxassetid://10734910430",
+			["palmtree"] = "rbxassetid://10734910680",
+			["paperclip"] = "rbxassetid://10734910927",
+			["partypopper"] = "rbxassetid://10734918735",
+			["pause"] = "rbxassetid://10734919336",
+			["pausecircle"] = "rbxassetid://10735024209",
+			["pauseoctagon"] = "rbxassetid://10734919143",
+			["pentool"] = "rbxassetid://10734919503",
+			["pencil"] = "rbxassetid://10734919691",
+			["percent"] = "rbxassetid://10734919919",
+			["personstanding"] = "rbxassetid://10734920149",
+			["phone"] = "rbxassetid://10734921524",
+			["phonecall"] = "rbxassetid://10734920305",
+			["phoneforwarded"] = "rbxassetid://10734920508",
+			["phoneincoming"] = "rbxassetid://10734920694",
+			["phonemissed"] = "rbxassetid://10734920845",
+			["phoneoff"] = "rbxassetid://10734921077",
+			["phoneoutgoing"] = "rbxassetid://10734921288",
+			["piechart"] = "rbxassetid://10734921727",
+			["piggybank"] = "rbxassetid://10734921935",
+			["pin"] = "rbxassetid://10734922324",
+			["pinoff"] = "rbxassetid://10734922180",
+			["pipette"] = "rbxassetid://10734922497",
+			["pizza"] = "rbxassetid://10734922774",
+			["plane"] = "rbxassetid://10734922971",
+			["play"] = "rbxassetid://10734923549",
+			["playcircle"] = "rbxassetid://10734923214",
+			["plus"] = "rbxassetid://10734924532",
+			["pluscircle"] = "rbxassetid://10734923868",
+			["plussquare"] = "rbxassetid://10734924219",
+			["podcast"] = "rbxassetid://10734929553",
+			["pointer"] = "rbxassetid://10734929723",
+			["poundsterling"] = "rbxassetid://10734929981",
+			["power"] = "rbxassetid://10734930466",
+			["poweroff"] = "rbxassetid://10734930257",
+			["printer"] = "rbxassetid://10734930632",
+			["puzzle"] = "rbxassetid://10734930886",
+			["quote"] = "rbxassetid://10734931234",
+			["radio"] = "rbxassetid://10734931596",
+			["radioreceiver"] = "rbxassetid://10734931402",
+			["rectanglehorizontal"] = "rbxassetid://10734931777",
+			["rectanglevertical"] = "rbxassetid://10734932081",
+			["recycle"] = "rbxassetid://10734932295",
+			["redo"] = "rbxassetid://10734932822",
+			["redo2"] = "rbxassetid://10734932586",
+			["refreshccw"] = "rbxassetid://10734933056",
+			["refreshcw"] = "rbxassetid://10734933222",
+			["refrigerator"] = "rbxassetid://10734933465",
+			["regex"] = "rbxassetid://10734933655",
+			["repeat"] = "rbxassetid://10734933966",
+			["repeat1"] = "rbxassetid://10734933826",
+			["reply"] = "rbxassetid://10734934252",
+			["replyall"] = "rbxassetid://10734934132",
+			["rewind"] = "rbxassetid://10734934347",
+			["rocket"] = "rbxassetid://10734934585",
+			["rockingchair"] = "rbxassetid://10734939942",
+			["rotate3d"] = "rbxassetid://10734940107",
+			["rotateccw"] = "rbxassetid://10734940376",
+			["rotatecw"] = "rbxassetid://10734940654",
+			["rss"] = "rbxassetid://10734940825",
+			["ruler"] = "rbxassetid://10734941018",
+			["russianruble"] = "rbxassetid://10734941199",
+			["sailboat"] = "rbxassetid://10734941354",
+			["save"] = "rbxassetid://10734941499",
+			["scale"] = "rbxassetid://10734941912",
+			["scale3d"] = "rbxassetid://10734941739",
+			["scaling"] = "rbxassetid://10734942072",
+			["scan"] = "rbxassetid://10734942565",
+			["scanface"] = "rbxassetid://10734942198",
+			["scanline"] = "rbxassetid://10734942351",
+			["scissors"] = "rbxassetid://10734942778",
+			["screenshare"] = "rbxassetid://10734943193",
+			["screenshareoff"] = "rbxassetid://10734942967",
+			["scroll"] = "rbxassetid://10734943448",
+			["search"] = "rbxassetid://10734943674",
+			["send"] = "rbxassetid://10734943902",
+			["separatorhorizontal"] = "rbxassetid://10734944115",
+			["separatorvertical"] = "rbxassetid://10734944326",
+			["server"] = "rbxassetid://10734949856",
+			["servercog"] = "rbxassetid://10734944444",
+			["servercrash"] = "rbxassetid://10734944554",
+			["serveroff"] = "rbxassetid://10734944668",
+			["settings"] = "rbxassetid://10734950309",
+			["settings2"] = "rbxassetid://10734950020",
+			["share"] = "rbxassetid://10734950813",
+			["share2"] = "rbxassetid://10734950553",
+			["sheet"] = "rbxassetid://10734951038",
+			["shield"] = "rbxassetid://10734951847",
+			["shieldalert"] = "rbxassetid://10734951173",
+			["shieldcheck"] = "rbxassetid://10734951367",
+			["shieldclose"] = "rbxassetid://10734951535",
+			["shieldoff"] = "rbxassetid://10734951684",
+			["shirt"] = "rbxassetid://10734952036",
+			["shoppingbag"] = "rbxassetid://10734952273",
+			["shoppingcart"] = "rbxassetid://10734952479",
+			["shovel"] = "rbxassetid://10734952773",
+			["showerhead"] = "rbxassetid://10734952942",
+			["shrink"] = "rbxassetid://10734953073",
+			["shrub"] = "rbxassetid://10734953241",
+			["shuffle"] = "rbxassetid://10734953451",
+			["sidebar"] = "rbxassetid://10734954301",
+			["sidebarclose"] = "rbxassetid://10734953715",
+			["sidebaropen"] = "rbxassetid://10734954000",
+			["sigma"] = "rbxassetid://10734954538",
+			["signal"] = "rbxassetid://10734961133",
+			["signalhigh"] = "rbxassetid://10734954807",
+			["signallow"] = "rbxassetid://10734955080",
+			["signalmedium"] = "rbxassetid://10734955336",
+			["signalzero"] = "rbxassetid://10734960878",
+			["siren"] = "rbxassetid://10734961284",
+			["skipback"] = "rbxassetid://10734961526",
+			["skipforward"] = "rbxassetid://10734961809",
+			["skull"] = "rbxassetid://10734962068",
+			["slack"] = "rbxassetid://10734962339",
+			["slash"] = "rbxassetid://10734962600",
+			["slice"] = "rbxassetid://10734963024",
+			["sliders"] = "rbxassetid://10734963400",
+			["slidershorizontal"] = "rbxassetid://10734963191",
+			["smartphone"] = "rbxassetid://10734963940",
+			["smartphonecharging"] = "rbxassetid://10734963671",
+			["smile"] = "rbxassetid://10734964441",
+			["smileplus"] = "rbxassetid://10734964188",
+			["snowflake"] = "rbxassetid://10734964600",
+			["sofa"] = "rbxassetid://10734964852",
+			["sortasc"] = "rbxassetid://10734965115",
+			["sortdesc"] = "rbxassetid://10734965287",
+			["speaker"] = "rbxassetid://10734965419",
+			["sprout"] = "rbxassetid://10734965572",
+			["square"] = "rbxassetid://10734965702",
+			["star"] = "rbxassetid://10734966248",
+			["starhalf"] = "rbxassetid://10734965897",
+			["staroff"] = "rbxassetid://10734966097",
+			["stethoscope"] = "rbxassetid://10734966384",
+			["sticker"] = "rbxassetid://10734972234",
+			["stickynote"] = "rbxassetid://10734972463",
+			["stopcircle"] = "rbxassetid://10734972621",
+			["stretchhorizontal"] = "rbxassetid://10734972862",
+			["stretchvertical"] = "rbxassetid://10734973130",
+			["strikethrough"] = "rbxassetid://10734973290",
+			["subscript"] = "rbxassetid://10734973457",
+			["sun"] = "rbxassetid://10734974297",
+			["sundim"] = "rbxassetid://10734973645",
+			["sunmedium"] = "rbxassetid://10734973778",
+			["sunmoon"] = "rbxassetid://10734973999",
+			["sunsnow"] = "rbxassetid://10734974130",
+			["sunrise"] = "rbxassetid://10734974522",
+			["sunset"] = "rbxassetid://10734974689",
+			["superscript"] = "rbxassetid://10734974850",
+			["swissfranc"] = "rbxassetid://10734975024",
+			["switchcamera"] = "rbxassetid://10734975214",
+			["sword"] = "rbxassetid://10734975486",
+			["swords"] = "rbxassetid://10734975692",
+			["syringe"] = "rbxassetid://10734975932",
+			["table"] = "rbxassetid://10734976230",
+			["table2"] = "rbxassetid://10734976097",
+			["tablet"] = "rbxassetid://10734976394",
+			["tag"] = "rbxassetid://10734976528",
+			["tags"] = "rbxassetid://10734976739",
+			["target"] = "rbxassetid://10734977012",
+			["tent"] = "rbxassetid://10734981750",
+			["terminal"] = "rbxassetid://10734982144",
+			["terminalsquare"] = "rbxassetid://10734981995",
+			["textcursor"] = "rbxassetid://10734982395",
+			["textcursorinput"] = "rbxassetid://10734982297",
+			["thermometer"] = "rbxassetid://10734983134",
+			["thermometersnowflake"] = "rbxassetid://10734982571",
+			["thermometersun"] = "rbxassetid://10734982771",
+			["thumbsdown"] = "rbxassetid://10734983359",
+			["thumbsup"] = "rbxassetid://10734983629",
+			["ticket"] = "rbxassetid://10734983868",
+			["timer"] = "rbxassetid://10734984606",
+			["timeroff"] = "rbxassetid://10734984138",
+			["timerreset"] = "rbxassetid://10734984355",
+			["toggleleft"] = "rbxassetid://10734984834",
+			["toggleright"] = "rbxassetid://10734985040",
+			["tornado"] = "rbxassetid://10734985247",
+			["toybrick"] = "rbxassetid://10747361919",
+			["train"] = "rbxassetid://10747362105",
+			["trash"] = "rbxassetid://10747362393",
+			["trash2"] = "rbxassetid://10747362241",
+			["treedeciduous"] = "rbxassetid://10747362534",
+			["treepine"] = "rbxassetid://10747362748",
+			["trees"] = "rbxassetid://10747363016",
+			["trendingdown"] = "rbxassetid://10747363205",
+			["trendingup"] = "rbxassetid://10747363465",
+			["triangle"] = "rbxassetid://10747363621",
+			["trophy"] = "rbxassetid://10747363809",
+			["truck"] = "rbxassetid://10747364031",
+			["tv"] = "rbxassetid://10747364593",
+			["tv2"] = "rbxassetid://10747364302",
+			["type"] = "rbxassetid://10747364761",
+			["umbrella"] = "rbxassetid://10747364971",
+			["underline"] = "rbxassetid://10747365191",
+			["undo"] = "rbxassetid://10747365484",
+			["undo2"] = "rbxassetid://10747365359",
+			["unlink"] = "rbxassetid://10747365771",
+			["unlink2"] = "rbxassetid://10747397871",
+			["unlock"] = "rbxassetid://10747366027",
+			["upload"] = "rbxassetid://10747366434",
+			["uploadcloud"] = "rbxassetid://10747366266",
+			["usb"] = "rbxassetid://10747366606",
+			["user"] = "rbxassetid://10747373176",
+			["usercheck"] = "rbxassetid://10747371901",
+			["usercog"] = "rbxassetid://10747372167",
+			["userminus"] = "rbxassetid://10747372346",
+			["userplus"] = "rbxassetid://10747372702",
+			["userx"] = "rbxassetid://10747372992",
+			["users"] = "rbxassetid://10747373426",
+			["utensils"] = "rbxassetid://10747373821",
+			["utensilscrossed"] = "rbxassetid://10747373629",
+			["venetianmask"] = "rbxassetid://10747374003",
+			["verified"] = "rbxassetid://10747374131",
+			["vibrate"] = "rbxassetid://10747374489",
+			["vibrateoff"] = "rbxassetid://10747374269",
+			["video"] = "rbxassetid://10747374938",
+			["videooff"] = "rbxassetid://10747374721",
+			["view"] = "rbxassetid://10747375132",
+			["voicemail"] = "rbxassetid://10747375281",
+			["volume"] = "rbxassetid://10747376008",
+			["volume1"] = "rbxassetid://10747375450",
+			["volume2"] = "rbxassetid://10747375679",
+			["volumex"] = "rbxassetid://10747375880",
+			["wallet"] = "rbxassetid://10747376205",
+			["wand"] = "rbxassetid://10747376565",
+			["wand2"] = "rbxassetid://10747376349",
+			["watch"] = "rbxassetid://10747376722",
+			["waves"] = "rbxassetid://10747376931",
+			["webcam"] = "rbxassetid://10747381992",
+			["wifi"] = "rbxassetid://10747382504",
+			["wifioff"] = "rbxassetid://10747382268",
+			["wind"] = "rbxassetid://10747382750",
+			["wraptext"] = "rbxassetid://10747383065",
+			["wrench"] = "rbxassetid://10747383470",
+			["x"] = "rbxassetid://10747384394",
+			["xcircle"] = "rbxassetid://10747383819",
+			["xoctagon"] = "rbxassetid://10747384037",
+			["xsquare"] = "rbxassetid://10747384217",
+			["zoomin"] = "rbxassetid://10747384552",
+			["zoomout"] = "rbxassetid://10747384679"
+    }
 }
 
-local vd = getgenv().VD
-local localPlayer = players.LocalPlayer
-local currentCamera = workspaceService.CurrentCamera
-local touchEnabled = userInputService.TouchEnabled and not userInputService.KeyboardEnabled
-local v47 = { SCPZombie = {} }
-local fire = nil
-local v48 = nil
+local _isfolder = isfolder or function() return true end
+local _makefolder = makefolder or function() end
+local _writefile = writefile or function(path, data) warn("File saving not supported on this executor.") end
+local _readfile = readfile or function() return "{}" end
+local _listfiles = listfiles or function() return {} end
+local _delfile = delfile or function() warn("File deletion not supported.") end
 
--- Hooking / Silent Aim Twist of Fate
-local function f25()
-  if getgenv().IYAN_AntiFailHooked then
-    return
-  end
+local function Create(className, properties)
+    local instance = Instance.new(className)
+    
+    if className == "TextBox" then
+        instance.Text = ""
+    end
 
-  getgenv().IYAN_AntiFailHooked = true
+    for k, v in pairs(properties or {}) do
+        instance[k] = v
+    end
+    
+    if (className == "TextLabel" or className == "TextButton" or className == "TextBox") then
+        if properties.TextSize and properties.RichText ~= true then
+            instance.TextScaled = true
+            local constraint = Instance.new("UITextSizeConstraint")
+            constraint.MaxTextSize = properties.TextSize
+            constraint.MinTextSize = 6
+            constraint.Parent = instance
+        end
+    end
+    
+    return instance
+end
 
-  task.spawn(function()
-    pcall(function()
-      local waitForChild3 = replicatedStorage:WaitForChild("Remotes", 10)
-      replicatedStorage:WaitForChild("Events", 10)
-      local v49 = false
+local function BuildSearchIndex(card)
+    local parts = {}
+    for _, desc in ipairs(card:GetDescendants()) do
+        if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
+            if desc.Text and desc.Text ~= "" then
+                table.insert(parts, desc.Text:lower())
+            end
+        end
+    end
+    return table.concat(parts, " ")
+end
 
-      if not waitForChild3 then
-        return
-      else
-        local items = waitForChild3:FindFirstChild("Items")
-        local twistOfFate = items and items:FindFirstChild("Twist of Fate")
-        fire = twistOfFate and twistOfFate:FindFirstChild("Fire")
+local function Tween(instance, properties, duration)
+    duration = duration or 0.25
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(instance, tweenInfo, properties)
+    tween:Play()
+    return tween
+end
 
-        v48 = hookmetamethod(game, "__namecall", function(p48, ...)
-          local v50 = getnamecallmethod()
-          local v51, v52 = ...
+local function AddBounce(button, scaleFactor)
+    scaleFactor = scaleFactor or 0.96
+    local scaleObj = button:FindFirstChild("UIScale") or Create("UIScale", {Parent = button, Scale = 1})
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Tween(scaleObj, {Scale = scaleFactor}, 0.15)
+        end
+    end)
+    button.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Tween(scaleObj, {Scale = 1}, 0.15)
+        end
+    end)
+    button.MouseLeave:Connect(function()
+        Tween(scaleObj, {Scale = 1}, 0.15)
+    end)
+end
 
-          if v49 then
-            return v48(p48, ...)
-          end
-
-          local unit
-
-          if fire and vd.AUTO_ToFAim and p48 == fire and v50 == "FireServer"
-            and not checkcaller() then
-            if typeof(v51) == "Instance" and typeof(v52) == "Vector3" then
-              local character4 = localPlayer.Character
-              local humanoidRootPart = character4 and character4:FindFirstChild("HumanoidRootPart")
-
-              if humanoidRootPart then
-                local v53 = nil
-                local autoToFAimRange = vd.AUTO_ToFAimRange or 90
-                local autoToFTargetMode = vd.AUTO_ToFTargetMode or "Killer"
-                local autoToFAimPart = vd.AUTO_ToFAimPart or "HumanoidRootPart"
-
-                if autoToFTargetMode == "SCP" then
-                  if v47 and v47.SCPZombie then
-                    for key4, value12 in pairs(v47.SCPZombie) do
-                      if key4 and key4.Parent then
-                        local findFirstChild = nil
-
-                        if key4:IsA("Model") then
-                          findFirstChild = key4:FindFirstChild(autoToFAimPart)
-                            or key4.PrimaryPart or key4:FindFirstChildWhichIsA("BasePart")
-                        elseif key4:IsA("BasePart") then
-                          findFirstChild = key4
-                        end
-
-                        local part = findFirstChild or value12 and value12.part
-
-                        if part then
-                          local magnitude = (part.Position - humanoidRootPart.Position).Magnitude
-
-                          if magnitude <= autoToFAimRange then
-                            autoToFAimRange = magnitude
-                            v53 = part
-                          end
-                        end
-                      end
-                    end
-                  end
-                else
-                  for index6, value13 in ipairs(players:GetPlayers()) do
-                    if value13 ~= localPlayer and value13.Character and value13.Team then
-                      if autoToFTargetMode == "Killer" and value13.Team.Name == "Killer"
-                        or autoToFTargetMode == "Survivor"
-                          and value13.Team.Name == "Survivors" then
-                        local findFirstChild2 = value13.Character:FindFirstChild(autoToFAimPart)
-                        local humanoid2 = value13.Character:FindFirstChildOfClass("Humanoid")
-
-                        if findFirstChild2 and humanoid2 and humanoid2.Health > 0 then
-                          local magnitude2 = (findFirstChild2.Position
-                            - humanoidRootPart.Position).Magnitude
-
-                          if magnitude2 <= autoToFAimRange then
-                            v53 = findFirstChild2
-                            autoToFAimRange = magnitude2
-                          end
-                        end
-                      end
-                    end
-                  end
+local function MakeDraggable(topbar, object)
+    topbar.Active = true
+    object.Active = true
+    local dragging, dragInput, dragStart, startPos
+    
+    topbar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = object.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
                 end
+            end)
+        end
+    end)
+    
+    topbar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            Tween(object, {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}, 0.08)
+        end
+    end)
+end
 
-                if v53 then
-                  local position = humanoidRootPart.Position
-                  local position2 = v53.Position
-                  local v54 = position2
+local AccentColor = Color3.fromRGB(255, 40, 40)
+local BackgroundColor = Color3.fromRGB(24, 16, 18)
+local CardColor = Color3.fromRGB(30, 20, 22)
+local HoverColor = Color3.fromRGB(45, 28, 32)
+local TextColor = Color3.fromRGB(240, 240, 240)
+local SubTextColor = Color3.fromRGB(170, 150, 150)
 
-                  if vd.AUTO_ToFPredict then
-                    local assemblyLinearVelocity = v53.AssemblyLinearVelocity
+local GlobalNotifContainer
 
-                    v54 = position2 + Vector3.new(
-                      assemblyLinearVelocity.X, 0, assemblyLinearVelocity.Z
-                    ) * (autoToFAimRange / (vd.AUTO_ToFBulletSpeed or 200))
-                  end
+function Library:Notify(options)
+    if not GlobalNotifContainer then return end
+    local title = options.Title or "Notification"
+    local desc = options.Description or "Information updated."
+    local duration = options.Duration or 3
 
-                  local v55 = v54 - position
-                  unit = v55.Magnitude > 0.01 and v55.Unit or v52
+    local Notif = Create("Frame", {Parent = GlobalNotifContainer, BackgroundColor3 = Color3.fromRGB(25, 18, 20), Size = UDim2.new(1, 0, 0, 60), BackgroundTransparency = 1, ZIndex = 201, ClipsDescendants = true})
+    Create("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 8)})
+    local Stroke = Create("UIStroke", {Parent = Notif, Color = AccentColor, Thickness = 1.5, Transparency = 1})
 
-                  if currentCamera.CFrame.LookVector:Dot(unit)
-                    < (vd.AUTO_ToFDotThreshold or 0.5) then
-                    return
-                  end
+    local TitleText = Create("TextLabel", {Parent = Notif, Text = title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 12), Size = UDim2.new(1, -24, 0, 14), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202})
+    local DescText = Create("TextLabel", {Parent = Notif, Text = desc, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 28), Size = UDim2.new(1, -24, 0, 14), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202})
 
-                  v49 = true
+    Tween(Notif, {BackgroundTransparency = 0}, 0.3)
+    Tween(Stroke, {Transparency = 0}, 0.3)
+    Tween(TitleText, {TextTransparency = 0}, 0.3)
+    Tween(DescText, {TextTransparency = 0}, 0.3)
 
-                  task.defer(function()
-                    pcall(function() fire:FireServer(v51, unit) end)
-                    v49 = false
-                  end)
+    task.delay(duration, function()
+        Tween(Notif, {BackgroundTransparency = 1}, 0.4)
+        Tween(Stroke, {Transparency = 1}, 0.4)
+        Tween(TitleText, {TextTransparency = 1}, 0.4)
+        Tween(DescText, {TextTransparency = 1}, 0.4)
+        task.wait(0.4)
+        Notif:Destroy()
+    end)
+end
 
-                  return
-                end
-              end
+function Library:CreateWindow(options)
+    local hubName = "Kenz Hub"
+    local subText = "Made By Kenz & Death"
+    local subColor = AccentColor
+    local sphTextToggle = false
+    local sphWords = "KH"
+    local sphImage = "rbxassetid://113406531660767"
+    local topbarLogo = "rbxassetid://113406531660767"
+    local logoSize = 28
+    local sphIconSize = 24
+
+    if type(options) == "table" then
+        hubName = options.Title or hubName
+        subText = options.Subtitle or subText
+        subColor = options.SubtitleColor or AccentColor
+        
+        if options.SphereText ~= nil then
+            sphTextToggle = options.SphereText
+        end
+        if options.SphereWords ~= nil then
+            local wordList = string.split(tostring(options.SphereWords), " ")
+            if #wordList > 2 then
+                sphWords = wordList[1] .. " " .. wordList[2]
+            else
+                sphWords = tostring(options.SphereWords)
             end
-
-            if v48 then
-              return v48(p48, ...)
-            end
-
-            return
-          end
-
-          if v48 then
-            return v48(p48, ...)
-          end
-        end)
-
-        getgenv().IYAN_oldNamecall = v48
-        return
-      end
-    end)
-  end)
-end
-
-f25()
-
--- Auto Skillcheck (Optimized & Non-Freezing)
-local function f15()
-  local touchEnabled = userInputService.TouchEnabled and not userInputService.KeyboardEnabled
-  local playerGui4 = localPlayer:WaitForChild("PlayerGui")
-  local touchIdCounter = 1000
-
-  local v176 = {
-    LastGoalRotation = nil,
-    HasClickedThisGoal = false,
-    LastLineRotation = nil,
-    LastTick = nil,
-    WasActive = false,
-    PerfectLastGoalRotation = nil,
-    PerfectHasClickedThisGoal = nil,
-    InstantLastTriggerTick = 0,
-    InstantLastGoalRotation = 0,
-    InstantLastGoalInstance = nil,
-    InstantCurrentGoalID = 0,
-    InstantHasClicked = false,
-    InstantForcingRotation = false,
-    InstantRotationConnection = nil,
-  }
-
-  local function f93(p128, p129)
-    local v177 = p129 - p128
-    if v177 > 180 then v177 = v177 - 360 end
-    if v177 < -180 then v177 = v177 + 360 end
-    return v177
-  end
-
-  local function f94()
-    local findFirstChild18
-    if touchEnabled then
-      findFirstChild18 = playerGui4:FindFirstChild("check", true)
-      if findFirstChild18 and findFirstChild18:IsA("GuiObject") then
-        local absolutePosition = findFirstChild18.AbsolutePosition
-        local absoluteSize = findFirstChild18.AbsoluteSize
-        local getGuiInset = guiService:GetGuiInset()
-        local x = absolutePosition.X + absoluteSize.X / 2 + getGuiInset.X
-        local y = absolutePosition.Y + absoluteSize.Y / 2 + getGuiInset.Y
-
-        touchIdCounter = touchIdCounter + 1
-        if touchIdCounter > 99999 then touchIdCounter = 1000 end
-        local currentTouchId = touchIdCounter
-
-        pcall(function()
-          virtualInputManager:SendTouchEvent(currentTouchId, Enum.UserInputState.Begin.Value, x, y)
-        end)
-        task.wait(0.01)
-        pcall(function()
-          virtualInputManager:SendTouchEvent(currentTouchId, Enum.UserInputState.End.Value, x, y)
-        end)
-      end
-    else
-      pcall(function()
-        virtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-      end)
-      task.wait(0.01)
-      pcall(function()
-        virtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-      end)
-    end
-  end
-
-  local function f95()
-    for index36, value80 in ipairs({ "SkillCheckPromptGui", "SkillCheckPromptGui-con" }) do
-      local findFirstChild19 = playerGui4:FindFirstChild(value80, true)
-      if findFirstChild19 then
-        local findFirstChild20 = findFirstChild19:FindFirstChild("Check", true)
-        if findFirstChild20 and findFirstChild20.Visible then
-          local findFirstChild21 = findFirstChild20:FindFirstChild("Line", true)
-          local findFirstChild22 = findFirstChild20:FindFirstChild("Goal", true)
-          if findFirstChild21 and findFirstChild22 then
-            return findFirstChild21, findFirstChild22
-          end
         end
-      end
-    end
-  end
-
-  local function f96()
-    local v180, v181 = f95()
-    if not (v180 and v181) then
-      v176.InstantHasClicked = false
-      v176.InstantLastGoalRotation = 0
-      v176.InstantLastGoalInstance = nil
-      v176.InstantCurrentGoalID = 0
-      if v176.InstantRotationConnection then
-        v176.InstantRotationConnection:Disconnect()
-        v176.InstantRotationConnection = nil
-      end
-      return
-    else
-      local v182 = v181.Rotation % 360
-      local rotation = (v182 + 106) % 360
-      if not v176.InstantForcingRotation then
-        v176.InstantForcingRotation = true
-        pcall(function() v180.Rotation = rotation end)
-        v176.InstantForcingRotation = false
-      end
-      local v183 = math.abs(v182 - v176.InstantLastGoalRotation)
-      if v183 > 180 then v183 = 360 - v183 end
-      if v183 > 0.5 or v176.InstantLastGoalInstance ~= v181 then
-        v176.InstantHasClicked = false
-        v176.InstantCurrentGoalID = v176.InstantCurrentGoalID + 1
-        local instantCurrentGoalID = v176.InstantCurrentGoalID
-        if v176.InstantRotationConnection then
-          v176.InstantRotationConnection:Disconnect()
+        
+        if options.SphereImage ~= nil then
+            sphImage = options.SphereImage
         end
-        v176.InstantRotationConnection = v180:GetPropertyChangedSignal("Rotation"):Connect(function()
-          if v176.InstantForcingRotation then return end
-          v176.InstantForcingRotation = true
-          pcall(function()
-            local _, v185 = f95()
-            if v185 then
-              v180.Rotation = (v185.Rotation % 360 + 106) % 360
-            end
-          end)
-          v176.InstantForcingRotation = false
-        end)
-
-        if not v176.InstantHasClicked then
-          v176.InstantHasClicked = true
-          task.spawn(function()
-            task.wait(0.05)
-            if v176.InstantCurrentGoalID == instantCurrentGoalID then
-              local v186, v187 = f95()
-              if v186 and v187 and tick() - v176.InstantLastTriggerTick > 0.03 then
-                v176.InstantLastTriggerTick = tick()
-                f94()
-              end
-            end
-          end)
+        if options.Logo ~= nil then
+            topbarLogo = options.Logo
         end
-      end
-      v176.InstantLastGoalRotation = v182
-      v176.InstantLastGoalInstance = v181
+        logoSize = options.LogoSize or 28
+        sphIconSize = options.SphereIconSize or 24
+    elseif type(options) == "string" then
+        hubName = options
     end
-  end
 
-  local function f97(p130, p131, p132, p133)
-    local function f100(p134)
-      if p132 > p133 then
-        return p134 >= p132 or p134 <= p133
-      end
-      return p134 >= p132 and p134 <= p133
-    end
-    if f100(p131) then return true end
-    if p130 == nil then return false end
-    local v202 = f93(p130, p131)
-    local v203 = math.abs(math.floor(v202))
-    if v203 < 2 then return false end
-    local v204 = v202 / v203
-    for i = 1, v203 do
-      if f100((p130 + v204 * i) % 360) then return true end
-    end
-    return false
-  end
+    local uniqueID = HttpService:GenerateGUID(false)
+    local parentGui = (gethui and gethui()) or (RunService:IsStudio() and game.Players.LocalPlayer:WaitForChild("PlayerGui")) or CoreGui
+    local ScreenGui = Create("ScreenGui", {
+        Name = "KenzHub_UI_" .. uniqueID,
+        Parent = parentGui,
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true
+    })
 
-  local function f98()
-    local v188, v189 = f95()
-    if not (v188 and v189) then
-      v176.PerfectLastGoalRotation = nil
-      v176.PerfectHasClickedThisGoal = false
-      v176.PerfectLastLineRotation = nil
-      v176.PerfectLastTick = nil
-      v176.PerfectWasActive = false
-      return
-    end
-    local v190 = v188.Rotation % 360
-    local v191 = v189.Rotation % 360
-    local v192 = os.clock()
-    if not v176.PerfectWasActive then
-      v176.PerfectWasActive = true
-      v176.PerfectHasClickedThisGoal = false
-      v176.PerfectLastGoalRotation = v191
-      v176.PerfectLastLineRotation = v190
-      v176.PerfectLastTick = v192
-      return
-    end
-    if v176.PerfectLastGoalRotation and math.abs(f93(v176.PerfectLastGoalRotation, v191)) > 5 then
-      v176.PerfectHasClickedThisGoal = false
-      v176.PerfectLastLineRotation = nil
-      v176.PerfectLastTick = nil
-    end
-    v176.PerfectLastGoalRotation = v191
-    if v176.PerfectHasClickedThisGoal then
-      v176.PerfectLastLineRotation = v190
-      v176.PerfectLastTick = v192
-      return
-    end
-    if v176.PerfectLastLineRotation and v176.PerfectLastTick then
-      local v193 = v192 - v176.PerfectLastTick
-      if v193 > 0 then
-        local v194 = f93(v176.PerfectLastLineRotation, v190)
-        if f97(v176.PerfectLastLineRotation, (v190 + v194 / v193 * v193 * 0) % 360, (v191 + 104) % 360, (v191 + 108) % 360) then
-          v176.PerfectHasClickedThisGoal = true
-          f94()
-        end
-      end
-    end
-    v176.PerfectLastLineRotation = v190
-    v176.PerfectLastTick = v192
-  end
+    local NotifContainer = Create("Frame", {
+        Parent = ScreenGui,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 280, 1, -20),
+        Position = UDim2.new(1, -300, 0, 10),
+        ZIndex = 200,
+        Active = false
+    })
+    Create("UIListLayout", {Parent = NotifContainer, VerticalAlignment = Enum.VerticalAlignment.Bottom, HorizontalAlignment = Enum.HorizontalAlignment.Right, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10)})
+    GlobalNotifContainer = NotifContainer
 
-  local function f99()
-    local v195, v196 = f95()
-    if not (v195 and v196) then
-      v176.LastGoalRotation = nil
-      v176.HasClickedThisGoal = false
-      v176.LastLineRotation = nil
-      v176.LastTick = nil
-      v176.WasActive = false
-      return
-    end
-    local v197 = v195.Rotation % 360
-    local v198 = v196.Rotation % 360
-    local v199 = os.clock()
-    if not v176.WasActive then
-      v176.WasActive = true
-      v176.HasClickedThisGoal = false
-      v176.LastGoalRotation = v198
-      v176.LastLineRotation = v197
-      v176.LastTick = os.clock()
-      return
-    end
-    if v176.LastGoalRotation and math.abs(f93(v176.LastGoalRotation, v198)) > 5 then
-      v176.HasClickedThisGoal = false
-      v176.LastLineRotation = nil
-      v176.LastTick = nil
-    end
-    v176.LastGoalRotation = v198
-    if v176.HasClickedThisGoal then
-      v176.LastLineRotation = v197
-      v176.LastTick = v199
-      return
-    end
-    if v176.LastLineRotation and v176.LastTick then
-      local v200 = v199 - v176.LastTick
-      if v200 > 0 then
-        local v201 = f93(v176.LastLineRotation, v197)
-        if f97(v176.LastLineRotation, (v197 + v201 / v200 * v200 * 0) % 360, (v198 + 104) % 360, (v198 + 109) % 360) then
-          v176.HasClickedThisGoal = true
-          task.spawn(function()
-            task.wait(0.03)
-            f94()
-          end)
-        end
-      end
-    end
-    v176.LastLineRotation = v197
-    v176.LastTick = v199
-  end
+    local InfoOverlay = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Color3.fromRGB(5, 5, 8), BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 150, Visible = false, Active = true})
+    local InfoCard = Create("Frame", {Parent = InfoOverlay, BackgroundColor3 = Color3.fromRGB(22, 16, 18), Size = UDim2.new(0, 310, 0, 240), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 151, BackgroundTransparency = 1, ClipsDescendants = true})
+    Create("UICorner", {Parent = InfoCard, CornerRadius = UDim.new(0, 8)})
+    Create("UIStroke", {Parent = InfoCard, Color = AccentColor, Thickness = 1.5, Transparency = 1})
+    local InfoScale = Create("UIScale", {Parent = InfoCard, Scale = 0})
 
-  runService.RenderStepped:Connect(function()
-    if not VD.AutoSkillcheck then return end
-    if VD.AutoSkillcheckMode == "Perfect" then
-      f98()
-    elseif VD.AutoSkillcheckMode == "Instant" then
-      f96()
-    else
-      f99()
-    end
-  end)
-end
+    local InfoHeader = Create("Frame", {Parent = InfoCard, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 35), ZIndex = 152})
+    local InfoTitle = Create("TextLabel", {Parent = InfoHeader, Text = "Feature Info", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = TextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 0), Size = UDim2.new(1, -50, 1, 0), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 152})
+    local InfoCloseBtn = Create("TextButton", {Parent = InfoHeader, Text = "X", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 35, 1, 0), Position = UDim2.new(1, -35, 0, 0), ZIndex = 152, TextTransparency = 1})
+    AddBounce(InfoCloseBtn)
 
-f15()
+    local InfoScroll = Create("ScrollingFrame", {Parent = InfoCard, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 1, -50), Position = UDim2.new(0, 15, 0, 40), CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = AccentColor, BorderSizePixel = 0, ZIndex = 152})
+    local InfoLayout = Create("UIListLayout", {Parent = InfoScroll, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+    local InfoDesc = Create("TextLabel", {Parent = InfoScroll, Text = "", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y, ZIndex = 152, TextTransparency = 1})
+    local InfoExampleBox = Create("Frame", {Parent = InfoScroll, BackgroundColor3 = Color3.fromRGB(15, 10, 12), Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, ZIndex = 152})
+    Create("UICorner", {Parent = InfoExampleBox, CornerRadius = UDim.new(0, 6)})
+    Create("UIStroke", {Parent = InfoExampleBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+    local InfoExampleText = Create("TextLabel", {Parent = InfoExampleBox, Text = "", Font = Enum.Font.Code, TextSize = 11, TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 0), Position = UDim2.new(0, 8, 0, 8), TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y, ZIndex = 152, TextTransparency = 1})
+    Create("UIPadding", {Parent = InfoExampleBox, PaddingBottom = UDim.new(0, 8)})
 
--- Auto Parry Setup
-local function f23()
-  return coreGui
-end
+    InfoLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() InfoScroll.CanvasSize = UDim2.new(0, 0, 0, InfoLayout.AbsoluteContentSize.Y + 10) end)
 
-local iyanParryRange = Instance.new("CylinderHandleAdornment")
-iyanParryRange.Name = "IYAN_ParryRange"
-iyanParryRange.Radius = vd.SURV_ParryRange or 12
-iyanParryRange.InnerRadius = math.max(0.1, (vd.SURV_ParryRange or 12) - 0.15)
-iyanParryRange.Height = 0.01
-iyanParryRange.Color3 = (vd.SURV_ParryMode == "Aggressive") and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(50, 150, 255)
-iyanParryRange.AlwaysOnTop = false
-iyanParryRange.Adornee = workspaceService:FindFirstChildOfClass("Terrain")
-iyanParryRange.Transparency = 1
-iyanParryRange.Parent = f23()
-
-local function f75()
-  local character10 = localPlayer.Character
-  if not character10 then return false end
-  if character10:FindFirstChild("Parrying Dagger") then return true end
-  for _, value69 in ipairs(character10:GetDescendants()) do
-    if value69.Name == "Parrying Dagger" and (value69:IsA("Tool") or value69:IsA("Accessory") or value69:IsA("Model")) then
-      return true
-    end
-  end
-  return false
-end
-
-local function f76()
-  if not vd.SURV_AutoParry or not vd.SURV_ShowParryCircle then
-    iyanParryRange.Transparency = 1
-    return
-  else
-    local character11 = localPlayer.Character
-    local humanoidRootPart7 = character11 and character11:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart7 then
-      iyanParryRange.Transparency = 1
-      return
-    else
-      local survParryRange = vd.SURV_ParryRange or 12
-      iyanParryRange.Transparency = 0.4
-      iyanParryRange.Radius = survParryRange
-      iyanParryRange.InnerRadius = math.max(0.1, survParryRange - 0.15)
-      iyanParryRange.Color3 = (vd.SURV_ParryMode == "Aggressive") and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(50, 150, 255)
-      
-      local raycastParams = RaycastParams.new()
-      raycastParams.FilterDescendantsInstances = { character11 }
-      raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-      local raycast = workspaceService:Raycast(humanoidRootPart7.Position, Vector3.new(0, -15, 0), raycastParams)
-      local position3 = raycast and raycast.Position or humanoidRootPart7.Position - Vector3.new(0, 3, 0)
-      iyanParryRange.CFrame = CFrame.new(position3 + Vector3.new(0, 0.05, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
-    end
-  end
-end
-
-local v163 = {}
-local v164
-
-local function f77()
-  local playerGui2 = localPlayer:FindFirstChildOfClass("PlayerGui")
-  if not playerGui2 then return end
-  table.clear(v163)
-  v164 = nil
-  for _, value70 in ipairs({ "Survivor", "Survivor-con" }) do
-    local findFirstChild17 = playerGui2:FindFirstChild(value70)
-    if findFirstChild17 then
-      local gen = findFirstChild17:FindFirstChild("Gen")
-      if gen then
-        local itemFrame = gen:FindFirstChild("ItemFrame")
-        if itemFrame then
-          local gui = itemFrame:FindFirstChild("Gui")
-          if gui then
-            local bar = gui:FindFirstChild("Bar")
-            if bar then
-              local uiGradient = bar:FindFirstChild("UIGradient")
-              if uiGradient then table.insert(v163, uiGradient) end
-            end
-          end
-          local icon = itemFrame:FindFirstChild("icon")
-          if icon then v164 = icon end
-        end
-      end
-    end
-  end
-  local survivorMob = playerGui2:FindFirstChild("Survivor-mob")
-  if survivorMob then
-    local controls = survivorMob:FindFirstChild("Controls")
-    if controls then
-      for _, value71 in ipairs(controls:GetChildren()) do
-        if value71:IsA("ImageButton") and value71.Name == "Gui-mob" then
-          local bar2 = value71:FindFirstChild("Bar")
-          if bar2 then
-            local uiGradient2 = bar2:FindFirstChild("UIGradient")
-            if uiGradient2 then table.insert(v163, uiGradient2) end
-          end
-        end
-      end
-    end
-  end
-end
-
-task.spawn(function()
-  local total = 0
-  while #v163 == 0 and total < 10 do
-    task.wait(0.5)
-    f77()
-    total = total + 0.5
-  end
-end)
-
-local v165 = {
-  CooldownToken = 0,
-  IsOnCooldown = false,
-  IsResolving = false,
-  Gradients = v163,
-  Icon = v164,
-  CooldownThread = nil,
-  LockConnection = nil,
-  ParryTrack = nil,
-}
-
-local function f78()
-  local humanoid3 = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
-  if not humanoid3 then return true end
-  return humanoid3.Health < humanoid3.MaxHealth * 0.5
-end
-
-local function f79(imageColor3)
-  if #v165.Gradients == 0 then f77() end
-  for _, value73 in ipairs(v165.Gradients) do
-    if value73 and value73.Parent and value73.Parent.Parent then
-      local icon2 = value73.Parent.Parent:FindFirstChild("icon")
-      if icon2 then icon2.ImageColor3 = imageColor3 end
-      local gui2 = value73.Parent.Parent:FindFirstChild("Gui")
-      if gui2 then gui2.ImageColor3 = imageColor3 end
-    end
-  end
-  if v164 then v164.ImageColor3 = imageColor3 end
-end
-
-local function f80()
-  if v165.CooldownThread then
-    task.cancel(v165.CooldownThread)
-    v165.CooldownThread = nil
-  end
-  v165.IsOnCooldown = false
-  v165.IsResolving = false
-  f79(Color3.fromRGB(255, 255, 255))
-  for _, value74 in ipairs(v165.Gradients) do
-    if value74 and value74.Parent then
-      value74.Offset = Vector2.new(0, 0.25)
-    end
-  end
-end
-
-do
-  local function f81()
-    local currentCamera2 = workspaceService.CurrentCamera
-    if not currentCamera2 then return end
-    local v166 = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not v166 or not v166.Parent then return end
-    local lookVector = currentCamera2.CFrame.LookVector
-    local vector = Vector3.new(lookVector.X, 0, lookVector.Z)
-    if vector.Magnitude <= 0 then return end
-    local cframe = CFrame.new(v166.Position, v166.Position + vector.Unit)
-    local create11 = tweenService:Create(v166, TweenInfo.new(0.2, Enum.EasingStyle.Linear), { CFrame = cframe })
-    create11:Play()
-    create11.Completed:Connect(function()
-      local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
-      if hum then hum.AutoRotate = true end
-      if v165.LockConnection then v165.LockConnection:Disconnect() end
-      local v167 = tick()
-      v165.LockConnection = runService.Heartbeat:Connect(function()
-        if tick() - v167 >= 0.8 then
-          if v165.LockConnection then v165.LockConnection:Disconnect(); v165.LockConnection = nil end
-          return
-        end
-        if v166 and v166.Parent then
-          v166.CFrame = CFrame.new(v166.Position, v166.Position + vector.Unit)
-        elseif v165.LockConnection then
-          v165.LockConnection:Disconnect()
-          v165.LockConnection = nil
-        end
-      end)
-    end)
-  end
-
-  local function f82()
-    local character12 = localPlayer.Character
-    if not character12 then return true
-    elseif localPlayer:GetAttribute("IsDead") then return true
-    elseif character12:GetAttribute("IsCarried") then return true
-    elseif character12:GetAttribute("IsHooked") then return true
-    elseif collectionService:HasTag(character12:FindFirstChild("HumanoidRootPart"), "doing action") then return true
-    else
-      local checkInterractable = character12:FindFirstChild("CheckInterractable")
-      if checkInterractable then
-        for _, value75 in ipairs({ "isVaulting", "isSliding", "isDroppingPallet", "isRepairing", "isHealing", "isUnhooking", "isExiting" }) do
-          if checkInterractable:GetAttribute(value75) then return true end
-        end
-        return false
-      end
-      return false
-    end
-  end
-
-  local f83
-
-  local function f84(p118)
-    v165.CooldownToken = v165.CooldownToken + 1
-    local cooldownToken = v165.CooldownToken
-    v165.IsResolving = false
-    v165.IsOnCooldown = true
-    f79(Color3.fromRGB(77, 77, 77))
-    f83(p118)
-    if v165.CooldownThread then task.cancel(v165.CooldownThread) end
-    v165.CooldownThread = task.delay(p118, function()
-      if v165.CooldownToken == cooldownToken then
-        v165.IsOnCooldown = false
-        f79(Color3.fromRGB(255, 255, 255))
-        v165.CooldownThread = nil
-      end
-    end)
-  end
-
-  function f83(p119)
-    if #v165.Gradients == 0 then f77() end
-    for _, value76 in ipairs(v165.Gradients) do
-      if value76 and value76.Parent then
-        value76.Offset = Vector2.new(0, 0.75)
-        local create12 = tweenService:Create(value76, TweenInfo.new(p119, Enum.EasingStyle.Linear), { Offset = Vector2.new(0, 0.25) })
-        create12:Play()
-        create12.Completed:Connect(function()
-          if not v165.IsOnCooldown then f79(Color3.fromRGB(255, 255, 255)) end
-        end)
-      end
-    end
-  end
-
-  local function f85()
-    local character13 = localPlayer.Character
-    local humanoid4 = character13 and character13:FindFirstChildOfClass("Humanoid")
-    if not humanoid4 then return end
-    local animator = humanoid4:FindFirstChildOfClass("Animator")
-    if not animator then return end
-    local survParryAnimId = vd.SURV_ParryAnimId or "rbxassetid://109133187196613"
-    local animation = Instance.new("Animation")
-    animation.AnimationId = survParryAnimId
-    local loadAnimation = animator:LoadAnimation(animation)
-    if loadAnimation then
-      loadAnimation.Priority = Enum.AnimationPriority.Action
-      loadAnimation:Play()
-      v165.ParryTrack = loadAnimation
-      task.delay(1.5, function()
-        if loadAnimation and loadAnimation.IsPlaying then loadAnimation:Stop() end
-        v165.ParryTrack = nil
-      end)
-    end
-  end
-
-  local function f86()
-    if not vd.SURV_AutoParry then return false
-    elseif not f75() then return false
-    elseif v165.IsOnCooldown then return false
-    elseif v165.IsResolving then return false
-    elseif f82() then return false
-    elseif f78() then return false
-    else return true end
-  end
-
-  local f87
-
-  local function f88()
-    if not f86() then return end
-    v165.IsResolving = true
-    f79(Color3.fromRGB(77, 77, 77))
-    local parry = replicatedStorage:FindFirstChild("Remotes"):FindFirstChild("Items"):FindFirstChild("Parrying Dagger"):FindFirstChild("parry")
-    if parry then pcall(function() parry:FireServer() end) end
-    f81()
-    local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.AutoRotate = false end
-    f85()
-    local rootPart = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if rootPart then collectionService:AddTag(rootPart, "doing action") end
-    local slow = replicatedStorage:FindFirstChild("Remotes"):FindFirstChild("Mechanics"):FindFirstChild("Slow")
-    if slow then pcall(function() slow:Fire(0, 1, 0) end) end
-    task.spawn(f87)
-    task.delay(2, function()
-      if v165.IsResolving then
-        v165.IsResolving = false
-        f84(60)
-        if rootPart then collectionService:RemoveTag(rootPart, "doing action") end
-      end
-    end)
-  end
-
-  function f87()
-    local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    for _, value77 in ipairs({ { speed = 0, duration = 2 }, { speed = 19, duration = 2 }, { speed = 18, duration = 1 }, { speed = 17, duration = math.huge } }) do
-      if not hum.Parent then break end
-      hum.WalkSpeed = value77.speed
-      if value77.duration == math.huge then break end
-      task.wait(value77.duration)
-    end
-  end
-
-  local function f89()
-    task.spawn(function()
-      local remotes = replicatedStorage:FindFirstChild("Remotes")
-      if not remotes then return end
-      local parryingDagger = remotes:FindFirstChild("Items"):FindFirstChild("Parrying Dagger")
-      if not parryingDagger then return end
-      local parryResult = parryingDagger:FindFirstChild("parryResult")
-      if not parryResult then return end
-      parryResult.OnClientEvent:Connect(function(p120, p121)
-        if not v165.IsResolving then return end
-        v165.IsResolving = false
-        local v170 = tonumber(p121)
-        if v170 and v170 > 0 then f84(v170)
-        elseif p120 == true then f84(90)
-        else f84(60) end
-        local rootPart = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if rootPart then collectionService:RemoveTag(rootPart, "doing action") end
-      end)
-    end)
-  end
-
-  f89()
-
-  local v172 = {
-    ["rbxassetid://113255068724446"] = true,
-    ["rbxassetid://74968262036854"] = true,
-    ["rbxassetid://110355011987939"] = true,
-    ["rbxassetid://139369275981139"] = true,
-    ["rbxassetid://132817836308238"] = true,
-    ["rbxassetid://129784271201071"] = true,
-    ["rbxassetid://133963973694098"] = true,
-    ["rbxassetid://117042998468241"] = true,
-    ["rbxassetid://105374834496520"] = true,
-    ["rbxassetid://111920872708571"] = true,
-    ["rbxassetid://78432063483146"] = true,
-    ["rbxassetid://118907603246885"] = true,
-    ["rbxassetid://138720291317243"] = true,
-    ["rbxassetid://115244153053858"] = true,
-    ["rbxassetid://130593238885843"] = true,
-    ["rbxassetid://122812055447896"] = true,
-    ["rbxassetid://78935059863801"] = true,
-    ["rbxassetid://135002183282873"] = true,
-    ["rbxassetid://121216847022485"] = true,
-  }
-
-  local v173 = {}
-
-  local function f90(p122)
-    if not p122 or v173[p122] then return end
-    v173[p122] = true
-    local humanoid5 = p122:FindFirstChild("Humanoid")
-    if not humanoid5 then
-      humanoid5 = p122:WaitForChild("Humanoid", 5)
-      if not humanoid5 then return end
-    end
-    local animator2 = humanoid5:FindFirstChildOfClass("Animator")
-    if not animator2 then
-      animator2 = humanoid5:WaitForChild("Animator", 5)
-      if not animator2 then return end
-    end
-    humanoid5.ChildAdded:Connect(function(child3)
-      if child3:IsA("Animator") then
-        v173[p122] = nil
-        f90(p122)
-      end
-    end)
-    p122.AncestryChanged:Connect(function(_, p124)
-      if not p124 then v173[p122] = nil end
-    end)
-    animator2.AnimationPlayed:Connect(function(p125)
-      local animationId = p125.Animation and p125.Animation.AnimationId or ""
-      if not v172[animationId] then return end
-      if not vd.SURV_AutoParry then return end
-      if not f75() then return end
-      if v165.IsOnCooldown or v165.IsResolving then return end
-      local character14 = localPlayer.Character
-      if not character14 then return end
-      local humanoidRootPart8 = character14:FindFirstChild("HumanoidRootPart")
-      local humanoidRootPart9 = p122:FindFirstChild("HumanoidRootPart")
-      if not humanoidRootPart8 or not humanoidRootPart9 then return end
-      local magnitude3 = (humanoidRootPart8.Position - humanoidRootPart9.Position).Magnitude
-      local survParryMode = vd.SURV_ParryMode or "Legit"
-      local survParryRange2 = vd.SURV_ParryRange or 12
-
-      if survParryMode == "Aggressive" then
-        if magnitude3 > survParryRange2 + 3 then return end
-        if magnitude3 <= survParryRange2 then
-          f88()
+    local function OpenInfoWindow(data)
+        InfoTitle.Text = data.Title or "Information"
+        InfoDesc.Text = data.Description or "No description provided."
+        if data.Example then
+            InfoExampleText.Text = data.Example
+            InfoExampleBox.Visible = true
         else
-          local connect = nil
-          local v174 = os.clock()
-          connect = runService.Heartbeat:Connect(function()
-            if os.clock() - v174 >= 1.5 or v165.IsOnCooldown or v165.IsResolving or not humanoidRootPart8 or not humanoidRootPart9 then
-              if connect then connect:Disconnect() end
-              return
-            end
-            if (humanoidRootPart8.Position - humanoidRootPart9.Position).Magnitude <= survParryRange2 then
-              f88()
-              if connect then connect:Disconnect() end
-            end
-          end)
+            InfoExampleBox.Visible = false
         end
-        return
-      elseif magnitude3 > survParryRange2 then
-        return
-      else
-        local v175 = Vector3.new(humanoidRootPart8.Position.X, 0, humanoidRootPart8.Position.Z) - Vector3.new(humanoidRootPart9.Position.X, 0, humanoidRootPart9.Position.Z)
-        if v175.Magnitude > 0 then
-          if Vector3.new(humanoidRootPart9.CFrame.LookVector.X, 0, humanoidRootPart9.CFrame.LookVector.Z).Unit:Dot(v175.Unit) < 0.6 then
-            return
-          end
-          f88()
-          return
-        end
-        f88()
-        return
-      end
+        InfoOverlay.Visible = true
+        Tween(InfoOverlay, {BackgroundTransparency = 0.4}, 0.3)
+        Tween(InfoCard, {BackgroundTransparency = 0}, 0.3)
+        Tween(InfoCard:FindFirstChild("UIStroke"), {Transparency = 0.3}, 0.3)
+        Tween(InfoScale, {Scale = 1}, 0.3)
+        Tween(InfoTitle, {TextTransparency = 0}, 0.3)
+        Tween(InfoCloseBtn, {TextTransparency = 0}, 0.3)
+        Tween(InfoDesc, {TextTransparency = 0}, 0.3)
+        if data.Example then Tween(InfoExampleText, {TextTransparency = 0}, 0.3) end
+    end
+
+    InfoCloseBtn.MouseButton1Click:Connect(function()
+        Tween(InfoOverlay, {BackgroundTransparency = 1}, 0.3)
+        Tween(InfoCard, {BackgroundTransparency = 1}, 0.3)
+        Tween(InfoCard:FindFirstChild("UIStroke"), {Transparency = 1}, 0.3)
+        Tween(InfoScale, {Scale = 0}, 0.3)
+        Tween(InfoTitle, {TextTransparency = 1}, 0.3)
+        Tween(InfoCloseBtn, {TextTransparency = 1}, 0.3)
+        Tween(InfoDesc, {TextTransparency = 1}, 0.3)
+        if InfoExampleBox.Visible then Tween(InfoExampleText, {TextTransparency = 1}, 0.3) end
+        task.wait(0.3)
+        InfoOverlay.Visible = false
     end)
-  end
 
-  local function f91(p126)
-    if p126 ~= localPlayer and p126.Team and p126.Team.Name == "Killer" and p126.Character then
-      f90(p126.Character)
-    end
-  end
-
-  local function f92(p127)
-    if p127 == localPlayer then return end
-    p127.CharacterAdded:Connect(function() f91(p127) end)
-    p127:GetPropertyChangedSignal("Team"):Connect(function() f91(p127) end)
-    if p127.Character then f91(p127) end
-  end
-
-  for _, value78 in pairs(players:GetPlayers()) do
-    f92(value78)
-  end
-
-  players.PlayerAdded:Connect(f92)
-
-  task.spawn(function()
-    while true do
-      task.wait(5)
-      for _, value79 in pairs(players:GetPlayers()) do
-        f91(value79)
-      end
-    end
-  end)
-end
-
-runService.RenderStepped:Connect(function() f76() end)
-
-local function f141()
-  if not localPlayer.Team then
-    return "Unknown"
-  else
-    local name8 = localPlayer.Team.Name
-
-    if name8 == "Killer" then
-      return "Killer"
+    local function AddInfoIcon(parent, pos, data)
+        if not data then return end
+        local Btn = Create("TextButton", {Parent = parent, Text = "?", Font = Enum.Font.GothamBold, TextSize = 9, TextColor3 = SubTextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32), Size = UDim2.new(0, 15, 0, 15), Position = pos, AutoButtonColor = false, ZIndex = 5})
+        Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(1, 0)})
+        AddBounce(Btn)
+        Btn.MouseEnter:Connect(function() Tween(Btn, {TextColor3 = TextColor, BackgroundColor3 = AccentColor}, 0.2) end)
+        Btn.MouseLeave:Connect(function() Tween(Btn, {TextColor3 = SubTextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32)}, 0.2) end)
+        Btn.MouseButton1Click:Connect(function() OpenInfoWindow(data) end)
     end
 
-    if name8 == "Survivors" then
-      return "Survivor"
-    end
+    local MainFrame = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 500, 0, 320), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ClipsDescendants = true, BackgroundTransparency = 1, Active = true})
+    local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.75})
+    Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 8)})
+    
+    Create("UIStroke", {Parent = MainFrame, Color = AccentColor, Thickness = 1.5})
 
-    return "Lobby"
-  end
-end
+    Tween(MainScale, {Scale = 1}, 0.5)
+    Tween(MainFrame, {BackgroundTransparency = 0}, 0.5)
 
-local function f142(p187)
-  return p187 and p187.Team and p187.Team.Name == "Killer"
-end
+    local BottomDragHitbox = Create("Frame", {
+        Parent = ScreenGui,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 300, 0, 26),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        ZIndex = 145,
+        Active = true
+    })
 
--- Flee Killer Loop
-runService.Heartbeat:Connect(function()
-  if vd.SURV_FleeKiller then
-    pcall(function()
-      local character = localPlayer.Character
-      local v348 = character and character:FindFirstChild("HumanoidRootPart")
+    local FloatingBottomBar = Create("Frame", {
+        Parent = BottomDragHitbox,
+        BackgroundColor3 = CardColor,
+        BackgroundTransparency = 0,
+        Size = UDim2.new(1, 0, 0, 5),
+        Position = UDim2.new(0, 0, 0.5, -2.5),
+        ZIndex = 146
+    })
+    Create("UICorner", {Parent = FloatingBottomBar, CornerRadius = UDim.new(1, 0)})
+    local BottomBarStroke = Create("UIStroke", {
+        Parent = FloatingBottomBar, 
+        Color = Color3.fromRGB(60, 35, 40), 
+        Thickness = 1, 
+        Transparency = 0
+    })
 
-      if not v348 then
-        return
-      elseif f141() == "Killer" then
-        return
-      else
-        for index56, value181 in ipairs(players:GetPlayers()) do
-          if value181 ~= localPlayer and f142(value181) then
-            local character31 = value181.Character
-            local humanoidRootPart22 = character31 and value181.Character:FindFirstChild("HumanoidRootPart")
+    MakeDraggable(BottomDragHitbox, MainFrame)
 
-            if humanoidRootPart22 and (humanoidRootPart22.Position - v348.Position).Magnitude <= (vd.SURV_FleeDistance or 40) then
-              local unit5 = (v348.Position - humanoidRootPart22.Position).Unit
-
-              v348.CFrame = CFrame.new(
-                v348.Position + unit5 * ((vd.SURV_FleeDistance or 40) + 15),
-                v348.Position + unit5 * 100
-              )
-
-              break
-            end
-          end
+    RunService.RenderStepped:Connect(function()
+        if MainFrame and MainFrame.Visible then
+            BottomDragHitbox.Visible = true
+            local currentScale = MainScale.Scale
+            local frameHeight = 320 * currentScale
+            local frameWidth = 500 * currentScale
+            
+            BottomDragHitbox.Position = UDim2.new(
+                MainFrame.Position.X.Scale,
+                MainFrame.Position.X.Offset,
+                MainFrame.Position.Y.Scale,
+                MainFrame.Position.Y.Offset + (frameHeight / 2) + 16
+            )
+            BottomDragHitbox.Size = UDim2.new(0, frameWidth * 0.6, 0, 26 * currentScale)
+            FloatingBottomBar.Size = UDim2.new(1, 0, 0, 5 * currentScale)
+            FloatingBottomBar.Position = UDim2.new(0, 0, 0.5, -(2.5 * currentScale))
+        else
+            BottomDragHitbox.Visible = false
         end
-
-        return
-      end
     end)
-  end
-end)
 
--- Auto Drop Pallet Loop & Logic
-local v382 = 0
-local droppedPalletsCache = {}
-
-runService.Heartbeat:Connect(function()
-  if not vd.SURV_AutoDropPallet or f141() ~= "Survivor" then
-    return
-  end
-
-  if tick() - v382 < 0.2 then
-    return
-  end
-
-  v382 = tick()
-
-  pcall(function()
-    local character = localPlayer.Character
-    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then return end
-
-    local killerNearby = false
-    local maxDist = vd.SURV_AutoDropPalletDist or 20
-
-    for _, p in ipairs(players:GetPlayers()) do
-      if p ~= localPlayer and p.Team and p.Team.Name == "Killer" and p.Character then
-        local kRoot = p.Character:FindFirstChild("HumanoidRootPart")
-        if kRoot and (kRoot.Position - rootPart.Position).Magnitude <= maxDist then
-          killerNearby = true
-          break
-        end
-      end
+    local TopBar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 35), Position = UDim2.new(0, 0, 0, 0), Active = true})
+    MakeDraggable(TopBar, MainFrame)
+    
+    local titleOffsetX = 12
+    if topbarLogo then
+        local TopbarIcon = Create("ImageLabel", {
+            Parent = TopBar,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, logoSize, 0, logoSize),
+            Position = UDim2.new(0, 6, 0.5, -(logoSize / 2)),
+            Image = topbarLogo,
+            ScaleType = Enum.ScaleType.Fit
+        })
+        titleOffsetX = 6 + logoSize + 6
     end
 
-    if killerNearby then
-      local remotes = replicatedStorage:FindFirstChild("Remotes")
-      local palletRemote = remotes and remotes:FindFirstChild("Pallet")
-      local dropEvent = palletRemote and (palletRemote:FindFirstChild("PalletDropEvent") or palletRemote:FindFirstChild("DropPallet") or palletRemote:FindFirstChild("palletDrop"))
+    local TitleContainer = Create("Frame", {Parent = TopBar, BackgroundTransparency = 1, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(0, titleOffsetX, 0, 0)})
+    local Title = Create("TextLabel", {Parent = TitleContainer, Text = hubName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = AccentColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(1, 0, 0, 14), TextXAlignment = Enum.TextXAlignment.Left})
+    local Subtitle = Create("TextLabel", {Parent = TitleContainer, Text = subText, Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = subColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 18), Size = UDim2.new(1, 0, 0, 10), TextXAlignment = Enum.TextXAlignment.Left})
 
-      for _, obj in ipairs(collectionService:GetTagged("PalletPoint") or {}) do
-        if obj:IsA("BasePart") and (obj.Position - rootPart.Position).Magnitude <= 12 then
-          if not droppedPalletsCache[obj] then
-            droppedPalletsCache[obj] = true
-            if dropEvent and dropEvent:IsA("RemoteEvent") then
-              dropEvent:FireServer(obj)
+    local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 180, 0, 22), Position = UDim2.new(0, 150, 0.5, -11)})
+    Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 5)})
+    local SearchIcon = Create("ImageLabel", {Parent = SearchBar, BackgroundTransparency = 1, Image = "rbxassetid://6031154871", ImageColor3 = SubTextColor, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(0, 6, 0.5, -6)})
+    local SearchInput = Create("TextBox", {Parent = SearchBar, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 24, 0, 0), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, PlaceholderText = "Search..", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+
+    local CloseBtn = Create("TextButton", {Parent = TopBar, Text = "X", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 25, 1, 0), Position = UDim2.new(1, -28, 0, 0)})
+    local MinBtn = Create("TextButton", {Parent = TopBar, Text = "—", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 25, 1, 0), Position = UDim2.new(1, -53, 0, 0)})
+
+    local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 130, 1, -35), Position = UDim2.new(0, 0, 0, 35), Active = true})
+    local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -16, 0, 22), Position = UDim2.new(0, 8, 0, 4), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+    Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
+    Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
+    local TabSearchStroke = Create("UIStroke", {Parent = TabSearchBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+    
+    local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, -32), Position = UDim2.new(0, 8, 0, 30), ScrollBarThickness = 0})
+    Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
+    local Divider = Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(50, 35, 40), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -35), Position = UDim2.new(0, 130, 0, 35)})
+
+    local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -132, 1, -35), Position = UDim2.new(0, 132, 0, 35), Active = true})
+
+    local Sphere = Create("ImageButton", {Parent = ScreenGui, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 0.2, Size = UDim2.new(0, 46, 0, 46), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), Visible = false, AutoButtonColor = false, ImageTransparency = 1, ClipsDescendants = true})
+    Create("UICorner", {Parent = Sphere, CornerRadius = UDim.new(0, 8)})
+    Create("UIStroke", {Parent = Sphere, Color = AccentColor, Thickness = 2})
+    
+    local SphereImageLabel = Create("ImageLabel", {Parent = Sphere, BackgroundTransparency = 1, Size = UDim2.new(0, sphIconSize, 0, sphIconSize), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), Image = sphImage, ImageTransparency = 1, Visible = (not sphTextToggle)})
+    local SphereTextLabel = Create("TextLabel", {Parent = Sphere, Text = sphWords, Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), TextTransparency = 1, Visible = sphTextToggle})
+    MakeDraggable(Sphere, Sphere)
+
+    local Window = {CurrentTab = nil, Tabs = {}, Title = Title, AllCards = {}, MainFrame = MainFrame, CurrentTransparency = 0, ConfigElements = {}}
+
+    function Window:SetTransparency(val)
+        Window.CurrentTransparency = val
+        if MainFrame.Visible then
+            Tween(MainFrame, {BackgroundTransparency = val}, 0.3)
+            Tween(FloatingBottomBar, {BackgroundTransparency = val > 0 and 0.2 or 0}, 0.3)
+        end
+    end
+
+    MinBtn.MouseButton1Click:Connect(function()
+        Tween(MainScale, {Scale = 0}, 0.4)
+        Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
+        Tween(FloatingBottomBar, {BackgroundTransparency = 1}, 0.4)
+        Tween(BottomBarStroke, {Transparency = 1}, 0.4)
+        task.wait(0.3)
+        MainFrame.Visible = false
+        BottomDragHitbox.Visible = false
+        Sphere.Visible = true
+        Tween(Sphere, {Size = UDim2.new(0, 46, 0, 46)}, 0.4)
+        
+        if not sphTextToggle then
+            Tween(SphereImageLabel, {ImageTransparency = 0}, 0.4)
+        else
+            Tween(SphereTextLabel, {TextTransparency = 0}, 0.4)
+        end
+    end)
+
+    Sphere.MouseButton1Click:Connect(function()
+        Tween(Sphere, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        
+        if not sphTextToggle then Tween(SphereImageLabel, {ImageTransparency = 1}, 0.3) end
+        if sphTextToggle then Tween(SphereTextLabel, {TextTransparency = 1}, 0.3) end
+        
+        task.wait(0.2)
+        Sphere.Visible = false
+        MainFrame.Visible = true
+        BottomDragHitbox.Visible = true
+        Tween(MainScale, {Scale = 1}, 0.4)
+        Tween(MainFrame, {BackgroundTransparency = Window.CurrentTransparency}, 0.4)
+        Tween(FloatingBottomBar, {BackgroundTransparency = Window.CurrentTransparency > 0 and 0.2 or 0}, 0.4)
+        Tween(BottomBarStroke, {Transparency = 0}, 0.4)
+    end)
+
+    local Popup = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 100, Visible = false, Active = true})
+    local PopupCard = Create("Frame", {Parent = Popup, BackgroundColor3 = Color3.fromRGB(22, 16, 18), Size = UDim2.new(0, 290, 0, 150), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 101, BackgroundTransparency = 1, ClipsDescendants = false})
+    Create("UICorner", {Parent = PopupCard, CornerRadius = UDim.new(0, 12)})
+    local PopupScale = Create("UIScale", {Parent = PopupCard, Scale = 0.8})
+    local PopupStroke = Create("UIStroke", {Parent = PopupCard, Color = Color3.fromRGB(60, 35, 40), Thickness = 1, Transparency = 1})
+    local PopupTitle = Create("TextLabel", {Parent = PopupCard, Text = "Exit Application", Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 20), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center})
+    local PopupText = Create("TextLabel", {Parent = PopupCard, Text = "Are you sure you want to close Kenz Hub? Unsaved configurations might be lost.", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 50), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true})
+    local YesBtn = Create("TextButton", {Parent = PopupCard, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = AccentColor, Size = UDim2.new(0, 115, 0, 32), Position = UDim2.new(0.5, 8, 0, 98), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
+    Create("UICorner", {Parent = YesBtn, CornerRadius = UDim.new(0, 6)})
+    AddBounce(YesBtn)
+    local NoBtn = Create("TextButton", {Parent = PopupCard, Text = "Cancel", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32), Size = UDim2.new(0, 115, 0, 32), Position = UDim2.new(0.5, -123, 0, 98), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
+    Create("UICorner", {Parent = NoBtn, CornerRadius = UDim.new(0, 6)})
+    AddBounce(NoBtn)
+
+    CloseBtn.MouseButton1Click:Connect(function()
+        Popup.Visible = true
+        Tween(Popup, {BackgroundTransparency = 0.5}, 0.3)
+        Tween(PopupCard, {BackgroundTransparency = 0}, 0.3)
+        Tween(PopupScale, {Scale = 1}, 0.3)
+        Tween(PopupStroke, {Transparency = 0}, 0.3)
+        Tween(PopupTitle, {TextTransparency = 0}, 0.3)
+        Tween(PopupText, {TextTransparency = 0}, 0.3)
+        Tween(YesBtn, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
+        Tween(NoBtn, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
+    end)
+
+    YesBtn.MouseButton1Click:Connect(function()
+        Tween(Popup, {BackgroundTransparency = 1}, 0.3)
+        Tween(PopupCard, {BackgroundTransparency = 1}, 0.3)
+        Tween(PopupStroke, {Transparency = 1}, 0.3)
+        Tween(PopupTitle, {TextTransparency = 1}, 0.3)
+        Tween(PopupText, {TextTransparency = 1}, 0.3)
+        Tween(YesBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
+        Tween(NoBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
+        Tween(MainScale, {Scale = 0.8}, 0.3)
+        Tween(MainFrame, {BackgroundTransparency = 1}, 0.3)
+        Tween(FloatingBottomBar, {BackgroundTransparency = 1}, 0.3)
+        Tween(BottomBarStroke, {Transparency = 1}, 0.3)
+
+        for _, desc in ipairs(MainFrame:GetDescendants()) do
+            if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then Tween(desc, {TextTransparency = 1}, 0.3) if desc.BackgroundTransparency < 1 then Tween(desc, {BackgroundTransparency = 1}, 0.3) end
+            elseif desc:IsA("ImageLabel") or desc:IsA("ImageButton") then Tween(desc, {ImageTransparency = 1}, 0.3)
+            elseif desc:IsA("Frame") or desc:IsA("ScrollingFrame") then if desc.BackgroundTransparency < 1 then Tween(desc, {BackgroundTransparency = 1}, 0.3) end
+            elseif desc:IsA("UIStroke") then Tween(desc, {Transparency = 1}, 0.3) end
+        end
+        task.wait(0.35)
+        ScreenGui:Destroy()
+    end)
+
+    NoBtn.MouseButton1Click:Connect(function()
+        Tween(Popup, {BackgroundTransparency = 1}, 0.3)
+        Tween(PopupCard, {BackgroundTransparency = 1}, 0.3)
+        Tween(PopupScale, {Scale = 0.8}, 0.3)
+        Tween(PopupStroke, {Transparency = 1}, 0.3)
+        Tween(PopupTitle, {TextTransparency = 1}, 0.3)
+        Tween(PopupText, {TextTransparency = 1}, 0.3)
+        Tween(YesBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
+        Tween(NoBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
+        task.wait(0.3)
+        Popup.Visible = false
+    end)
+
+    TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        local query = TabSearchBox.Text:lower()
+        for _, tabInfo in ipairs(Window.Tabs) do
+            if query == "" or string.find(tabInfo.Txt.Text:lower(), query) then
+                tabInfo.Button.Visible = true
+            else
+                tabInfo.Button.Visible = false
             end
-            task.delay(4, function() droppedPalletsCache[obj] = nil end)
-          end
         end
-      end
-    end
-  end)
-end)
+    end)
 
-local connect6 = nil
-
-local function setAntiKnock(state)
-    VD.SURV_AntiKnock = state
-    local humanoid11
-    if state then
-        if connect6 then
-            connect6:Disconnect()
-            connect6 = nil
-        end
-        local character28 = localPlayer.Character
-        if character28 then
-            humanoid11 = character28:FindFirstChildOfClass("Humanoid")
-            if humanoid11 then
-                connect6 = humanoid11.HealthChanged:Connect(function()
-                    if VD.SURV_AntiKnock then
-                        humanoid11.Health = 100
+    SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local query = SearchInput.Text:lower()
+        if query == "" then
+            for _, data in ipairs(Window.AllCards) do
+                data.Card.Parent = data.OrigParent
+                data.Card.Visible = true
+            end
+        else
+            if not Window.CurrentTab or not Window.CurrentTab.CurrentPage then return end
+            local activeLeft = Window.CurrentTab.CurrentPage.LeftCol
+            local activeRight = Window.CurrentTab.CurrentPage.RightCol
+            local placeLeft = true
+            
+            for _, data in ipairs(Window.AllCards) do
+                local card = data.Card
+                if data.Tab == Window.CurrentTab then
+                    if not data.SearchIndex then
+                        data.SearchIndex = BuildSearchIndex(card)
                     end
-                end)
+                    local match = string.find(data.SearchIndex, query, 1, true)
+                    if match then
+                        card.Parent = placeLeft and activeLeft or activeRight
+                        placeLeft = not placeLeft
+                        card.Visible = true
+                    else
+                        card.Visible = false
+                    end
+                else
+                    card.Parent = data.OrigParent
+                    card.Visible = true
+                end
             end
         end
-    else
-        if connect6 then
-            connect6:Disconnect()
-            connect6 = nil
+    end)
+
+    function Window:CreateTab(tabName, icon, isDefault, isLocked)
+        local isWhitelisted = false
+        local player = game:GetService("Players").LocalPlayer
+        if player then
+            for _, allowedUser in ipairs(Library.WhitelistedUsers) do
+                if player.Name == allowedUser or player.DisplayName == allowedUser then
+                    isWhitelisted = true
+                    break
+                end
+            end
         end
+
+        local TabBtn = Create("TextButton", {Parent = TabContainer, Text = "", BackgroundColor3 = HoverColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30), AutoButtonColor = false})
+        Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 5)})
+        AddBounce(TabBtn, 0.98)
+        local Indicator = Create("Frame", {Name = "Indicator", Parent = TabBtn, BackgroundColor3 = isLocked and Color3.fromRGB(255, 215, 0) or AccentColor, Size = UDim2.new(0, 3, 0, 0), Position = UDim2.new(0, 0, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)})
+        Create("UICorner", {Parent = Indicator, CornerRadius = UDim.new(1, 0)})
+
+        -- Menambahkan dukungan ikon di samping tab (mendukung rbxassetid:// langsung atau dari tabel Library.Icons)
+        local textOffset = 12
+        if icon then
+            local resolvedIcon = Library.Icons[icon] or icon
+            Create("ImageLabel", {
+                Parent = TabBtn,
+                BackgroundTransparency = 1,
+                Image = resolvedIcon,
+                ImageColor3 = SubTextColor,
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new(0, 10, 0.5, -8),
+                Name = "TabIcon"
+            })
+            textOffset = 30
+        end
+
+        local Txt = Create("TextLabel", {Parent = TabBtn, Text = tabName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -(textOffset + 18), 1, 0), Position = UDim2.new(0, textOffset, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+
+        if isLocked then
+            Create("ImageLabel", {Parent = TabBtn, Image = "rbxassetid://6031082533", ImageColor3 = Color3.fromRGB(255, 215, 0), BackgroundTransparency = 1, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(1, -18, 0.5, -6)})
+        end
+
+        local TabContent = Create("Frame", {Parent = ContentArea, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Visible = false})
+        local PageNav = Create("Frame", {Parent = TabContent, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30)})
+        local PageNavList = Create("UIListLayout", {Parent = PageNav, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), VerticalAlignment = Enum.VerticalAlignment.Center})
+        local PageContainer = Create("Frame", {Parent = TabContent, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -30), Position = UDim2.new(0, 0, 0, 30)})
+
+        local TabConfig = {Button = TabBtn, Content = TabContent, Indicator = Indicator, Txt = Txt, Pages = {}, CurrentPage = nil}
+        table.insert(Window.Tabs, TabConfig)
+
+        TabBtn.MouseButton1Click:Connect(function()
+            if isLocked and not isWhitelisted then
+                return
+            end
+
+            if Window.CurrentTab == TabConfig then return end
+            
+            if Window.CurrentTab then
+                Tween(Window.CurrentTab.Button, {BackgroundTransparency = 1}, 0.2)
+                Tween(Window.CurrentTab.Indicator, {Size = UDim2.new(0, 3, 0, 0)}, 0.2)
+                Tween(Window.CurrentTab.Txt, {TextColor3 = SubTextColor}, 0.2)
+                local oldIcon = Window.CurrentTab.Button:FindFirstChild("TabIcon")
+                if oldIcon then Tween(oldIcon, {ImageColor3 = SubTextColor}, 0.2) end
+                Window.CurrentTab.Content.Visible = false
+            end
+            
+            Window.CurrentTab = TabConfig
+            TabConfig.Content.Visible = true
+            
+            TabConfig.Content.Position = UDim2.new(0, 0, 0, 12)
+            Tween(TabConfig.Content, {Position = UDim2.new(0, 0, 0, 0)}, 0.35)
+
+            Tween(TabBtn, {BackgroundTransparency = 0}, 0.2)
+            Tween(Indicator, {Size = UDim2.new(0, 3, 0, 16)}, 0.3)
+            Tween(Txt, {TextColor3 = TextColor}, 0.2)
+            local currentIcon = TabBtn:FindFirstChild("TabIcon")
+            if currentIcon then Tween(currentIcon, {ImageColor3 = TextColor}, 0.2) end
+
+            if #TabConfig.Pages > 0 then
+                local firstPage = TabConfig.Pages[1]
+                if TabConfig.CurrentPage ~= firstPage then
+                    if TabConfig.CurrentPage then
+                        Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0)
+                        Tween(TabConfig.CurrentPage.Highlight, {Size = UDim2.new(0, 0, 0, 2), BackgroundTransparency = 1}, 0)
+                        TabConfig.CurrentPage.Scroll.Visible = false
+                    end
+                    TabConfig.CurrentPage = firstPage
+                    firstPage.Scroll.Visible = true
+                    
+                    firstPage.Scroll.Position = UDim2.new(0, 4, 0, 12)
+                    Tween(firstPage.Scroll, {Position = UDim2.new(0, 4, 0, 4)}, 0.35)
+
+                    Tween(firstPage.Btn, {TextColor3 = TextColor}, 0)
+                    Tween(firstPage.Highlight, {Size = UDim2.new(1, 0, 0, 2), BackgroundTransparency = 0}, 0)
+                end
+            end
+        end)
+
+        function TabConfig:CreatePage(pageName)
+            local PageBtn = Create("TextButton", {Parent = PageNav, Text = pageName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X})
+            local PageHighlight = Create("Frame", {Parent = PageBtn, BackgroundColor3 = AccentColor, Size = UDim2.new(0, 0, 0, 2), Position = UDim2.new(0.5, 0, 1, -4), AnchorPoint = Vector2.new(0.5, 0), BackgroundTransparency = 1})
+            local PageScroll = Create("ScrollingFrame", {Parent = PageContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -8, 1, -8), Position = UDim2.new(0, 4, 0, 4), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(60, 40, 45), Visible = false, BorderSizePixel = 0})
+
+            local LeftColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(0.5, -4, 1, 0)})
+            local RightColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0.5, 4, 0, 0)})
+            
+            local L_Layout = Create("UIListLayout", {Parent = LeftColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+            local R_Layout = Create("UIListLayout", {Parent = RightColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+            
+            L_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() PageScroll.CanvasSize = UDim2.new(0, 0, 0, math.max(L_Layout.AbsoluteContentSize.Y, R_Layout.AbsoluteContentSize.Y) + 16) end)
+            R_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() PageScroll.CanvasSize = UDim2.new(0, 0, 0, math.max(L_Layout.AbsoluteContentSize.Y, R_Layout.AbsoluteContentSize.Y) + 16) end)
+
+            local PageObj = {Scroll = PageScroll, Btn = PageBtn, Highlight = PageHighlight, Left = true, LeftCol = LeftColumn, RightCol = RightColumn}
+            table.insert(TabConfig.Pages, PageObj)
+
+            PageBtn.MouseButton1Click:Connect(function()
+                if TabConfig.CurrentPage == PageObj then return end
+                if TabConfig.CurrentPage then
+                    Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0.2)
+                    Tween(TabConfig.CurrentPage.Highlight, {Size = UDim2.new(0, 0, 0, 2), BackgroundTransparency = 1}, 0.2)
+                    TabConfig.CurrentPage.Scroll.Visible = false
+                end
+                TabConfig.CurrentPage = PageObj
+                PageObj.Scroll.Visible = true
+                
+                PageObj.Scroll.Position = UDim2.new(0, 4, 0, 16)
+                Tween(PageObj.Scroll, {Position = UDim2.new(0, 4, 0, 4)}, 0.35)
+
+                Tween(PageBtn, {TextColor3 = TextColor}, 0.2)
+                Tween(PageHighlight, {Size = UDim2.new(1, 0, 0, 2), BackgroundTransparency = 0}, 0.3)
+            end)
+
+            if #TabConfig.Pages == 1 and not isLocked then
+                TabConfig.CurrentPage = PageObj
+                PageObj.Scroll.Visible = true
+                PageBtn.TextColor3 = TextColor
+                PageHighlight.Size = UDim2.new(1, 0, 0, 2)
+                PageHighlight.BackgroundTransparency = 0
+            end
+
+            function PageObj:CreateSection(sectionName)
+                local targetColumn = PageObj.Left and LeftColumn or RightColumn
+                PageObj.Left = not PageObj.Left
+
+                local SectionContainer = Create("Frame", {Parent = targetColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 26), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = true})
+                Create("UICorner", {Parent = SectionContainer, CornerRadius = UDim.new(0, 6)})
+                
+                table.insert(Window.AllCards, {
+                    Card = SectionContainer,
+                    OrigParent = targetColumn,
+                    Tab = TabConfig,
+                    Page = PageObj,
+                    SearchIndex = nil 
+                })
+                
+                local Title = Create("TextLabel", {Parent = SectionContainer, Text = sectionName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 26), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                local ItemContainer = Create("Frame", {Parent = SectionContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 26), AutomaticSize = Enum.AutomaticSize.Y})
+                local Pad = Create("UIPadding", {Parent = ItemContainer, PaddingBottom = UDim.new(0, 8), PaddingTop = UDim.new(0, 4)})
+                local SList = Create("UIListLayout", {Parent = ItemContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6)})
+
+                local Elements = {}
+
+                function Elements:AddCopyButton(name, copyText, infoData)
+                    local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 26)})
+                    local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0), AutoButtonColor = false})
+                    Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = Btn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    AddBounce(Btn)
+                    Btn.MouseEnter:Connect(function() Tween(Btn, {BackgroundColor3 = HoverColor}, 0.2) end)
+                    Btn.MouseLeave:Connect(function() Tween(Btn, {BackgroundColor3 = BackgroundColor}, 0.2) end)
+                    
+                    Btn.MouseButton1Click:Connect(function()
+                        Library:Notify({Title = "Notice", Description = "This item is read-only and cannot be copied."})
+                    end)
+                    AddInfoIcon(BtnFrame, UDim2.new(1, -32, 0.5, -7), infoData)
+                end
+
+                function Elements:AddButton(name, callback, infoData)
+                    local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 26)})
+                    local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0), AutoButtonColor = false})
+                    Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = Btn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    AddBounce(Btn)
+                    Btn.MouseEnter:Connect(function() Tween(Btn, {BackgroundColor3 = HoverColor}, 0.2) end)
+                    Btn.MouseLeave:Connect(function() Tween(Btn, {BackgroundColor3 = BackgroundColor}, 0.2) end)
+                    Btn.MouseButton1Click:Connect(function() if callback then callback() end end)
+
+                    AddInfoIcon(BtnFrame, UDim2.new(1, -32, 0.5, -7), infoData)
+                end
+
+                function Elements:AddToggle(name, default, callback, infoData)
+                    local state = default or false
+                    local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22)})
+                    
+                    Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    
+                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40), Size = UDim2.new(0, 32, 0, 16), Position = UDim2.new(1, -40, 0.5, -8), AutoButtonColor = false})
+                    Create("UICorner", {Parent = Lever, CornerRadius = UDim.new(1, 0)})
+                    AddBounce(Lever)
+                    
+                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)})
+                    Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
+
+                    local function internalSet(val)
+                        state = val
+                        Tween(Lever, {BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40)}, 0.3)
+                        Tween(Knob, {Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)}, 0.3)
+                        if callback then callback(state) end
+                    end
+
+                    Lever.MouseButton1Click:Connect(function() internalSet(not state) end)
+                    AddInfoIcon(TogFrame, UDim2.new(1, -58, 0.5, -7), infoData)
+                    
+                    Window.ConfigElements[name] = { Set = internalSet, Get = function() return state end }
+                end
+
+                function Elements:AddSlider(name, min, max, default, callback, infoData)
+                    local currentMin = min or 0
+                    local currentMax = max or 100
+                    local val = default or currentMin
+                    
+                    local SliFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 40)})
+                    
+                    Create("TextLabel", {Parent = SliFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 14), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    local ValTxt = Create("TextLabel", {Parent = SliFrame, Text = tostring(val), Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 45, 0, 14), Position = UDim2.new(1, -49, 0, 0), TextXAlignment = Enum.TextXAlignment.Right})
+                    
+                    local TrackBase = Create("Frame", {Parent = SliFrame, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 5), Position = UDim2.new(0, 8, 0, 22)})
+                    Create("UICorner", {Parent = TrackBase, CornerRadius = UDim.new(1, 0)})
+                    Create("UIStroke", {Parent = TrackBase, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local Fill = Create("Frame", {Parent = TrackBase, BackgroundColor3 = AccentColor, Size = UDim2.new(0, 0, 1, 0)})
+                    Create("UICorner", {Parent = Fill, CornerRadius = UDim.new(1, 0)})
+                    local Knob = Create("Frame", {Parent = Fill, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(1, -5, 0.5, -5)})
+                    Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
+
+                    local function internalSet(v, fireCallback)
+                        val = math.clamp(math.floor(v + 0.5), currentMin, currentMax)
+                        ValTxt.Text = tostring(val)
+                        
+                        local range = currentMax - currentMin
+                        local alpha = range > 0 and math.clamp((val - currentMin) / range, 0, 1) or 0
+                        Tween(Fill, {Size = UDim2.new(alpha, 0, 1, 0)}, 0.08)
+                        
+                        if fireCallback ~= false and callback then
+                            callback(val)
+                        end
+                    end
+
+                    local function updateMinMax(newMin, newMax)
+                        currentMin = newMin or currentMin
+                        currentMax = newMax or currentMax
+                        val = math.clamp(val, currentMin, currentMax)
+                        internalSet(val, false)
+                    end
+
+                    internalSet(val, false)
+
+                    local dragging = false
+                    local function Update(input)
+                        local absoluteWidth = TrackBase.AbsoluteSize.X
+                        if absoluteWidth > 0 then
+                            local pos = math.clamp((input.Position.X - TrackBase.AbsolutePosition.X) / absoluteWidth, 0, 1)
+                            internalSet(currentMin + ((currentMax - currentMin) * pos), true)
+                        end
+                    end
+
+                    Knob.InputBegan:Connect(function(input) 
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+                            dragging = true 
+                        end 
+                    end)
+                    TrackBase.InputBegan:Connect(function(input) 
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+                            dragging = true
+                            Update(input)
+                        end 
+                    end)
+                    UserInputService.InputEnded:Connect(function(input) 
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+                            dragging = false 
+                        end 
+                    end)
+                    UserInputService.InputChanged:Connect(function(input) 
+                        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+                            Update(input) 
+                        end 
+                    end)
+                    
+                    AddInfoIcon(SliFrame, UDim2.new(1, -69, 0, 0), infoData)
+
+                    local sliderObj = { 
+                        Set = function(v) internalSet(v, true) end, 
+                        Get = function() return val end,
+                        SetMinMax = updateMinMax 
+                    }
+                    Window.ConfigElements[name] = sliderObj
+                    return sliderObj
+                end
+
+                function Elements:AddDropdown(name, options, isMulti, callback, infoData)
+                    local selected = isMulti and {} or (options[1] or nil)
+                    local dropped = false
+                    local optionButtons = {}
+                    local maxVisible = math.min(#options, 3)
+                    local listHeight = maxVisible * 22
+                    local dropOpenHeight = 44 + 28 + listHeight
+                    
+                    local DropFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 44), ClipsDescendants = true})
+                    Create("TextLabel", {Parent = DropFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 14), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    
+                    local MainBtn = Create("TextButton", {Parent = DropFrame, Text = isMulti and "Select..." or "Select...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 24), Position = UDim2.new(0, 8, 0, 16), AutoButtonColor = false, TextXAlignment = Enum.TextXAlignment.Left})
+                    Create("UIPadding", {Parent = MainBtn, PaddingLeft = UDim.new(0, 6)})
+                    Create("UICorner", {Parent = MainBtn, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = MainBtn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+                    AddBounce(MainBtn, 0.98)
+                    local Arrow = Create("TextLabel", {Parent = MainBtn, Text = "▼", Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 18, 1, 0), Position = UDim2.new(1, -24, 0, 0)})
+
+                    local SearchBox = Create("TextBox", {Parent = DropFrame, PlaceholderText = "Search...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(18, 12, 14), Size = UDim2.new(1, -16, 0, 22), Position = UDim2.new(0, 8, 0, 42), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Visible = false})
+                    Create("UIPadding", {Parent = SearchBox, PaddingLeft = UDim.new(0, 6)})
+                    Create("UICorner", {Parent = SearchBox, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = SearchBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local ListFrame = Create("ScrollingFrame", {Parent = DropFrame, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, listHeight), Position = UDim2.new(0, 8, 0, 66), CanvasSize = UDim2.new(0, 0, 0, #options * 22), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(80, 50, 55), BorderSizePixel = 0})
+                    Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0, 4)})
+                    local DList = Create("UIListLayout", {Parent = ListFrame, SortOrder = Enum.SortOrder.LayoutOrder})
+
+                    local function UpdateText()
+                        if isMulti then
+                            local txt = ""
+                            for _, v in pairs(selected) do txt = txt .. v .. ", " end
+                            MainBtn.Text = txt == "" and "Select..." or txt:sub(1, -3)
+                        else
+                            MainBtn.Text = selected or "Select..."
+                        end
+                    end
+
+                    local function internalSet(v)
+                        selected = v
+                        UpdateText()
+                        for _, btn in ipairs(optionButtons) do
+                            local isSel = false
+                            if isMulti then
+                                isSel = table.find(selected, btn.Text) ~= nil
+                            else
+                                isSel = (selected == btn.Text)
+                            end
+                            Tween(btn, {TextColor3 = isSel and TextColor or SubTextColor}, 0.2)
+                            Tween(btn:FindFirstChild("Frame"), {Size = isSel and UDim2.new(1, 0, 1, 0) or UDim2.new(0, 0, 1, 0)}, 0.2)
+                        end
+                        if callback then callback(selected) end
+                    end
+
+                    for _, opt in pairs(options) do
+                        local isInitialSelected = (not isMulti and selected == opt)
+                        local OptBtn = Create("TextButton", {Parent = ListFrame, Text = opt, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = isInitialSelected and TextColor or SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22), AutoButtonColor = false})
+                        local Check = Create("Frame", {Parent = OptBtn, BackgroundColor3 = AccentColor, Size = isInitialSelected and UDim2.new(1, 0, 1, 0) or UDim2.new(0, 0, 1, 0), BackgroundTransparency = 0.8})
+                        table.insert(optionButtons, OptBtn)
+                        
+                        OptBtn.MouseButton1Click:Connect(function()
+                            if isMulti then
+                                if table.find(selected, opt) then
+                                    table.remove(selected, table.find(selected, opt))
+                                else
+                                    table.insert(selected, opt)
+                                end
+                                internalSet(selected)
+                            else
+                                internalSet(opt)
+                                dropped = false
+                                Tween(Arrow, {Rotation = 0}, 0.3)
+                                Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 44)}, 0.3)
+                                SearchBox.Visible = false
+                            end
+                        end)
+                    end
+                    UpdateText()
+
+                    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+                        local q = SearchBox.Text:lower()
+                        for _, btn in ipairs(optionButtons) do
+                            if q == "" or string.find(btn.Text:lower(), q) then btn.Visible = true else btn.Visible = false end
+                        end
+                    end)
+
+                    DList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                        ListFrame.CanvasSize = UDim2.new(0, 0, 0, DList.AbsoluteContentSize.Y)
+                        if dropped then
+                            local dynamicHeight = math.min(DList.AbsoluteContentSize.Y, listHeight)
+                            local newOpenHeight = 44 + 28 + dynamicHeight
+                            ListFrame.Size = UDim2.new(1, -16, 0, dynamicHeight)
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, newOpenHeight)}, 0.1)
+                        end
+                    end)
+
+                    MainBtn.MouseButton1Click:Connect(function()
+                        dropped = not dropped
+                        if dropped then
+                            SearchBox.Visible = true
+                            SearchBox.Text = ""
+                            Tween(Arrow, {Rotation = 180}, 0.3)
+                            local dynamicHeight = math.min(DList.AbsoluteContentSize.Y, listHeight)
+                            local newOpenHeight = 44 + 28 + dynamicHeight
+                            ListFrame.Size = UDim2.new(1, -16, 0, dynamicHeight)
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, newOpenHeight)}, 0.3)
+                        else
+                            SearchBox.Visible = false
+                            Tween(Arrow, {Rotation = 0}, 0.3)
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 44)}, 0.3)
+                        end
+                    end)
+                    AddInfoIcon(DropFrame, UDim2.new(1, -20, 0, 0), infoData)
+
+                    Window.ConfigElements[name] = { Set = internalSet, Get = function() return selected end }
+                end
+
+                function Elements:AddTextbox(name, placeholder, callback, infoData)
+                    local TxtFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 44)})
+                    Create("TextLabel", {Parent = TxtFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 14), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    local Input = Create("TextBox", {Parent = TxtFrame, PlaceholderText = placeholder or "Type here...", Text = "", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 24), Position = UDim2.new(0, 8, 0, 16), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+                    Create("UIPadding", {Parent = Input, PaddingLeft = UDim.new(0, 6)})
+                    Create("UICorner", {Parent = Input, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = Input, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local function internalSet(v)
+                        Input.Text = tostring(v)
+                        if callback then callback(v) end
+                    end
+
+                    Input.FocusLost:Connect(function(enterPressed) internalSet(Input.Text) end)
+                    AddInfoIcon(TxtFrame, UDim2.new(1, -20, 0, 0), infoData)
+                    
+                    Window.ConfigElements[name] = { Set = internalSet, Get = function() return Input.Text end }
+                end
+
+                function Elements:AddColorPicker(name, defaultColor, callback, infoData)
+                    local color = defaultColor or Color3.fromRGB(255, 255, 255)
+                    local h, s, v_hsv = color:ToHSV()
+                    local dropped = false
+                    
+                    local CFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 26), ClipsDescendants = true})
+                    Create("TextLabel", {Parent = CFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 0, 26), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    local DisplayBtn = Create("TextButton", {Parent = CFrame, Text = "", BackgroundColor3 = color, Size = UDim2.new(0, 26, 0, 14), Position = UDim2.new(1, -34, 0.5, -7), AutoButtonColor = false})
+                    Create("UICorner", {Parent = DisplayBtn, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = DisplayBtn, Color = Color3.fromRGB(255,255,255), Transparency = 0.8, Thickness = 1})
+                    AddBounce(DisplayBtn)
+
+                    local PickerArea = Create("Frame", {Parent = CFrame, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 130), Position = UDim2.new(0, 8, 0, 30)})
+                    Create("UICorner", {Parent = PickerArea, CornerRadius = UDim.new(0, 4)})
+
+                    local PickerClose = Create("TextButton", {Parent = PickerArea, Text = "X", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = SubTextColor, BackgroundColor3 = Color3.fromRGB(45, 25, 28), Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(1, -20, 0, 4), ZIndex = 50, AutoButtonColor = false})
+                    Create("UICorner", {Parent = PickerClose, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(PickerClose)
+                    
+                    PickerClose.MouseEnter:Connect(function() Tween(PickerClose, {TextColor3 = Color3.fromRGB(255, 60, 60)}, 0.2) end)
+                    PickerClose.MouseLeave:Connect(function() Tween(PickerClose, {TextColor3 = SubTextColor}, 0.2) end)
+                    PickerClose.MouseButton1Click:Connect(function() dropped = false Tween(CFrame, {Size = UDim2.new(1, 0, 0, 26)}, 0.3) end)
+
+                    local SVMap = Create("TextButton", {Parent = PickerArea, Text = "", BackgroundColor3 = Color3.fromHSV(h, 1, 1), Size = UDim2.new(1, -40, 0, 80), Position = UDim2.new(0, 8, 0, 8), AutoButtonColor = false, Active = true})
+                    Create("UICorner", {Parent = SVMap, CornerRadius = UDim.new(0, 4)})
+                    
+                    local WhiteGrad = Create("Frame", {Parent = SVMap, Size = UDim2.new(1,0,1,0), BackgroundColor3 = Color3.new(1,1,1), ZIndex = 2})
+                    Create("UIGradient", {Parent = WhiteGrad, Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1)}), Rotation = 0})
+                    Create("UICorner", {Parent = WhiteGrad, CornerRadius = UDim.new(0, 4)})
+
+                    local BlackGrad = Create("Frame", {Parent = SVMap, Size = UDim2.new(1,0,1,0), BackgroundColor3 = Color3.new(0,0,0), ZIndex = 3})
+                    Create("UIGradient", {Parent = BlackGrad, Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0)}), Rotation = 90})
+                    Create("UICorner", {Parent = BlackGrad, CornerRadius = UDim.new(0, 4)})
+
+                    local SVRing = Create("Frame", {Parent = BlackGrad, Size = UDim2.new(0, 8, 0, 8), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(s, 0, 1-v_hsv, 0), BackgroundColor3 = Color3.new(1,1,1), ZIndex = 4})
+                    Create("UICorner", {Parent = SVRing, CornerRadius = UDim.new(1, 0)})
+                    Create("UIStroke", {Parent = SVRing, Color = Color3.new(0,0,0), Thickness = 1})
+
+                    local HueSlider = Create("TextButton", {Parent = PickerArea, Text = "", Size = UDim2.new(1, -16, 0, 14), Position = UDim2.new(0, 8, 0, 100), AutoButtonColor = false, BackgroundColor3 = Color3.new(1,1,1), Active = true})
+                    Create("UICorner", {Parent = HueSlider, CornerRadius = UDim.new(0, 4)})
+                    local HueGradient = Create("UIGradient", {Parent = HueSlider, Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)), ColorSequenceKeypoint.new(0.333, Color3.fromRGB(0, 255, 0)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.667, Color3.fromRGB(0, 0, 255)), ColorSequenceKeypoint.new(0.833, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))})})
+                    local HueRing = Create("Frame", {Parent = HueSlider, Size = UDim2.new(0, 5, 0, 14), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(h, 0, 0.5, 0), BackgroundColor3 = Color3.new(1,1,1)})
+                    Create("UICorner", {Parent = HueRing, CornerRadius = UDim.new(0, 2)})
+                    Create("UIStroke", {Parent = HueRing, Color = Color3.new(0,0,0), Thickness = 1})
+
+                    local function internalSet(hexString)
+                        local s_check, c = pcall(function() return Color3.fromHex(hexString) end)
+                        if s_check then
+                            color = c
+                            h, s, v_hsv = color:ToHSV()
+                            DisplayBtn.BackgroundColor3 = color
+                            SVMap.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                            SVRing.Position = UDim2.new(s, 0, 1-v_hsv, 0)
+                            HueRing.Position = UDim2.new(h, 0, 0.5, 0)
+                            if callback then callback(color) end
+                        end
+                    end
+
+                    local function UpdateColor()
+                        color = Color3.fromHSV(h, s, v_hsv)
+                        DisplayBtn.BackgroundColor3 = color
+                        SVMap.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                        if callback then callback(color) end
+                    end
+
+                    local draggingSV = false
+                    local draggingHue = false
+                    
+                    SVMap.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then draggingSV = true if PageObj and PageObj.Scroll then PageObj.Scroll.ScrollingEnabled = false end end end)
+                    HueSlider.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then draggingHue = true if PageObj and PageObj.Scroll then PageObj.Scroll.ScrollingEnabled = false end end end)
+                    UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then draggingSV = false draggingHue = false if PageObj and PageObj.Scroll then PageObj.Scroll.ScrollingEnabled = true end end end)
+
+                    UserInputService.InputChanged:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if draggingSV then
+                                local relX = math.clamp((input.Position.X - SVMap.AbsolutePosition.X) / SVMap.AbsoluteSize.X, 0, 1)
+                                local relY = math.clamp((input.Position.Y - SVMap.AbsolutePosition.Y) / SVMap.AbsoluteSize.Y, 0, 1)
+                                s = relX
+                                v_hsv = 1 - relY
+                                SVRing.Position = UDim2.new(s, 0, 1-v_hsv, 0)
+                                UpdateColor()
+                            elseif draggingHue then
+                                local relX = math.clamp((input.Position.X - HueSlider.AbsolutePosition.X) / HueSlider.AbsoluteSize.X, 0, 1)
+                                h = relX
+                                HueRing.Position = UDim2.new(h, 0, 0.5, 0)
+                                UpdateColor()
+                            end
+                        end
+                    end)
+
+                    DisplayBtn.MouseButton1Click:Connect(function() dropped = not dropped Tween(CFrame, {Size = UDim2.new(1, 0, 0, dropped and 165 or 26)}, 0.3) end)
+                    AddInfoIcon(CFrame, UDim2.new(1, -54, 0, 6), infoData)
+
+                    Window.ConfigElements[name] = { Set = internalSet, Get = function() return color:ToHex() end }
+                end
+
+                function Elements:AddConfigManager(folderName)
+                    folderName = folderName or "kenzhubSavers"
+                    if not _isfolder(folderName) then _makefolder(folderName) end
+
+                    local ManagerFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 220)})
+                    
+                    local ManagerSearch = Create("TextBox", {Parent = ManagerFrame, PlaceholderText = "Search Saves...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 24), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+                    Create("UIPadding", {Parent = ManagerSearch, PaddingLeft = UDim.new(0, 6)})
+                    Create("UICorner", {Parent = ManagerSearch, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = ManagerSearch, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local Monitor = Create("ScrollingFrame", {Parent = ManagerFrame, BackgroundColor3 = Color3.fromRGB(18, 12, 14), Size = UDim2.new(1, -16, 0, 100), Position = UDim2.new(0, 8, 0, 30), ScrollBarThickness = 2, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0)})
+                    Create("UICorner", {Parent = Monitor, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = Monitor, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+                    local MonitorLayout = Create("UIListLayout", {Parent = Monitor, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
+                    Create("UIPadding", {Parent = Monitor, PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
+
+                    MonitorLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                        Monitor.CanvasSize = UDim2.new(0, 0, 0, MonitorLayout.AbsoluteContentSize.Y + 8)
+                    end)
+
+                    local deleteMode = false
+                    local editMode = false
+                    local selectedForDelete = {}
+                    local editTargetFile = ""
+
+                    local Controls = Create("Frame", {Parent = ManagerFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 72), Position = UDim2.new(0, 8, 0, 138)})
+
+                    local NameBox = Create("TextBox", {Parent = Controls, PlaceholderText = "Enter save name...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, 0, 0, 24), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+                    Create("UIPadding", {Parent = NameBox, PaddingLeft = UDim.new(0, 6)})
+                    Create("UICorner", {Parent = NameBox, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = NameBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local CreateBtn = Create("TextButton", {Parent = Controls, Text = "Create Save", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255,255,255), BackgroundColor3 = AccentColor, Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0, 0, 0, 30), AutoButtonColor = false})
+                    Create("UICorner", {Parent = CreateBtn, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(CreateBtn)
+
+                    local DeleteTogBtn = Create("TextButton", {Parent = Controls, Text = "Delete: OFF", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0.5, 4, 0, 30), AutoButtonColor = false})
+                    Create("UICorner", {Parent = DeleteTogBtn, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(DeleteTogBtn)
+
+                    local ActionArea = Create("Frame", {Parent = Controls, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), Position = UDim2.new(0, 0, 0, 30), Visible = false})
+                    
+                    local ConfirmActionBtn = Create("TextButton", {Parent = ActionArea, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255,255,255), BackgroundColor3 = Color3.fromRGB(200, 50, 50), Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false})
+                    Create("UICorner", {Parent = ConfirmActionBtn, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(ConfirmActionBtn)
+
+                    local CancelActionBtn = Create("TextButton", {Parent = ActionArea, Text = "Cancel", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(50, 40, 45), Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0.5, 4, 0, 0), AutoButtonColor = false})
+                    Create("UICorner", {Parent = CancelActionBtn, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(CancelActionBtn)
+
+                    AddInfoIcon(ManagerFrame, UDim2.new(1, -16, 0, -18), {
+                        Title = "Config Protocol",
+                        Description = "Manage your configuration saves securely."
+                    })
+
+                    local InternalConfirmPopup = Create("Frame", {Parent = ManagerFrame, BackgroundColor3 = Color3.fromRGB(22, 16, 18), Size = UDim2.new(1, -16, 1, -16), Position = UDim2.new(0, 8, 0, 8), ZIndex = 60, BackgroundTransparency = 1, Visible = false})
+                    Create("UICorner", {Parent = InternalConfirmPopup, CornerRadius = UDim.new(0, 8)})
+                    Create("UIStroke", {Parent = InternalConfirmPopup, Color = Color3.fromRGB(180, 50, 50), Thickness = 1, Transparency = 1})
+                    
+                    local P_Title = Create("TextLabel", {Parent = InternalConfirmPopup, Text = "Confirm Deletion?", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = Color3.fromRGB(255, 60, 60), BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 30), TextTransparency = 1, ZIndex = 61})
+                    local P_Desc = Create("TextLabel", {Parent = InternalConfirmPopup, Text = "Permanently erase selected saves?", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 55), TextWrapped = true, TextTransparency = 1, ZIndex = 61})
+                    
+                    local P_Yes = Create("TextButton", {Parent = InternalConfirmPopup, Text = "Yes", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = Color3.fromRGB(180, 50, 50), Size = UDim2.new(0.5, -20, 0, 28), Position = UDim2.new(0, 15, 0, 100), AutoButtonColor = false, BackgroundTransparency = 1, TextTransparency = 1, ZIndex = 61})
+                    Create("UICorner", {Parent = P_Yes, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(P_Yes)
+                    
+                    local P_No = Create("TextButton", {Parent = InternalConfirmPopup, Text = "No", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(0.5, 5, 0, 100), AutoButtonColor = false, BackgroundTransparency = 1, TextTransparency = 1, ZIndex = 61})
+                    Create("UICorner", {Parent = P_No, CornerRadius = UDim.new(0, 4)})
+                    AddBounce(P_No)
+
+                    local function HideInternalPopup()
+                        Tween(InternalConfirmPopup, {BackgroundTransparency = 1}, 0.3)
+                        Tween(InternalConfirmPopup:FindFirstChild("UIStroke"), {Transparency = 1}, 0.3)
+                        Tween(P_Title, {TextTransparency = 1}, 0.3)
+                        Tween(P_Desc, {TextTransparency = 1}, 0.3)
+                        Tween(P_Yes, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
+                        Tween(P_No, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
+                        task.wait(0.3)
+                        InternalConfirmPopup.Visible = false
+                    end
+
+                    local function RefreshMonitor()
+                        for _, v in ipairs(Monitor:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
+                        selectedForDelete = {}
+
+                        local files = {}
+                        local success, result = pcall(function()
+                            return _listfiles(folderName)
+                        end)
+                        if success and type(result) == "table" then
+                            files = result
+                        end
+
+                        for _, filepath in ipairs(files) do
+                            local rawName = filepath:match("([^/\\]+)%.json$")
+                            if rawName then
+                                local displayFName = rawName:gsub("_%d+%.%d+$", ""):gsub("_%d+$", "")
+
+                                local Row = Create("Frame", {Parent = Monitor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, 0, 0, 26)})
+                                Create("UICorner", {Parent = Row, CornerRadius = UDim.new(0, 4)})
+                                
+                                local Title = Create("TextLabel", {Parent = Row, Text = displayFName, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                                
+                                local LoadBtn = Create("TextButton", {Parent = Row, Text = "Load", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(45, 120, 60), Size = UDim2.new(0, 30, 0, 18), Position = UDim2.new(1, -62, 0.5, -9), AutoButtonColor = false})
+                                Create("UICorner", {Parent = LoadBtn, CornerRadius = UDim.new(0, 4)})
+                                AddBounce(LoadBtn)
+
+                                local EditBtn = Create("TextButton", {Parent = Row, Text = "Edit", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(150, 100, 45), Size = UDim2.new(0, 26, 0, 18), Position = UDim2.new(1, -30, 0.5, -9), AutoButtonColor = false})
+                                Create("UICorner", {Parent = EditBtn, CornerRadius = UDim.new(0, 4)})
+                                AddBounce(EditBtn)
+
+                                local SelectionMask = Create("TextButton", {Parent = Row, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, -70, 1, 0), ZIndex = 2})
+                                
+                                SelectionMask.MouseButton1Click:Connect(function()
+                                    if deleteMode then
+                                        if selectedForDelete[filepath] then
+                                            selectedForDelete[filepath] = nil
+                                            Tween(Row, {BackgroundColor3 = BackgroundColor}, 0.2)
+                                        else
+                                            selectedForDelete[filepath] = true
+                                            Tween(Row, {BackgroundColor3 = Color3.fromRGB(180, 50, 50)}, 0.2)
+                                        end
+                                    end
+                                end)
+
+                                LoadBtn.MouseButton1Click:Connect(function()
+                                    if deleteMode or editMode then return end
+                                    local s, data = pcall(function() return HttpService:JSONDecode(_readfile(filepath)) end)
+                                    if s and type(data) == "table" then
+                                        for k, v in pairs(data) do
+                                            if Window.ConfigElements[k] and Window.ConfigElements[k].Set then
+                                                Window.ConfigElements[k].Set(v)
+                                            end
+                                        end
+                                        Library:Notify({Title = "Saves Loader", Description = "Loaded " .. displayFName})
+                                    end
+                                end)
+
+                                EditBtn.MouseButton1Click:Connect(function()
+                                    if deleteMode then return end
+                                    editMode = true
+                                    editTargetFile = filepath
+                                    NameBox.Text = displayFName
+                                    CreateBtn.Visible = false
+                                    DeleteTogBtn.Visible = false
+                                    ActionArea.Visible = true
+                                    ConfirmActionBtn.Text = "Save Edit"
+                                    ConfirmActionBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 200)
+                                end)
+                            end
+                        end
+                    end
+
+                    local function ExecuteSave(saveName)
+                        local payload = {}
+                        for k, el in pairs(Window.ConfigElements) do
+                            if el.Get then payload[k] = el.Get() end
+                        end
+                        local encoded = HttpService:JSONEncode(payload)
+                        local uniqueKey = tostring(math.floor(tick()))
+                        local finalPath = folderName .. "/" .. saveName .. "_" .. uniqueKey .. ".json"
+                        _writefile(finalPath, encoded)
+                        RefreshMonitor()
+                        Library:Notify({Title = "Saved Successfully", Description = "[" .. saveName .. "] secured."})
+                    end
+
+                    CreateBtn.MouseButton1Click:Connect(function()
+                        if NameBox.Text ~= "" then ExecuteSave(NameBox.Text) end
+                    end)
+
+                    DeleteTogBtn.MouseButton1Click:Connect(function()
+                        if editMode then return end
+                        deleteMode = not deleteMode
+                        DeleteTogBtn.Text = deleteMode and "Delete: ON" or "Delete: OFF"
+                        Tween(DeleteTogBtn, {BackgroundColor3 = deleteMode and Color3.fromRGB(180, 50, 50) or Color3.fromRGB(50, 35, 40)}, 0.2)
+                        
+                        ActionArea.Visible = deleteMode
+                        CreateBtn.Visible = not deleteMode
+                        if deleteMode then
+                            ConfirmActionBtn.Text = "Delete Selected"
+                            ConfirmActionBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+                        else
+                            RefreshMonitor()
+                        end
+                    end)
+
+                    ConfirmActionBtn.MouseButton1Click:Connect(function()
+                        if deleteMode then
+                            InternalConfirmPopup.Visible = true
+                            Tween(InternalConfirmPopup, {BackgroundTransparency = 0.1}, 0.3)
+                            Tween(InternalConfirmPopup:FindFirstChild("UIStroke"), {Transparency = 0.5}, 0.3)
+                            Tween(P_Title, {TextTransparency = 0}, 0.3)
+                            Tween(P_Desc, {TextTransparency = 0}, 0.3)
+                            Tween(P_Yes, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
+                            Tween(P_No, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
+                        elseif editMode then
+                            local newName = NameBox.Text
+                            if newName ~= "" then
+                                pcall(function() _delfile(editTargetFile) end)
+                                ExecuteSave(newName)
+                            end
+                            editMode = false
+                            ActionArea.Visible = false
+                            CreateBtn.Visible = true
+                            DeleteTogBtn.Visible = true
+                            RefreshMonitor()
+                        end
+                    end)
+
+                    P_Yes.MouseButton1Click:Connect(function()
+                        for file, _ in pairs(selectedForDelete) do pcall(function() _delfile(file) end) end
+                        deleteMode = false
+                        DeleteTogBtn.Text = "Delete: OFF"
+                        DeleteTogBtn.BackgroundColor3 = Color3.fromRGB(50, 35, 40)
+                        ActionArea.Visible = false
+                        CreateBtn.Visible = true
+                        RefreshMonitor()
+                        Library:Notify({Title = "Deletions Complete", Description = "Selected saves erased."})
+                        HideInternalPopup()
+                    end)
+
+                    P_No.MouseButton1Click:Connect(function()
+                        HideInternalPopup()
+                    end)
+
+                    CancelActionBtn.MouseButton1Click:Connect(function()
+                        editMode = false
+                        deleteMode = false
+                        DeleteTogBtn.Text = "Delete: OFF"
+                        DeleteTogBtn.BackgroundColor3 = Color3.fromRGB(50, 35, 40)
+                        ActionArea.Visible = false
+                        CreateBtn.Visible = true
+                        DeleteTogBtn.Visible = true
+                        NameBox.Text = ""
+                        RefreshMonitor()
+                    end)
+
+                    ManagerSearch:GetPropertyChangedSignal("Text"):Connect(function()
+                        local q = ManagerSearch.Text:lower()
+                        for _, v in ipairs(Monitor:GetChildren()) do
+                            if v:IsA("Frame") then
+                                local lbl = v:FindFirstChildOfClass("TextLabel")
+                                if lbl then v.Visible = (q == "" or string.find(lbl.Text:lower(), q) ~= nil) end
+                            end
+                        end
+                    end)
+
+                    RefreshMonitor()
+                end
+
+                return Elements
+            end
+            return PageObj
+        end
+
+        if isDefault then
+            TabBtn.BackgroundTransparency = 0
+            Indicator.Size = UDim2.new(0, 3, 0, 16)
+            Txt.TextColor3 = TextColor
+            local initIcon = TabBtn:FindFirstChild("TabIcon")
+            if initIcon then initIcon.ImageColor3 = TextColor end
+            TabContent.Visible = true
+            Window.CurrentTab = TabConfig
+        end
+        return TabConfig
     end
+    return Window
 end
 
-localPlayer.CharacterAdded:Connect(function(character)
-    task.wait(0.5)
-    if VD.SURV_AntiKnock then
-        setAntiKnock(true)
-    end
-end)
-
--- UI Library Initialization
-local Library = loadstring(game:HttpGetAsync("https://pastefy.app/EeGhd4aA/raw"))()
-
-local Window = Library:CreateWindow({
-    Title = "Kenz Hub",
-    Subtitle = "By Kenz & Death",
-    SubtitleColor = Color3.fromRGB(255, 0, 0),
-    Logo = "rbxassetid://133364772533215",
-    LogoSize = 32,
-    SphereText = false,
-    SphereWords = "ZX",
-    SphereImage = "rbxassetid://133364772533215",
-    SphereIconSize = 38
-})
-
-local SurvivorTab = Window:CreateTab("Survivor", false, false)
-local SurvivorPage = SurvivorTab:CreatePage("Survivor")
-
-local SkillcheckCard = SurvivorPage:CreateSection("Skillcheck")
-
-SkillcheckCard:AddToggle("Auto Skillcheck", false, function(state)
-    VD.AutoSkillcheck = state == true
-    Library:Notify({
-        Title = "Auto Skillcheck",
-        Description = state and "Enabled" or "Disabled",
-        Duration = 2
-    })
-end, {
-    Title = "Auto Skillcheck",
-    Description = "Automatically completes skillchecks on generator or survivor actions"
-})
-
-SkillcheckCard:AddDropdown("Skillcheck Mode", {"Normal", "Perfect", "Instant"}, false, function(selected)
-    if type(selected) == "table" then
-        selected = selected[1]
-    end
-    VD.AutoSkillcheckMode = selected or "Normal"
-    Library:Notify({
-        Title = "Skillcheck Mode",
-        Description = "Mode set to: " .. VD.AutoSkillcheckMode,
-        Duration = 2
-    })
-end, {
-    Title = "Skillcheck Method",
-    Description = "Select the skillcheck completion precision level (Normal, Perfect, or Instant)"
-})
-
-local SilentAimCard = SurvivorPage:CreateSection("Silent Aim Twist Of Fate")
-
-SilentAimCard:AddToggle("Silent Aim Twist Of Fate", false, function(state)
-    VD.AUTO_ToFAim = state == true
-    Library:Notify({
-        Title = "Silent Aim ToF",
-        Description = state and "Enabled" or "Disabled",
-        Duration = 2
-    })
-end, {
-    Title = "Silent Aim Twist Of Fate",
-    Description = "Enable silent aim for Twist of Fate item"
-})
-
-SilentAimCard:AddDropdown("ToF Target Mode", {"Killer", "Survivor", "SCP"}, false, function(selected)
-    if type(selected) == "table" then
-        selected = selected[1]
-    end
-    VD.AUTO_ToFTargetMode = selected or "Killer"
-    Library:Notify({
-        Title = "ToF Target Mode",
-        Description = "Target set to: " .. VD.AUTO_ToFTargetMode,
-        Duration = 2
-    })
-end, {
-    Title = "Target Mode",
-    Description = "Select silent aim target (Killer, Survivor, or SCP)."
-})
-
-SilentAimCard:AddDropdown("ToF Aim Part", {"HumanoidRootPart", "Head", "Torso"}, false, function(selected)
-    if type(selected) == "table" then
-        selected = selected[1]
-    end
-    VD.AUTO_ToFAimPart = selected or "HumanoidRootPart"
-    Library:Notify({
-        Title = "ToF Aim Part",
-        Description = "Part set to: " .. VD.AUTO_ToFAimPart,
-        Duration = 2
-    })
-end, {
-    Title = "Aim Part",
-    Description = "Select the target body part you want to target"
-})
-
-SilentAimCard:AddToggle("ToF Prediction", true, function(state)
-    VD.AUTO_ToFPredict = state == true
-end, {
-    Title = "Prediction",
-    Description = "Enable target movement prediction"
-})
-
-local AutoParryCard = SurvivorPage:CreateSection("Auto Parry")
-
-AutoParryCard:AddToggle("Enable Auto Parry", false, function(state)
-    VD.SURV_AutoParry = state == true
-    if not state then
-        iyanParryRange.Transparency = 1
-        f80()
-    end
-    Library:Notify({
-        Title = "Auto Parry",
-        Description = state and "Enabled" or "Disabled",
-        Duration = 2
-    })
-end, {
-    Title = "Enable Auto Parry",
-    Description = "Automatically parry killer attacks using Parrying Dagger"
-})
-
-AutoParryCard:AddDropdown("Parry Mode", {"Legit", "Aggressive"}, false, function(selected)
-    if type(selected) == "table" then
-        selected = selected[1]
-    end
-    VD.SURV_ParryMode = selected or "Legit"
-    iyanParryRange.Color3 = (VD.SURV_ParryMode == "Aggressive") and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(50, 150, 255)
-    Library:Notify({
-        Title = "Parry Mode",
-        Description = "Mode set to: " .. VD.SURV_ParryMode,
-        Duration = 2
-    })
-end, {
-    Title = "Parry Mode",
-    Description = "Select parry mode (Legit or Aggressive)"
-})
-
-AutoParryCard:AddSlider("Parry Range", 2, 30, VD.SURV_ParryRange or 12, function(value)
-    VD.SURV_ParryRange = value
-    iyanParryRange.Radius = value
-    iyanParryRange.InnerRadius = math.max(0.1, value - 0.15)
-end, {
-    Title = "Parry Range (Studs)",
-    Description = "Set parry detection range (2 - 30 Studs)."
-})
-
-AutoParryCard:AddToggle("Show Parry Range Circle", true, function(state)
-    VD.SURV_ShowParryCircle = state == true
-    if not state then
-        iyanParryRange.Transparency = 1
-    end
-end, {
-    Title = "Show Parry Range Circle",
-    Description = "Displays a parry range indicator circle on the ground"
-})
-
-local FleeKillerCard = SurvivorPage:CreateSection("Flee Killer")
-
-FleeKillerCard:AddToggle("Flee Killer", false, function(state)
-    VD.SURV_FleeKiller = state == true
-    Library:Notify({
-        Title = "Flee Killer",
-        Description = state and "Enabled" or "Disabled",
-        Duration = 2
-    })
-end, {
-    Title = "Flee Killer",
-    Description = "Automatically dodge when Killer is within a certain distance"
-})
-
-FleeKillerCard:AddSlider("Flee Distance", 10, 40, VD.SURV_FleeDistance or 40, function(value)
-    VD.SURV_FleeDistance = value
-end, {
-    Title = "Evasion Distance (Studs)",
-    Description = "Set the minimum Killer distance for the Flee Killer feature to be active (10 - 40 Studs)"
-})
-
--- Auto Drop Pallet UI Section
-local PalletCard = SurvivorPage:CreateSection("Auto Drop Pallet")
-
-PalletCard:AddToggle("Auto Drop Pallet", false, function(state)
-    VD.SURV_AutoDropPallet = state == true
-    Library:Notify({
-        Title = "Auto Drop Pallet",
-        Description = state and "Enabled" or "Disabled",
-        Duration = 2
-    })
-end, {
-    Title = "Auto Drop Pallet",
-    Description = "Automatically drops pallets when the Killer is within range"
-})
-
-PalletCard:AddSlider("Killer Detection Range", 5, 50, VD.SURV_AutoDropPalletDist or 20, function(value)
-    VD.SURV_AutoDropPalletDist = value
-end, {
-    Title = "Detection Range (Studs)",
-    Description = "Set the distance threshold for dropping pallets"
-})
-
-PalletCard:AddDropdown("Pallet Mode", {"Aggressive", "Safe"}, false, function(selected)
-    if type(selected) == "table" then
-        selected = selected[1]
-    end
-    VD.SURV_AutoDropPalletMode = selected or "Aggressive"
-    Library:Notify({
-        Title = "Pallet Mode",
-        Description = "Mode set to: " .. VD.SURV_AutoDropPalletMode,
-        Duration = 2
-    })
-end, {
-    Title = "Pallet Drop Mode",
-    Description = "Select pallet drop behavior mode"
-})
-
-local AntiKnockCard = SurvivorPage:CreateSection("Anti Knock")
-
-AntiKnockCard:AddToggle("Anti Knock", false, function(state)
-    setAntiKnock(state)
-    Library:Notify({
-        Title = "Anti Knock",
-        Description = state and "Enabled" or "Disabled",
-        Duration = 2
-    })
-end, {
-    Title = "Anti Knock",
-    Description = "Automatically restores health to prevent being knocked down"
-})
+return Library

@@ -1035,8 +1035,49 @@ function Library:CreateWindow(options)
         Create("UIListLayout", {Parent = PageNav, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), VerticalAlignment = Enum.VerticalAlignment.Center})
         local PageContainer = Create("Frame", {Parent = TabContent, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -30), Position = UDim2.new(0, 0, 0, 30)})
 
-        local TabConfig = {Button = TabBtn, Content = TabContent, Indicator = Indicator, Txt = Txt, Pages = {}, CurrentPage = nil}
+        local TabConfig = {
+            Button = TabBtn, 
+            Content = TabContent, 
+            Indicator = Indicator, 
+            Txt = Txt, 
+            Pages = {}, 
+            CurrentPage = nil,
+            LastSection = nil,
+            DefaultPage = nil
+        }
         table.insert(Window.Tabs, TabConfig)
+
+        local function ensureDefaultPageAndSection()
+            if #TabConfig.Pages == 0 then
+                TabConfig.DefaultPage = TabConfig:CreatePage("Overview")
+            end
+            if not TabConfig.LastSection and TabConfig.DefaultPage then
+                TabConfig.LastSection = TabConfig.DefaultPage:CreateSection("General")
+            end
+        end
+
+        function TabConfig:AddSection(data)
+            if #TabConfig.Pages == 0 then
+                TabConfig.DefaultPage = TabConfig:CreatePage("Overview")
+            end
+            local secName = type(data) == "table" and data[1] or data
+            TabConfig.LastSection = TabConfig.DefaultPage:CreateSection(secName)
+            return TabConfig.LastSection
+        end
+
+        function TabConfig:AddParagraph(data)
+            ensureDefaultPageAndSection()
+            local title = type(data) == "table" and data[1] or ""
+            local desc = type(data) == "table" and data[2] or data
+            return TabConfig.LastSection:AddParagraph(title, desc)
+        end
+
+        function TabConfig:AddButton(data)
+            ensureDefaultPageAndSection()
+            local name = type(data) == "table" and data[1] or "Button"
+            local cb = type(data) == "table" and data[2] or nil
+            return TabConfig.LastSection:AddButton(name, cb)
+        end
 
         TabBtn.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabConfig then return end
@@ -1127,15 +1168,6 @@ function Library:CreateWindow(options)
                     Create("UIPadding", {Parent = ParaFrame, PaddingBottom = UDim.new(0, 6)})
                 end
 
-                function Elements:AddProfile(imageUrl, playerName)
-                    local ProfFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 48)})
-                    local AvatarImg = Create("ImageLabel", {Parent = ProfFrame, Image = imageUrl, BackgroundColor3 = CardColor, Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 8, 0.5, -19)})
-                    Create("UICorner", {Parent = AvatarImg, CornerRadius = UDim.new(1, 0)})
-                    Create("UIStroke", {Parent = AvatarImg, Color = AccentColor, Thickness = 1})
-                    Create("TextLabel", {Parent = ProfFrame, Text = "Welcome,", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 0, 12), Position = UDim2.new(0, 52, 0.5, -12), TextXAlignment = Enum.TextXAlignment.Left})
-                    Create("TextLabel", {Parent = ProfFrame, Text = playerName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 0, 16), Position = UDim2.new(0, 52, 0.5, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                end
-
                 function Elements:AddButton(name, callback)
                     local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 26)})
                     local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0), AutoButtonColor = false})
@@ -1143,24 +1175,6 @@ function Library:CreateWindow(options)
                     Create("UIStroke", {Parent = Btn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
                     AddBounce(Btn)
                     Btn.MouseButton1Click:Connect(function() if callback then callback() end end)
-                end
-
-                function Elements:AddToggle(name, default, callback)
-                    local state = default or false
-                    local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22)})
-                    Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40), Size = UDim2.new(0, 32, 0, 16), Position = UDim2.new(1, -40, 0.5, -8), AutoButtonColor = false})
-                    Create("UICorner", {Parent = Lever, CornerRadius = UDim.new(1, 0)})
-                    AddBounce(Lever)
-                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)})
-                    Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
-
-                    Lever.MouseButton1Click:Connect(function()
-                        state = not state
-                        Tween(Lever, {BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40)}, 0.3)
-                        Tween(Knob, {Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)}, 0.3)
-                        if callback then callback(state) end
-                    end)
                 end
 
                 return Elements
@@ -1179,6 +1193,14 @@ function Library:CreateWindow(options)
         end
         return TabConfig
     end
+
+    function Window:MakeTab(data)
+        local name = type(data) == "table" and data[1] or data
+        local icon = type(data) == "table" and data[2] or nil
+        local isDef = #Window.Tabs == 0
+        return self:CreateTab(name, icon, isDef, false)
+    end
+
     return Window
 end
 

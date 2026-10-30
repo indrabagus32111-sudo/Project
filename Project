@@ -12,7 +12,7 @@ local LocalPlayer = Players.LocalPlayer
 local Library = {
     WhitelistedUsers = {},
     Icons = {
-			["accessibility"] = "rbxassetid://10709751939",
+        ["accessibility"] = "rbxassetid://10709751939",
 			["activity"] = "rbxassetid://10709752035",
 			["airvent"] = "rbxassetid://10709752131",
 			["airplay"] = "rbxassetid://10709752254",
@@ -1147,6 +1147,31 @@ function Library:CreateWindow(options)
                     Btn.MouseButton1Click:Connect(function() if callback then callback() end end)
                 end
 
+                function Elements:AddToggle(name, default, callback)
+                    local state = default or false
+                    local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22)})
+                    Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40), Size = UDim2.new(0, 32, 0, 16), Position = UDim2.new(1, -40, 0.5, -8), AutoButtonColor = false})
+                    Create("UICorner", {Parent = Lever, CornerRadius = UDim.new(1, 0)})
+                    AddBounce(Lever)
+                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)})
+                    Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
+
+                    Lever.MouseButton1Click:Connect(function()
+                        state = not state
+                        Tween(Lever, {BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40)}, 0.3)
+                        Tween(Knob, {Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)}, 0.3)
+                        if callback then callback(state) end
+                    end)
+                end
+
+                function Elements:AddConfigManager(folderName)
+                    folderName = folderName or "kenzhubSavers"
+                    if not _isfolder(folderName) then _makefolder(folderName) end
+                    local ManagerFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 120)})
+                    Create("TextLabel", {Parent = ManagerFrame, Text = "Config Manager Active", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0)})
+                end
+
                 return Elements
             end
             return PageObj
@@ -1165,3 +1190,5 @@ function Library:CreateWindow(options)
     end
     return Window
 end
+
+return Library

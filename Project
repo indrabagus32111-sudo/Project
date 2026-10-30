@@ -1576,6 +1576,143 @@ function Library:CreateWindow(options)
                     Window.ConfigElements[name] = { Set = internalSet, Get = function() return state end }
                 end
 
+                -- [BARU] Penambahan Slider
+                function Elements:AddSlider(name, min, max, default, callback, infoData)
+                    min = min or 0
+                    max = max or 100
+                    default = default or min
+                    local value = math.clamp(default, min, max)
+
+                    local SliderFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 38)})
+                    Create("TextLabel", {Parent = SliderFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 16), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    
+                    local ValueLabel = Create("TextLabel", {Parent = SliderFrame, Text = tostring(value), Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 50, 0, 16), Position = UDim2.new(1, -58, 0, 0), TextXAlignment = Enum.TextXAlignment.Right})
+                    
+                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(1, -16, 0, 6), Position = UDim2.new(0, 8, 0, 24)})
+                    Create("UICorner", {Parent = SliderBar, CornerRadius = UDim.new(1, 0)})
+                    
+                    local SliderFill = Create("Frame", {Parent = SliderBar, BackgroundColor3 = AccentColor, Size = UDim2.new((value - min) / (max - min), 0, 1, 0)})
+                    Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
+
+                    local SliderBtn = Create("TextButton", {Parent = SliderBar, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), AutoButtonColor = false})
+
+                    local dragging = false
+                    local function updateValue(input)
+                        local sizeX = math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+                        value = math.floor(min + ((max - min) * sizeX))
+                        ValueLabel.Text = tostring(value)
+                        SliderFill.Size = UDim2.new(sizeX, 0, 1, 0)
+                        if callback then callback(value) end
+                    end
+
+                    SliderBtn.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            dragging = true
+                            updateValue(input)
+                        end
+                    end)
+
+                    UserInputService.InputEnded:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            dragging = false
+                        end
+                    end)
+
+                    UserInputService.InputChanged:Connect(function(input)
+                        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                            updateValue(input)
+                        end
+                    end)
+
+                    AddInfoIcon(SliderFrame, UDim2.new(1, -16, 0, -2), infoData)
+                    Window.ConfigElements[name] = { Set = function(val) 
+                        value = math.clamp(val, min, max)
+                        ValueLabel.Text = tostring(value)
+                        SliderFill.Size = UDim2.new((value - min) / (max - min), 0, 1, 0)
+                        if callback then callback(value) end
+                    end, Get = function() return value end }
+                end
+
+                -- [BARU] Penambahan TextBox
+                function Elements:AddTextBox(name, default, callback, infoData)
+                    default = default or ""
+                    local TextFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 44)})
+                    Create("TextLabel", {Parent = TextFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 16), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    
+                    local TBox = Create("TextBox", {Parent = TextFrame, Text = default, PlaceholderText = "Type here...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 22), Position = UDim2.new(0, 8, 0, 18), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+                    Create("UIPadding", {Parent = TBox, PaddingLeft = UDim.new(0, 6)})
+                    Create("UICorner", {Parent = TBox, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = TBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    TBox.FocusLost:Connect(function(enterPressed)
+                        if callback then callback(TBox.Text, enterPressed) end
+                    end)
+
+                    AddInfoIcon(TextFrame, UDim2.new(1, -16, 0, -2), infoData)
+                    Window.ConfigElements[name] = { Set = function(val) TBox.Text = tostring(val) if callback then callback(TBox.Text, false) end end, Get = function() return TBox.Text end }
+                end
+
+                -- [BARU] Penambahan Dropdown
+                function Elements:AddDropdown(name, options, default, callback, infoData)
+                    options = options or {}
+                    local selected = default or options[1] or ""
+                    local opened = false
+
+                    local DropFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28), ClipsDescendants = true})
+                    local DropBtn = Create("TextButton", {Parent = DropFrame, Text = "", BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 26), Position = UDim2.new(0, 8, 0, 0), AutoButtonColor = false})
+                    Create("UICorner", {Parent = DropBtn, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = DropBtn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local TitleLbl = Create("TextLabel", {Parent = DropBtn, Text = name .. ": " .. tostring(selected), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    
+                    local ListFrame = Create("ScrollingFrame", {Parent = DropFrame, BackgroundColor3 = Color3.fromRGB(18, 12, 14), Size = UDim2.new(1, -16, 0, 0), Position = UDim2.new(0, 8, 0, 28), ScrollBarThickness = 2, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), Visible = false})
+                    Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = ListFrame, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+                    local ListLayout = Create("UIListLayout", {Parent = ListFrame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2)})
+
+                    ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                        ListFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 4)
+                    end)
+
+                    local function rebuildOptions()
+                        for _, v in ipairs(ListFrame:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+                        for _, opt in ipairs(options) do
+                            local OptBtn = Create("TextButton", {Parent = ListFrame, Text = tostring(opt), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22), AutoButtonColor = false})
+                            OptBtn.MouseButton1Click:Connect(function()
+                                selected = opt
+                                TitleLbl.Text = name .. ": " .. tostring(selected)
+                                opened = false
+                                Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 28)}, 0.2)
+                                Tween(ListFrame, {Size = UDim2.new(1, -16, 0, 0)}, 0.2)
+                                task.wait(0.2)
+                                ListFrame.Visible = false
+                                if callback then callback(selected) end
+                            end)
+                            OptBtn.MouseEnter:Connect(function() Tween(OptBtn, {TextColor3 = TextColor}, 0.1) end)
+                            OptBtn.MouseLeave:Connect(function() Tween(OptBtn, {TextColor3 = SubTextColor}, 0.1) end)
+                        end
+                    end
+                    rebuildOptions()
+
+                    DropBtn.MouseButton1Click:Connect(function()
+                        opened = not opened
+                        if opened then
+                            ListFrame.Visible = true
+                            local targetHeight = math.clamp(#options * 24, 0, 120)
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 32 + targetHeight)}, 0.2)
+                            Tween(ListFrame, {Size = UDim2.new(1, -16, 0, targetHeight)}, 0.2)
+                        else
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 28)}, 0.2)
+                            Tween(ListFrame, {Size = UDim2.new(1, -16, 0, 0)}, 0.2)
+                            task.wait(0.2)
+                            ListFrame.Visible = false
+                        end
+                    end)
+
+                    AddInfoIcon(DropFrame, UDim2.new(1, -16, 0, 6), infoData)
+                    Window.ConfigElements[name] = { Set = function(val) selected = val TitleLbl.Text = name .. ": " .. tostring(selected) if callback then callback(selected) end end, Get = function() return selected end }
+                end
+
                 function Elements:AddConfigManager(folderName)
                     folderName = folderName or "kenzhubSavers"
                     if not _isfolder(folderName) then _makefolder(folderName) end

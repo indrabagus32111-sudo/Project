@@ -1885,6 +1885,180 @@ function Library:CreateWindow(options)
         return TabConfig
     end
 
+    local GameInfoCard = Create("Frame", { Name = "GameInfoCard", Parent = OptionsScroll, BackgroundColor3 = FIELD_BG,
+        BorderSizePixel = 0, Size = UDim2.new(1, -32, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = 31 })
+    Create("UICorner", { Parent = GameInfoCard, CornerRadius = UDim.new(0, 10) })
+    Create("UIStroke", { Parent = GameInfoCard, Color = FIELD_STROKE, Thickness = 1 })
+    Create("UIPadding", { Parent = GameInfoCard, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12),
+        PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) })
+    Create("UIListLayout", { Parent = GameInfoCard, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 9) })
+    Create("TextLabel", { Parent = GameInfoCard, LayoutOrder = 1, Text = "GAME INFO", Font = Enum.Font.SciFi, TextSize = 13,
+        TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 14),
+        TextXAlignment = Enum.TextXAlignment.Left })
+
+    local GITop = Create("Frame", { Parent = GameInfoCard, LayoutOrder = 2, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 64) })
+    local GIThumb = Create("ImageLabel", { Parent = GITop, BackgroundColor3 = Color3.fromRGB(24, 25, 32), BorderSizePixel = 0,
+        Size = UDim2.new(0, 64, 0, 64), Image = "", ScaleType = Enum.ScaleType.Crop })
+    Create("UICorner", { Parent = GIThumb, CornerRadius = UDim.new(0, 12) })
+    Create("UIStroke", { Parent = GIThumb, Color = FIELD_STROKE_HOT, Thickness = 1, Transparency = 0.4 })
+    local GITitle = Create("TextLabel", { Parent = GITop, Text = "Loading...", Font = Enum.Font.GothamBold, TextSize = 13,
+        TextColor3 = TextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 76, 0, 4), Size = UDim2.new(1, -76, 0, 36),
+        TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true,
+        TextTruncate = Enum.TextTruncate.AtEnd })
+    local GIBy = Create("TextLabel", { Parent = GITop, Text = "", Font = Enum.Font.Jura, TextSize = 12, TextColor3 = SubTextColor,
+        BackgroundTransparency = 1, Position = UDim2.new(0, 76, 0, 44), Size = UDim2.new(1, -76, 0, 16),
+        TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd })
+
+    local GIDescHolder = Create("Frame", { Parent = GameInfoCard, LayoutOrder = 3, BackgroundTransparency = 1,
+        ClipsDescendants = true, Size = UDim2.new(1, 0, 0, 44) })
+    local GIDesc = Create("TextLabel", { Parent = GIDescHolder, Text = "", Font = Enum.Font.Gotham, TextSize = 11,
+        TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
+        TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top })
+    local GIMore = Create("TextButton", { Parent = GameInfoCard, LayoutOrder = 4, Text = "Show more", Font = Enum.Font.GothamBold,
+        TextSize = 11, TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 14),
+        TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false, Visible = false })
+    local descOpen = false
+    GIMore.MouseButton1Click:Connect(function()
+        PlayUISound(UI_SOUND_IDS.Control)
+        descOpen = not descOpen
+        if descOpen then
+            GIDescHolder.Size = UDim2.new(1, 0, 0, 0)
+            GIDescHolder.AutomaticSize = Enum.AutomaticSize.Y
+            GIMore.Text = "Show less"
+        else
+            GIDescHolder.AutomaticSize = Enum.AutomaticSize.None
+            GIDescHolder.Size = UDim2.new(1, 0, 0, 44)
+            GIMore.Text = "Show more"
+        end
+    end)
+
+    local GIDivider = Create("Frame", { Parent = GameInfoCard, LayoutOrder = 5, BackgroundColor3 = FIELD_STROKE,
+        BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 1) })
+    local GIRows = Create("Frame", { Parent = GameInfoCard, LayoutOrder = 6, BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y })
+    Create("UIListLayout", { Parent = GIRows, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5) })
+    local giRowOrder = 0
+    local function GIRow(label)
+        giRowOrder = giRowOrder + 1
+        local row = Create("Frame", { Parent = GIRows, LayoutOrder = giRowOrder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16) })
+        Create("TextLabel", { Parent = row, Text = label, Font = Enum.Font.Code, TextSize = 11, TextColor3 = SubTextColor,
+            BackgroundTransparency = 1, Size = UDim2.new(0.4, 0, 1, 0), TextXAlignment = Enum.TextXAlignment.Left })
+        return Create("TextLabel", { Parent = row, Text = "...", Font = Enum.Font.Code, TextSize = 11, TextColor3 = TextColor,
+            BackgroundTransparency = 1, Position = UDim2.new(0.4, 0, 0, 0), Size = UDim2.new(0.6, 0, 1, 0),
+            TextXAlignment = Enum.TextXAlignment.Right, TextTruncate = Enum.TextTruncate.AtEnd })
+    end
+    local vCreated  = GIRow("Created")
+    local vUpdated  = GIRow("Last Updated")
+    local vCreator  = GIRow("Creator")
+    local vPlace    = GIRow("Place ID")
+    local vUniverse = GIRow("Universe ID")
+    local vVersion  = GIRow("Place Version")
+    local vPlayers  = GIRow("Players")
+    local vUptime   = GIRow("Server Uptime")
+    vPlace.Text = tostring(game.PlaceId)
+    vUniverse.Text = tostring(game.GameId)
+    do
+        local okV, ver = pcall(function() return game.PlaceVersion end)
+        vVersion.Text = okV and ("v" .. tostring(ver)) or "N/A"
+    end
+
+    local GIBtns = Create("Frame", { Parent = GameInfoCard, LayoutOrder = 7, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28) })
+    local function GIButton(text, x, cb)
+        local b = Create("TextButton", { Parent = GIBtns, Text = text, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor,
+            BackgroundColor3 = Color3.fromRGB(24, 25, 32), BorderSizePixel = 0, AutoButtonColor = false,
+            Size = UDim2.new(0.5, -3, 1, 0), Position = UDim2.new(x, x == 0 and 0 or 3, 0, 0) })
+        Create("UICorner", { Parent = b, CornerRadius = UDim.new(0, 8) })
+        local st = Create("UIStroke", { Parent = b, Color = FIELD_STROKE, Thickness = 1 })
+        b.MouseEnter:Connect(function() Tween(st, { Color = FIELD_STROKE_HOT }, TI.Fast); Tween(b, { BackgroundColor3 = FIELD_BG_HOVER }, TI.Fast) end)
+        b.MouseLeave:Connect(function() Tween(st, { Color = FIELD_STROKE }, TI.Fast); Tween(b, { BackgroundColor3 = Color3.fromRGB(24, 25, 32) }, TI.Fast) end)
+        AddBounce(b, 0.96)
+        b.MouseButton1Click:Connect(function() PlayUISound(UI_SOUND_IDS.Control); cb() end)
+    end
+    local function CopyInfo(label, value)
+        local ok = CopyToClipboard(value)
+        Library:Notify({ Title = ok and "Copied" or "Copy Failed",
+            Desc = ok and (label .. " copied to clipboard.") or "Clipboard is not supported here.", Be = ok and "Success" or "Error" })
+    end
+    GIButton("Copy Place ID", 0, function() CopyInfo("Place ID", tostring(game.PlaceId)) end)
+    GIButton("Copy Game Link", 0.5, function() CopyInfo("Game link", "https://www.roblox.com/games/" .. tostring(game.PlaceId)) end)
+
+    local function FmtDate(iso)
+        if type(iso) ~= "string" or iso == "" then return "Unknown" end
+        local ok, res = pcall(function() return DateTime.fromIsoDate(iso):FormatLocalTime("ll", "en-us") end)
+        if ok and res then return res end
+        return iso:match("^(%d+%-%d+%-%d+)") or "Unknown"
+    end
+    local function RefreshLive()
+        local okP, count = pcall(function() return #Players:GetPlayers() end)
+        vPlayers.Text = (okP and tostring(count) or "?") .. " / " .. tostring(Players.MaxPlayers)
+        local t = math.max(0, math.floor(workspace.DistributedGameTime))
+        vUptime.Text = string.format("%02d:%02d:%02d", math.floor(t / 3600), math.floor(t % 3600 / 60), t % 60)
+    end
+    RefreshLive()
+
+    local gameInfoData = nil
+    if game.GameId ~= 0 then
+        GIThumb.Image = string.format("rbxthumb://type=GameIcon&id=%d&w=150&h=150", game.GameId)
+    end
+    local function LoadGameInfo()
+        for _ = 1, 3 do
+            local ok, info = pcall(function() return MarketplaceService:GetProductInfo(game.PlaceId, Enum.InfoType.Asset) end)
+            if ok and type(info) == "table" then
+                gameInfoData = info
+                GITitle.Text = tostring(info.Name or "Unknown Game")
+                local cr = type(info.Creator) == "table" and info.Creator or nil
+                local crName = cr and tostring(cr.Name or "Unknown") or "Unknown"
+                GIBy.Text = "by " .. crName
+                vCreator.Text = crName
+                local desc = tostring(info.Description or "")
+                if desc:gsub("%s", "") == "" then desc = "No description provided." end
+                GIDesc.Text = desc
+                GIMore.Visible = #desc > 90
+                vCreated.Text = FmtDate(info.Created)
+                vUpdated.Text = FmtDate(info.Updated)
+                local iconId = tonumber(info.IconImageAssetId)
+                if iconId and iconId > 0 then
+                    if game.GameId == 0 then
+                        GIThumb.Image = "rbxassetid://" .. iconId
+                    else
+                        task.delay(4, function()
+                            if GIThumb.Parent and not GIThumb.IsLoaded then GIThumb.Image = "rbxassetid://" .. iconId end
+                        end)
+                    end
+                end
+                return
+            end
+            task.wait(3)
+        end
+        local okN, nm = pcall(function() return game.Name end)
+        GITitle.Text = (okN and nm ~= "" and nm) or "Unknown Game"
+        GIBy.Text = "Details unavailable"
+        GIDesc.Text = "Could not reach the Roblox catalog for this place."
+        vCreated.Text, vUpdated.Text, vCreator.Text = "Unavailable", "Unavailable", "Unavailable"
+    end
+    task.spawn(LoadGameInfo)
+    task.spawn(function()
+        while ScreenGui and ScreenGui.Parent do
+            task.wait(1)
+            if Panel.Visible and not Window._isMinimized then RefreshLive() end
+        end
+    end)
+    function Window:GetGameInfo() return gameInfoData end
+
+    -- Public helpers for scripts that want to drive these settings.
+    function Window:SetUIScale(percent) SetScalePct(percent) end
+    function Window:AddCredit(a, b) if RS.AddCredit then return RS.AddCredit(a, b) end end
+    function Window:SetSoundsEnabled(on) SetSoundsOption(on) end
+    function Window:SetBackgroundBlur(on) SetBlurOption(on) end
+    function Window:SetDragLock(on) SetLockOption(on) end
+    function Window:SetMenuKey(keyName)
+        local ok, code = pcall(function() return Enum.KeyCode[tostring(keyName)] end)
+        if ok and code then
+            menuKeyCode, menuKeyName = code, code.Name
+            MenuChip.SetKey(menuKeyName)
+        end
+    end
+
     function Window:MakeTab(data)
         local name = type(data) == "table" and data[1] or data
         local icon = type(data) == "table" and data[2] or nil

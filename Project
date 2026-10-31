@@ -3,849 +3,26 @@ local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
-local TextService = game:GetService("TextService")
-local MarketplaceService = game:GetService("MarketplaceService")
-local Players = game:GetService("Players")
 
 local Library = {
     WhitelistedUsers = {},
     Icons = {
         ["accessibility"] = "rbxassetid://10709751939",
-			["activity"] = "rbxassetid://10709752035",
-			["airvent"] = "rbxassetid://10709752131",
-			["airplay"] = "rbxassetid://10709752254",
-			["alarmcheck"] = "rbxassetid://10709752405",
-			["alarmclock"] = "rbxassetid://10709752630",
-			["alarmclockoff"] = "rbxassetid://10709752508",
-			["alarmminus"] = "rbxassetid://10709752732",
-			["alarmplus"] = "rbxassetid://10709752825",
-			["album"] = "rbxassetid://10709752906",
-			["alertcircle"] = "rbxassetid://10709752996",
-			["alertoctagon"] = "rbxassetid://10709753064",
-			["alerttriangle"] = "rbxassetid://10709753149",
-			["aligncenter"] = "rbxassetid://10709753570",
-			["aligncenterhorizontal"] = "rbxassetid://10709753272",
-			["aligncentervertical"] = "rbxassetid://10709753421",
-			["alignendhorizontal"] = "rbxassetid://10709753692",
-			["alignendvertical"] = "rbxassetid://10709753808",
-			["alignhorizontaldistributecenter"] = "rbxassetid://10747779791",
-			["alignhorizontaldistributeend"] = "rbxassetid://10747784534",
-			["alignhorizontaldistributestart"] = "rbxassetid://10709754118",
-			["alignhorizontaljustifycenter"] = "rbxassetid://10709754204",
-			["alignhorizontaljustifyend"] = "rbxassetid://10709754317",
-			["alignhorizontaljustifystart"] = "rbxassetid://10709754436",
-			["alignhorizontalspacearound"] = "rbxassetid://10709754590",
-			["alignhorizontalspacebetween"] = "rbxassetid://10709754749",
-			["alignjustify"] = "rbxassetid://10709759610",
-			["alignleft"] = "rbxassetid://10709759764",
-			["alignright"] = "rbxassetid://10709759895",
-			["alignstarthorizontal"] = "rbxassetid://10709760051",
-			["alignstartvertical"] = "rbxassetid://10709760244",
-			["alignverticaldistributecenter"] = "rbxassetid://10709760351",
-			["alignverticaldistributeend"] = "rbxassetid://10709760434",
-			["alignverticaldistributestart"] = "rbxassetid://10709760612",
-			["alignverticaljustifycenter"] = "rbxassetid://10709760814",
-			["alignverticaljustifyend"] = "rbxassetid://10709761003",
-			["alignverticaljustifystart"] = "rbxassetid://10709761176",
-			["alignverticalspacearound"] = "rbxassetid://10709761324",
-			["alignverticalspacebetween"] = "rbxassetid://10709761434",
-			["anchor"] = "rbxassetid://10709761530",
-			["angry"] = "rbxassetid://10709761629",
-			["annoyed"] = "rbxassetid://10709761722",
-			["aperture"] = "rbxassetid://10709761813",
-			["apple"] = "rbxassetid://10709761889",
-			["archive"] = "rbxassetid://10709762233",
-			["archiverestore"] = "rbxassetid://10709762058",
-			["armchair"] = "rbxassetid://10709762327",
-			["arrowbigdown"] = "rbxassetid://10747796644",
-			["arrowbigleft"] = "rbxassetid://10709762574",
-			["arrowbigright"] = "rbxassetid://10709762727",
-			["arrowbigup"] = "rbxassetid://10709762879",
-			["arrowdown"] = "rbxassetid://10709767827",
-			["arrowdowncircle"] = "rbxassetid://10709763034",
-			["arrowdownleft"] = "rbxassetid://10709767656",
-			["arrowdownright"] = "rbxassetid://10709767750",
-			["arrowleft"] = "rbxassetid://10709768114",
-			["arrowleftcircle"] = "rbxassetid://10709767936",
-			["arrowleftright"] = "rbxassetid://10709768019",
-			["arrowright"] = "rbxassetid://10709768347",
-			["arrowrightcircle"] = "rbxassetid://10709768226",
-			["arrowup"] = "rbxassetid://10709768939",
-			["arrowupcircle"] = "rbxassetid://10709768432",
-			["arrowupdown"] = "rbxassetid://10709768538",
-			["arrowupleft"] = "rbxassetid://10709768661",
-			["arrowupright"] = "rbxassetid://10709768787",
-			["asterisk"] = "rbxassetid://10709769095",
-			["atsign"] = "rbxassetid://10709769286",
-			["award"] = "rbxassetid://10709769406",
-			["axe"] = "rbxassetid://10709769508",
-			["axis3d"] = "rbxassetid://10709769598",
-			["baby"] = "rbxassetid://10709769732",
-			["backpack"] = "rbxassetid://10709769841",
-			["baggageclaim"] = "rbxassetid://10709769935",
-			["banana"] = "rbxassetid://10709770005",
-			["banknote"] = "rbxassetid://10709770178",
-			["barchart"] = "rbxassetid://10709773755",
-			["barchart2"] = "rbxassetid://10709770317",
-			["barchart3"] = "rbxassetid://10709770431",
-			["barchart4"] = "rbxassetid://10709770560",
-			["barcharthorizontal"] = "rbxassetid://10709773669",
-			["barcode"] = "rbxassetid://10747360675",
-			["baseline"] = "rbxassetid://10709773863",
-			["bath"] = "rbxassetid://10709773963",
-			["battery"] = "rbxassetid://10709774640",
-			["batterycharging"] = "rbxassetid://10709774068",
-			["batteryfull"] = "rbxassetid://10709774206",
-			["batterylow"] = "rbxassetid://10709774370",
-			["batterymedium"] = "rbxassetid://10709774513",
-			["beaker"] = "rbxassetid://10709774756",
-			["bed"] = "rbxassetid://10709775036",
-			["beddouble"] = "rbxassetid://10709774864",
-			["bedsingle"] = "rbxassetid://10709774968",
-			["beer"] = "rbxassetid://10709775167",
-			["bell"] = "rbxassetid://10709775704",
-			["bellminus"] = "rbxassetid://10709775241",
-			["belloff"] = "rbxassetid://10709775320",
-			["bellplus"] = "rbxassetid://10709775448",
-			["bellring"] = "rbxassetid://10709775560",
-			["bike"] = "rbxassetid://10709775894",
-			["binary"] = "rbxassetid://10709776050",
-			["bitcoin"] = "rbxassetid://10709776126",
-			["bluetooth"] = "rbxassetid://10709776655",
-			["bluetoothconnected"] = "rbxassetid://10709776240",
-			["bluetoothoff"] = "rbxassetid://10709776344",
-			["bluetoothsearching"] = "rbxassetid://10709776501",
-			["bold"] = "rbxassetid://10747813908",
-			["bomb"] = "rbxassetid://10709781460",
-			["bone"] = "rbxassetid://10709781605",
-			["book"] = "rbxassetid://10709781824",
-			["bookopen"] = "rbxassetid://10709781717",
-			["bookmark"] = "rbxassetid://10709782154",
-			["bookmarkminus"] = "rbxassetid://10709781919",
-			["bookmarkplus"] = "rbxassetid://10709782044",
-			["bot"] = "rbxassetid://10709782230",
-			["box"] = "rbxassetid://10709782497",
-			["boxselect"] = "rbxassetid://10709782342",
-			["boxes"] = "rbxassetid://10709782582",
-			["briefcase"] = "rbxassetid://10709782662",
-			["brush"] = "rbxassetid://10709782758",
-			["bug"] = "rbxassetid://10709782845",
-			["building"] = "rbxassetid://10709783051",
-			["building2"] = "rbxassetid://10709782939",
-			["bus"] = "rbxassetid://10709783137",
-			["cake"] = "rbxassetid://10709783217",
-			["calculator"] = "rbxassetid://10709783311",
-			["calendar"] = "rbxassetid://10709789505",
-			["calendarcheck"] = "rbxassetid://10709783474",
-			["calendarcheck2"] = "rbxassetid://10709783392",
-			["calendarclock"] = "rbxassetid://10709783577",
-			["calendardays"] = "rbxassetid://10709783673",
-			["calendarheart"] = "rbxassetid://10709783835",
-			["calendarminus"] = "rbxassetid://10709783959",
-			["calendaroff"] = "rbxassetid://10709788784",
-			["calendarplus"] = "rbxassetid://10709788937",
-			["calendarrange"] = "rbxassetid://10709789053",
-			["calendarsearch"] = "rbxassetid://10709789200",
-			["calendarx"] = "rbxassetid://10709789407",
-			["calendarx2"] = "rbxassetid://10709789329",
-			["camera"] = "rbxassetid://10709789686",
-			["cameraoff"] = "rbxassetid://10747822677",
-			["car"] = "rbxassetid://10709789810",
-			["carrot"] = "rbxassetid://10709789960",
-			["cast"] = "rbxassetid://10709790097",
-			["charge"] = "rbxassetid://10709790202",
-			["check"] = "rbxassetid://10709790644",
-			["checkcircle"] = "rbxassetid://10709790387",
-			["checkcircle2"] = "rbxassetid://10709790298",
-			["checksquare"] = "rbxassetid://10709790537",
-			["chefhat"] = "rbxassetid://10709790757",
-			["cherry"] = "rbxassetid://10709790875",
-			["chevrondown"] = "rbxassetid://10709790948",
-			["chevronfirst"] = "rbxassetid://10709791015",
-			["chevronlast"] = "rbxassetid://10709791130",
-			["chevronleft"] = "rbxassetid://10709791281",
-			["chevronright"] = "rbxassetid://10709791437",
-			["chevronup"] = "rbxassetid://10709791523",
-			["chevronsdown"] = "rbxassetid://10709796864",
-			["chevronsdownup"] = "rbxassetid://10709791632",
-			["chevronsleft"] = "rbxassetid://10709797151",
-			["chevronsleftright"] = "rbxassetid://10709797006",
-			["chevronsright"] = "rbxassetid://10709797382",
-			["chevronsrightleft"] = "rbxassetid://10709797274",
-			["chevronsup"] = "rbxassetid://10709797622",
-			["chevronsupdown"] = "rbxassetid://10709797508",
-			["chrome"] = "rbxassetid://10709797725",
-			["circle"] = "rbxassetid://10709798174",
-			["circledot"] = "rbxassetid://10709797837",
-			["circleellipsis"] = "rbxassetid://10709797985",
-			["circleslashed"] = "rbxassetid://10709798100",
-			["citrus"] = "rbxassetid://10709798276",
-			["clapperboard"] = "rbxassetid://10709798350",
-			["clipboard"] = "rbxassetid://10709799288",
-			["clipboardcheck"] = "rbxassetid://10709798443",
-			["clipboardcopy"] = "rbxassetid://10709798574",
-			["clipboardedit"] = "rbxassetid://10709798682",
-			["clipboardlist"] = "rbxassetid://10709798792",
-			["clipboardsignature"] = "rbxassetid://10709798890",
-			["clipboardtype"] = "rbxassetid://10709798999",
-			["clipboardx"] = "rbxassetid://10709799124",
-			["clock"] = "rbxassetid://10709805144",
-			["clock1"] = "rbxassetid://10709799535",
-			["clock10"] = "rbxassetid://10709799718",
-			["clock11"] = "rbxassetid://10709799818",
-			["clock12"] = "rbxassetid://10709799962",
-			["clock2"] = "rbxassetid://10709803876",
-			["clock3"] = "rbxassetid://10709803989",
-			["clock4"] = "rbxassetid://10709804164",
-			["clock5"] = "rbxassetid://10709804291",
-			["clock6"] = "rbxassetid://10709804435",
-			["clock7"] = "rbxassetid://10709804599",
-			["clock8"] = "rbxassetid://10709804784",
-			["clock9"] = "rbxassetid://10709804996",
-			["cloud"] = "rbxassetid://10709806740",
-			["cloudcog"] = "rbxassetid://10709805262",
-			["clouddrizzle"] = "rbxassetid://10709805371",
-			["cloudfog"] = "rbxassetid://10709805477",
-			["cloudhail"] = "rbxassetid://10709805596",
-			["cloudlightning"] = "rbxassetid://10709805727",
-			["cloudmoon"] = "rbxassetid://10709805942",
-			["cloudmoonrain"] = "rbxassetid://10709805838",
-			["cloudoff"] = "rbxassetid://10709806060",
-			["cloudrain"] = "rbxassetid://10709806277",
-			["cloudrainwind"] = "rbxassetid://10709806166",
-			["cloudsnow"] = "rbxassetid://10709806374",
-			["cloudsun"] = "rbxassetid://10709806631",
-			["cloudsunrain"] = "rbxassetid://10709806475",
-			["cloudy"] = "rbxassetid://10709806859",
-			["clover"] = "rbxassetid://10709806995",
-			["code"] = "rbxassetid://10709810463",
-			["code2"] = "rbxassetid://10709807111",
-			["codepen"] = "rbxassetid://10709810534",
-			["codesandbox"] = "rbxassetid://10709810676",
-			["coffee"] = "rbxassetid://10709810814",
-			["cog"] = "rbxassetid://10709810948",
-			["coins"] = "rbxassetid://10709811110",
-			["columns"] = "rbxassetid://10709811261",
-			["command"] = "rbxassetid://10709811365",
-			["compass"] = "rbxassetid://10709811445",
-			["component"] = "rbxassetid://10709811595",
-			["conciergebell"] = "rbxassetid://10709811706",
-			["connection"] = "rbxassetid://10747361219",
-			["contact"] = "rbxassetid://10709811834",
-			["contrast"] = "rbxassetid://10709811939",
-			["cookie"] = "rbxassetid://10709812067",
-			["copy"] = "rbxassetid://10709812159",
-			["copyleft"] = "rbxassetid://10709812251",
-			["copyright"] = "rbxassetid://10709812311",
-			["cornerdownleft"] = "rbxassetid://10709812396",
-			["cornerdownright"] = "rbxassetid://10709812485",
-			["cornerleftdown"] = "rbxassetid://10709812632",
-			["cornerleftup"] = "rbxassetid://10709812784",
-			["cornerrightdown"] = "rbxassetid://10709812939",
-			["cornerrightup"] = "rbxassetid://10709813094",
-			["cornerupleft"] = "rbxassetid://10709813185",
-			["cornerupright"] = "rbxassetid://10709813281",
-			["cpu"] = "rbxassetid://10709813383",
-			["croissant"] = "rbxassetid://10709818125",
-			["crop"] = "rbxassetid://10709818245",
-			["cross"] = "rbxassetid://10709818399",
-			["crosshair"] = "rbxassetid://10709818534",
-			["crown"] = "rbxassetid://10709818626",
-			["cupsoda"] = "rbxassetid://10709818763",
-			["curlybraces"] = "rbxassetid://10709818847",
-			["currency"] = "rbxassetid://10709818931",
-			["database"] = "rbxassetid://10709818996",
-			["delete"] = "rbxassetid://10709819059",
-			["diamond"] = "rbxassetid://10709819149",
-			["dice1"] = "rbxassetid://10709819266",
-			["dice2"] = "rbxassetid://10709819361",
-			["dice3"] = "rbxassetid://10709819508",
-			["dice4"] = "rbxassetid://10709819670",
-			["dice5"] = "rbxassetid://10709819801",
-			["dice6"] = "rbxassetid://10709819896",
-			["dices"] = "rbxassetid://10723343321",
-			["diff"] = "rbxassetid://10723343416",
-			["disc"] = "rbxassetid://10723343537",
-			["divide"] = "rbxassetid://10723343805",
-			["dividecircle"] = "rbxassetid://10723343636",
-			["dividesquare"] = "rbxassetid://10723343737",
-			["dollarsign"] = "rbxassetid://10723343958",
-			["download"] = "rbxassetid://10723344270",
-			["downloadcloud"] = "rbxassetid://10723344088",
-			["droplet"] = "rbxassetid://10723344432",
-			["droplets"] = "rbxassetid://10734883356",
-			["drumstick"] = "rbxassetid://10723344737",
-			["edit"] = "rbxassetid://10734883598",
-			["edit2"] = "rbxassetid://10723344885",
-			["edit3"] = "rbxassetid://10723345088",
-			["egg"] = "rbxassetid://10723345518",
-			["eggfried"] = "rbxassetid://10723345347",
-			["electricity"] = "rbxassetid://10723345749",
-			["electricityoff"] = "rbxassetid://10723345643",
-			["equal"] = "rbxassetid://10723345990",
-			["equalnot"] = "rbxassetid://10723345866",
-			["eraser"] = "rbxassetid://10723346158",
-			["euro"] = "rbxassetid://10723346372",
-			["expand"] = "rbxassetid://10723346553",
-			["externallink"] = "rbxassetid://10723346684",
-			["eye"] = "rbxassetid://10723346959",
-			["eyeoff"] = "rbxassetid://10723346871",
-			["factory"] = "rbxassetid://10723347051",
-			["fan"] = "rbxassetid://10723354359",
-			["fastforward"] = "rbxassetid://10723354521",
-			["feather"] = "rbxassetid://10723354671",
-			["figma"] = "rbxassetid://10723354801",
-			["file"] = "rbxassetid://10723374641",
-			["filearchive"] = "rbxassetid://10723354921",
-			["fileaudio"] = "rbxassetid://10723355148",
-			["fileaudio2"] = "rbxassetid://10723355026",
-			["fileaxis3d"] = "rbxassetid://10723355272",
-			["filebadge"] = "rbxassetid://10723355622",
-			["filebadge2"] = "rbxassetid://10723355451",
-			["filebarchart"] = "rbxassetid://10723355887",
-			["filebarchart2"] = "rbxassetid://10723355746",
-			["filebox"] = "rbxassetid://10723355989",
-			["filecheck"] = "rbxassetid://10723356210",
-			["filecheck2"] = "rbxassetid://10723356100",
-			["fileclock"] = "rbxassetid://10723356329",
-			["filecode"] = "rbxassetid://10723356507",
-			["filecog"] = "rbxassetid://10723356830",
-			["filecog2"] = "rbxassetid://10723356676",
-			["filediff"] = "rbxassetid://10723357039",
-			["filedigit"] = "rbxassetid://10723357151",
-			["filedown"] = "rbxassetid://10723357322",
-			["fileedit"] = "rbxassetid://10723357495",
-			["fileheart"] = "rbxassetid://10723357637",
-			["fileimage"] = "rbxassetid://10723357790",
-			["fileinput"] = "rbxassetid://10723357933",
-			["filejson"] = "rbxassetid://10723364435",
-			["filejson2"] = "rbxassetid://10723364361",
-			["filekey"] = "rbxassetid://10723364605",
-			["filekey2"] = "rbxassetid://10723364515",
-			["filelinechart"] = "rbxassetid://10723364725",
-			["filelock"] = "rbxassetid://10723364957",
-			["filelock2"] = "rbxassetid://10723364861",
-			["fileminus"] = "rbxassetid://10723365254",
-			["fileminus2"] = "rbxassetid://10723365086",
-			["fileoutput"] = "rbxassetid://10723365457",
-			["filepiechart"] = "rbxassetid://10723365598",
-			["fileplus"] = "rbxassetid://10723365877",
-			["fileplus2"] = "rbxassetid://10723365766",
-			["filequestion"] = "rbxassetid://10723365987",
-			["filescan"] = "rbxassetid://10723366167",
-			["filesearch"] = "rbxassetid://10723366550",
-			["filesearch2"] = "rbxassetid://10723366340",
-			["filesignature"] = "rbxassetid://10723366741",
-			["filespreadsheet"] = "rbxassetid://10723366962",
-			["filesymlink"] = "rbxassetid://10723367098",
-			["fileterminal"] = "rbxassetid://10723367244",
-			["filetext"] = "rbxassetid://10723367380",
-			["filetype"] = "rbxassetid://10723367606",
-			["filetype2"] = "rbxassetid://10723367509",
-			["fileup"] = "rbxassetid://10723367734",
-			["filevideo"] = "rbxassetid://10723373884",
-			["filevideo2"] = "rbxassetid://10723367834",
-			["filevolume"] = "rbxassetid://10723374172",
-			["filevolume2"] = "rbxassetid://10723374030",
-			["filewarning"] = "rbxassetid://10723374276",
-			["filex"] = "rbxassetid://10723374544",
-			["filex2"] = "rbxassetid://10723374378",
-			["files"] = "rbxassetid://10723374759",
-			["film"] = "rbxassetid://10723374981",
-			["filter"] = "rbxassetid://10723375128",
-			["fingerprint"] = "rbxassetid://10723375250",
-			["flag"] = "rbxassetid://10723375890",
-			["flagoff"] = "rbxassetid://10723375443",
-			["flagtriangleleft"] = "rbxassetid://10723375608",
-			["flagtriangleright"] = "rbxassetid://10723375727",
-			["flame"] = "rbxassetid://10723376114",
-			["flashlight"] = "rbxassetid://10723376471",
-			["flashlightoff"] = "rbxassetid://10723376365",
-			["flaskconical"] = "rbxassetid://10734883986",
-			["flaskround"] = "rbxassetid://10723376614",
-			["fliphorizontal"] = "rbxassetid://10723376884",
-			["fliphorizontal2"] = "rbxassetid://10723376745",
-			["flipvertical"] = "rbxassetid://10723377138",
-			["flipvertical2"] = "rbxassetid://10723377026",
-			["flower"] = "rbxassetid://10747830374",
-			["flower2"] = "rbxassetid://10723377305",
-			["focus"] = "rbxassetid://10723377537",
-			["folder"] = "rbxassetid://10723387563",
-			["folderarchive"] = "rbxassetid://10723384478",
-			["foldercheck"] = "rbxassetid://10723384605",
-			["folderclock"] = "rbxassetid://10723384731",
-			["folderclosed"] = "rbxassetid://10723384893",
-			["foldercog"] = "rbxassetid://10723385213",
-			["foldercog2"] = "rbxassetid://10723385036",
-			["folderdown"] = "rbxassetid://10723385338",
-			["folderedit"] = "rbxassetid://10723385445",
-			["folderheart"] = "rbxassetid://10723385545",
-			["folderinput"] = "rbxassetid://10723385721",
-			["folderkey"] = "rbxassetid://10723385848",
-			["folderlock"] = "rbxassetid://10723386005",
-			["folderminus"] = "rbxassetid://10723386127",
-			["folderopen"] = "rbxassetid://10723386277",
-			["folderoutput"] = "rbxassetid://10723386386",
-			["folderplus"] = "rbxassetid://10723386531",
-			["foldersearch"] = "rbxassetid://10723386787",
-			["foldersearch2"] = "rbxassetid://10723386674",
-			["foldersymlink"] = "rbxassetid://10723386930",
-			["foldertree"] = "rbxassetid://10723387085",
-			["folderup"] = "rbxassetid://10723387265",
-			["folderx"] = "rbxassetid://10723387448",
-			["folders"] = "rbxassetid://10723387721",
-			["forminput"] = "rbxassetid://10723387841",
-			["forward"] = "rbxassetid://10723388016",
-			["frame"] = "rbxassetid://10723394389",
-			["framer"] = "rbxassetid://10723394565",
-			["frown"] = "rbxassetid://10723394681",
-			["fuel"] = "rbxassetid://10723394846",
-			["functionsquare"] = "rbxassetid://10723395041",
-			["gamepad"] = "rbxassetid://10723395457",
-			["gamepad2"] = "rbxassetid://10723395215",
-			["gauge"] = "rbxassetid://10723395708",
-			["gavel"] = "rbxassetid://10723395896",
-			["gem"] = "rbxassetid://10723396000",
-			["ghost"] = "rbxassetid://10723396107",
-			["gift"] = "rbxassetid://10723396402",
-			["giftcard"] = "rbxassetid://10723396225",
-			["gitbranch"] = "rbxassetid://10723396676",
-			["gitbranchplus"] = "rbxassetid://10723396542",
-			["gitcommit"] = "rbxassetid://10723396812",
-			["gitcompare"] = "rbxassetid://10723396954",
-			["gitfork"] = "rbxassetid://10723397049",
-			["gitmerge"] = "rbxassetid://10723397165",
-			["gitpullrequest"] = "rbxassetid://10723397431",
-			["gitpullrequestclosed"] = "rbxassetid://10723397268",
-			["gitpullrequestdraft"] = "rbxassetid://10734884302",
-			["glass"] = "rbxassetid://10723397788",
-			["glass2"] = "rbxassetid://10723397529",
-			["glasswater"] = "rbxassetid://10723397678",
-			["glasses"] = "rbxassetid://10723397895",
-			["globe"] = "rbxassetid://10723404337",
-			["globe2"] = "rbxassetid://10723398002",
-			["grab"] = "rbxassetid://10723404472",
-			["graduationcap"] = "rbxassetid://10723404691",
-			["grape"] = "rbxassetid://10723404822",
-			["grid"] = "rbxassetid://10723404936",
-			["griphorizontal"] = "rbxassetid://10723405089",
-			["gripvertical"] = "rbxassetid://10723405236",
-			["hammer"] = "rbxassetid://10723405360",
-			["hand"] = "rbxassetid://10723405649",
-			["handmetal"] = "rbxassetid://10723405508",
-			["harddrive"] = "rbxassetid://10723405749",
-			["hardhat"] = "rbxassetid://10723405859",
-			["hash"] = "rbxassetid://10723405975",
-			["haze"] = "rbxassetid://10723406078",
-			["headphones"] = "rbxassetid://10723406165",
-			["heart"] = "rbxassetid://10723406885",
-			["heartcrack"] = "rbxassetid://10723406299",
-			["hearthandshake"] = "rbxassetid://10723406480",
-			["heartoff"] = "rbxassetid://10723406662",
-			["heartpulse"] = "rbxassetid://10723406795",
-			["helpcircle"] = "rbxassetid://10723406988",
-			["hexagon"] = "rbxassetid://10723407092",
-			["highlighter"] = "rbxassetid://10723407192",
-			["history"] = "rbxassetid://10723407335",
-			["home"] = "rbxassetid://10723407389",
-			["hourglass"] = "rbxassetid://10723407498",
-			["icecream"] = "rbxassetid://10723414308",
-			["image"] = "rbxassetid://10723415040",
-			["imageminus"] = "rbxassetid://10723414487",
-			["imageoff"] = "rbxassetid://10723414677",
-			["imageplus"] = "rbxassetid://10723414827",
-			["import"] = "rbxassetid://10723415205",
-			["inbox"] = "rbxassetid://10723415335",
-			["indent"] = "rbxassetid://10723415494",
-			["indianrupee"] = "rbxassetid://10723415642",
-			["infinity"] = "rbxassetid://10723415766",
-			["info"] = "rbxassetid://10723415903",
-			["inspect"] = "rbxassetid://10723416057",
-			["italic"] = "rbxassetid://10723416195",
-			["japaneseyen"] = "rbxassetid://10723416363",
-			["joystick"] = "rbxassetid://10723416527",
-			["key"] = "rbxassetid://10723416652",
-			["keyboard"] = "rbxassetid://10723416765",
-			["lamp"] = "rbxassetid://10723417513",
-			["lampceiling"] = "rbxassetid://10723416922",
-			["lampdesk"] = "rbxassetid://10723417016",
-			["lampfloor"] = "rbxassetid://10723417131",
-			["lampwalldown"] = "rbxassetid://10723417240",
-			["lampwallup"] = "rbxassetid://10723417356",
-			["landmark"] = "rbxassetid://10723417608",
-			["languages"] = "rbxassetid://10723417703",
-			["laptop"] = "rbxassetid://10723423881",
-			["laptop2"] = "rbxassetid://10723417797",
-			["lasso"] = "rbxassetid://10723424235",
-			["lassoselect"] = "rbxassetid://10723424058",
-			["laugh"] = "rbxassetid://10723424372",
-			["layers"] = "rbxassetid://10723424505",
-			["layout"] = "rbxassetid://10723425376",
-			["layoutdashboard"] = "rbxassetid://10723424646",
-			["layoutgrid"] = "rbxassetid://10723424838",
-			["layoutlist"] = "rbxassetid://10723424963",
-			["layouttemplate"] = "rbxassetid://10723425187",
-			["leaf"] = "rbxassetid://10723425539",
-			["library"] = "rbxassetid://10723425615",
-			["lifebuoy"] = "rbxassetid://10723425685",
-			["lightbulb"] = "rbxassetid://10723425852",
-			["lightbulboff"] = "rbxassetid://10723425762",
-			["linechart"] = "rbxassetid://10723426393",
-			["link"] = "rbxassetid://10723426722",
-			["link2"] = "rbxassetid://10723426595",
-			["link2off"] = "rbxassetid://10723426513",
-			["list"] = "rbxassetid://10723433811",
-			["listchecks"] = "rbxassetid://10734884548",
-			["listend"] = "rbxassetid://10723426886",
-			["listminus"] = "rbxassetid://10723426986",
-			["listmusic"] = "rbxassetid://10723427081",
-			["listordered"] = "rbxassetid://10723427199",
-			["listplus"] = "rbxassetid://10723427334",
-			["liststart"] = "rbxassetid://10723427494",
-			["listvideo"] = "rbxassetid://10723427619",
-			["listx"] = "rbxassetid://10723433655",
-			["loader"] = "rbxassetid://10723434070",
-			["loader2"] = "rbxassetid://10723433935",
-			["locate"] = "rbxassetid://10723434557",
-			["locatefixed"] = "rbxassetid://10723434236",
-			["locateoff"] = "rbxassetid://10723434379",
-			["lock"] = "rbxassetid://10723434711",
-			["login"] = "rbxassetid://10723434830",
-			["logout"] = "rbxassetid://10723434906",
-			["luggage"] = "rbxassetid://10723434993",
-			["magnet"] = "rbxassetid://10723435069",
-			["mail"] = "rbxassetid://10734885430",
-			["mailcheck"] = "rbxassetid://10723435182",
-			["mailminus"] = "rbxassetid://10723435261",
-			["mailopen"] = "rbxassetid://10723435342",
-			["mailplus"] = "rbxassetid://10723435443",
-			["mailquestion"] = "rbxassetid://10723435515",
-			["mailsearch"] = "rbxassetid://10734884739",
-			["mailwarning"] = "rbxassetid://10734885015",
-			["mailx"] = "rbxassetid://10734885247",
-			["mails"] = "rbxassetid://10734885614",
-			["map"] = "rbxassetid://10734886202",
-			["mappin"] = "rbxassetid://10734886004",
-			["mappinoff"] = "rbxassetid://10734885803",
-			["maximize"] = "rbxassetid://10734886735",
-			["maximize2"] = "rbxassetid://10734886496",
-			["medal"] = "rbxassetid://10734887072",
-			["megaphone"] = "rbxassetid://10734887454",
-			["megaphoneoff"] = "rbxassetid://10734887311",
-			["meh"] = "rbxassetid://10734887603",
-			["menu"] = "rbxassetid://10734887784",
-			["messagecircle"] = "rbxassetid://10734888000",
-			["messagesquare"] = "rbxassetid://10734888228",
-			["mic"] = "rbxassetid://10734888864",
-			["mic2"] = "rbxassetid://10734888430",
-			["micoff"] = "rbxassetid://10734888646",
-			["microscope"] = "rbxassetid://10734889106",
-			["microwave"] = "rbxassetid://10734895076",
-			["milestone"] = "rbxassetid://10734895310",
-			["minimize"] = "rbxassetid://10734895698",
-			["minimize2"] = "rbxassetid://10734895530",
-			["minus"] = "rbxassetid://10734896206",
-			["minuscircle"] = "rbxassetid://10734895856",
-			["minussquare"] = "rbxassetid://10734896029",
-			["monitor"] = "rbxassetid://10734896881",
-			["monitoroff"] = "rbxassetid://10734896360",
-			["monitorspeaker"] = "rbxassetid://10734896512",
-			["moon"] = "rbxassetid://10734897102",
-			["morehorizontal"] = "rbxassetid://10734897250",
-			["morevertical"] = "rbxassetid://10734897387",
-			["mountain"] = "rbxassetid://10734897956",
-			["mountainsnow"] = "rbxassetid://10734897665",
-			["mouse"] = "rbxassetid://10734898592",
-			["mousepointer"] = "rbxassetid://10734898476",
-			["mousepointer2"] = "rbxassetid://10734898194",
-			["mousepointerclick"] = "rbxassetid://10734898355",
-			["move"] = "rbxassetid://10734900011",
-			["move3d"] = "rbxassetid://10734898756",
-			["movediagonal"] = "rbxassetid://10734899164",
-			["movediagonal2"] = "rbxassetid://10734898934",
-			["movehorizontal"] = "rbxassetid://10734899414",
-			["movevertical"] = "rbxassetid://10734899821",
-			["music"] = "rbxassetid://10734905958",
-			["music2"] = "rbxassetid://10734900215",
-			["music3"] = "rbxassetid://10734905665",
-			["music4"] = "rbxassetid://10734905823",
-			["navigation"] = "rbxassetid://10734906744",
-			["navigation2"] = "rbxassetid://10734906332",
-			["navigation2off"] = "rbxassetid://10734906144",
-			["navigationoff"] = "rbxassetid://10734906580",
-			["network"] = "rbxassetid://10734906975",
-			["newspaper"] = "rbxassetid://10734907168",
-			["octagon"] = "rbxassetid://10734907361",
-			["option"] = "rbxassetid://10734907649",
-			["outdent"] = "rbxassetid://10734907933",
-			["package"] = "rbxassetid://10734909540",
-			["package2"] = "rbxassetid://10734908151",
-			["packagecheck"] = "rbxassetid://10734908384",
-			["packageminus"] = "rbxassetid://10734908626",
-			["packageopen"] = "rbxassetid://10734908793",
-			["packageplus"] = "rbxassetid://10734909016",
-			["packagesearch"] = "rbxassetid://10734909196",
-			["packagex"] = "rbxassetid://10734909375",
-			["paintbucket"] = "rbxassetid://10734909847",
-			["paintbrush"] = "rbxassetid://10734910187",
-			["paintbrush2"] = "rbxassetid://10734910030",
-			["palette"] = "rbxassetid://10734910430",
-			["palmtree"] = "rbxassetid://10734910680",
-			["paperclip"] = "rbxassetid://10734910927",
-			["partypopper"] = "rbxassetid://10734918735",
-			["pause"] = "rbxassetid://10734919336",
-			["pausecircle"] = "rbxassetid://10735024209",
-			["pauseoctagon"] = "rbxassetid://10734919143",
-			["pentool"] = "rbxassetid://10734919503",
-			["pencil"] = "rbxassetid://10734919691",
-			["percent"] = "rbxassetid://10734919919",
-			["personstanding"] = "rbxassetid://10734920149",
-			["phone"] = "rbxassetid://10734921524",
-			["phonecall"] = "rbxassetid://10734920305",
-			["phoneforwarded"] = "rbxassetid://10734920508",
-			["phoneincoming"] = "rbxassetid://10734920694",
-			["phonemissed"] = "rbxassetid://10734920845",
-			["phoneoff"] = "rbxassetid://10734921077",
-			["phoneoutgoing"] = "rbxassetid://10734921288",
-			["piechart"] = "rbxassetid://10734921727",
-			["piggybank"] = "rbxassetid://10734921935",
-			["pin"] = "rbxassetid://10734922324",
-			["pinoff"] = "rbxassetid://10734922180",
-			["pipette"] = "rbxassetid://10734922497",
-			["pizza"] = "rbxassetid://10734922774",
-			["plane"] = "rbxassetid://10734922971",
-			["play"] = "rbxassetid://10734923549",
-			["playcircle"] = "rbxassetid://10734923214",
-			["plus"] = "rbxassetid://10734924532",
-			["pluscircle"] = "rbxassetid://10734923868",
-			["plussquare"] = "rbxassetid://10734924219",
-			["podcast"] = "rbxassetid://10734929553",
-			["pointer"] = "rbxassetid://10734929723",
-			["poundsterling"] = "rbxassetid://10734929981",
-			["power"] = "rbxassetid://10734930466",
-			["poweroff"] = "rbxassetid://10734930257",
-			["printer"] = "rbxassetid://10734930632",
-			["puzzle"] = "rbxassetid://10734930886",
-			["quote"] = "rbxassetid://10734931234",
-			["radio"] = "rbxassetid://10734931596",
-			["radioreceiver"] = "rbxassetid://10734931402",
-			["rectanglehorizontal"] = "rbxassetid://10734931777",
-			["rectanglevertical"] = "rbxassetid://10734932081",
-			["recycle"] = "rbxassetid://10734932295",
-			["redo"] = "rbxassetid://10734932822",
-			["redo2"] = "rbxassetid://10734932586",
-			["refreshccw"] = "rbxassetid://10734933056",
-			["refreshcw"] = "rbxassetid://10734933222",
-			["refrigerator"] = "rbxassetid://10734933465",
-			["regex"] = "rbxassetid://10734933655",
-			["repeat"] = "rbxassetid://10734933966",
-			["repeat1"] = "rbxassetid://10734933826",
-			["reply"] = "rbxassetid://10734934252",
-			["replyall"] = "rbxassetid://10734934132",
-			["rewind"] = "rbxassetid://10734934347",
-			["rocket"] = "rbxassetid://10734934585",
-			["rockingchair"] = "rbxassetid://10734939942",
-			["rotate3d"] = "rbxassetid://10734940107",
-			["rotateccw"] = "rbxassetid://10734940376",
-			["rotatecw"] = "rbxassetid://10734940654",
-			["rss"] = "rbxassetid://10734940825",
-			["ruler"] = "rbxassetid://10734941018",
-			["russianruble"] = "rbxassetid://10734941199",
-			["sailboat"] = "rbxassetid://10734941354",
-			["save"] = "rbxassetid://10734941499",
-			["scale"] = "rbxassetid://10734941912",
-			["scale3d"] = "rbxassetid://10734941739",
-			["scaling"] = "rbxassetid://10734942072",
-			["scan"] = "rbxassetid://10734942565",
-			["scanface"] = "rbxassetid://10734942198",
-			["scanline"] = "rbxassetid://10734942351",
-			["scissors"] = "rbxassetid://10734942778",
-			["screenshare"] = "rbxassetid://10734943193",
-			["screenshareoff"] = "rbxassetid://10734942967",
-			["scroll"] = "rbxassetid://10734943448",
-			["search"] = "rbxassetid://10734943674",
-			["send"] = "rbxassetid://10734943902",
-			["separatorhorizontal"] = "rbxassetid://10734944115",
-			["separatorvertical"] = "rbxassetid://10734944326",
-			["server"] = "rbxassetid://10734949856",
-			["servercog"] = "rbxassetid://10734944444",
-			["servercrash"] = "rbxassetid://10734944554",
-			["serveroff"] = "rbxassetid://10734944668",
-			["settings"] = "rbxassetid://10734950309",
-			["settings2"] = "rbxassetid://10734950020",
-			["share"] = "rbxassetid://10734950813",
-			["share2"] = "rbxassetid://10734950553",
-			["sheet"] = "rbxassetid://10734951038",
-			["shield"] = "rbxassetid://10734951847",
-			["shieldalert"] = "rbxassetid://10734951173",
-			["shieldcheck"] = "rbxassetid://10734951367",
-			["shieldclose"] = "rbxassetid://10734951535",
-			["shieldoff"] = "rbxassetid://10734951684",
-			["shirt"] = "rbxassetid://10734952036",
-			["shoppingbag"] = "rbxassetid://10734952273",
-			["shoppingcart"] = "rbxassetid://10734952479",
-			["shovel"] = "rbxassetid://10734952773",
-			["showerhead"] = "rbxassetid://10734952942",
-			["shrink"] = "rbxassetid://10734953073",
-			["shrub"] = "rbxassetid://10734953241",
-			["shuffle"] = "rbxassetid://10734953451",
-			["sidebar"] = "rbxassetid://10734954301",
-			["sidebarclose"] = "rbxassetid://10734953715",
-			["sidebaropen"] = "rbxassetid://10734954000",
-			["sigma"] = "rbxassetid://10734954538",
-			["signal"] = "rbxassetid://10734961133",
-			["signalhigh"] = "rbxassetid://10734954807",
-			["signallow"] = "rbxassetid://10734955080",
-			["signalmedium"] = "rbxassetid://10734955336",
-			["signalzero"] = "rbxassetid://10734960878",
-			["siren"] = "rbxassetid://10734961284",
-			["skipback"] = "rbxassetid://10734961526",
-			["skipforward"] = "rbxassetid://10734961809",
-			["skull"] = "rbxassetid://10734962068",
-			["slack"] = "rbxassetid://10734962339",
-			["slash"] = "rbxassetid://10734962600",
-			["slice"] = "rbxassetid://10734963024",
-			["sliders"] = "rbxassetid://10734963400",
-			["slidershorizontal"] = "rbxassetid://10734963191",
-			["smartphone"] = "rbxassetid://10734963940",
-			["smartphonecharging"] = "rbxassetid://10734963671",
-			["smile"] = "rbxassetid://10734964441",
-			["smileplus"] = "rbxassetid://10734964188",
-			["snowflake"] = "rbxassetid://10734964600",
-			["sofa"] = "rbxassetid://10734964852",
-			["sortasc"] = "rbxassetid://10734965115",
-			["sortdesc"] = "rbxassetid://10734965287",
-			["speaker"] = "rbxassetid://10734965419",
-			["sprout"] = "rbxassetid://10734965572",
-			["square"] = "rbxassetid://10734965702",
-			["star"] = "rbxassetid://10734966248",
-			["starhalf"] = "rbxassetid://10734965897",
-			["staroff"] = "rbxassetid://10734966097",
-			["stethoscope"] = "rbxassetid://10734966384",
-			["sticker"] = "rbxassetid://10734972234",
-			["stickynote"] = "rbxassetid://10734972463",
-			["stopcircle"] = "rbxassetid://10734972621",
-			["stretchhorizontal"] = "rbxassetid://10734972862",
-			["stretchvertical"] = "rbxassetid://10734973130",
-			["strikethrough"] = "rbxassetid://10734973290",
-			["subscript"] = "rbxassetid://10734973457",
-			["sun"] = "rbxassetid://10734974297",
-			["sundim"] = "rbxassetid://10734973645",
-			["sunmedium"] = "rbxassetid://10734973778",
-			["sunmoon"] = "rbxassetid://10734973999",
-			["sunsnow"] = "rbxassetid://10734974130",
-			["sunrise"] = "rbxassetid://10734974522",
-			["sunset"] = "rbxassetid://10734974689",
-			["superscript"] = "rbxassetid://10734974850",
-			["swissfranc"] = "rbxassetid://10734975024",
-			["switchcamera"] = "rbxassetid://10734975214",
-			["sword"] = "rbxassetid://10734975486",
-			["swords"] = "rbxassetid://10734975692",
-			["syringe"] = "rbxassetid://10734975932",
-			["table"] = "rbxassetid://10734976230",
-			["table2"] = "rbxassetid://10734976097",
-			["tablet"] = "rbxassetid://10734976394",
-			["tag"] = "rbxassetid://10734976528",
-			["tags"] = "rbxassetid://10734976739",
-			["target"] = "rbxassetid://10734977012",
-			["tent"] = "rbxassetid://10734981750",
-			["terminal"] = "rbxassetid://10734982144",
-			["terminalsquare"] = "rbxassetid://10734981995",
-			["textcursor"] = "rbxassetid://10734982395",
-			["textcursorinput"] = "rbxassetid://10734982297",
-			["thermometer"] = "rbxassetid://10734983134",
-			["thermometersnowflake"] = "rbxassetid://10734982571",
-			["thermometersun"] = "rbxassetid://10734982771",
-			["thumbsdown"] = "rbxassetid://10734983359",
-			["thumbsup"] = "rbxassetid://10734983629",
-			["ticket"] = "rbxassetid://10734983868",
-			["timer"] = "rbxassetid://10734984606",
-			["timeroff"] = "rbxassetid://10734984138",
-			["timerreset"] = "rbxassetid://10734984355",
-			["toggleleft"] = "rbxassetid://10734984834",
-			["toggleright"] = "rbxassetid://10734985040",
-			["tornado"] = "rbxassetid://10734985247",
-			["toybrick"] = "rbxassetid://10747361919",
-			["train"] = "rbxassetid://10747362105",
-			["trash"] = "rbxassetid://10747362393",
-			["trash2"] = "rbxassetid://10747362241",
-			["treedeciduous"] = "rbxassetid://10747362534",
-			["treepine"] = "rbxassetid://10747362748",
-			["trees"] = "rbxassetid://10747363016",
-			["trendingdown"] = "rbxassetid://10747363205",
-			["trendingup"] = "rbxassetid://10747363465",
-			["triangle"] = "rbxassetid://10747363621",
-			["trophy"] = "rbxassetid://10747363809",
-			["truck"] = "rbxassetid://10747364031",
-			["tv"] = "rbxassetid://10747364593",
-			["tv2"] = "rbxassetid://10747364302",
-			["type"] = "rbxassetid://10747364761",
-			["umbrella"] = "rbxassetid://10747364971",
-			["underline"] = "rbxassetid://10747365191",
-			["undo"] = "rbxassetid://10747365484",
-			["undo2"] = "rbxassetid://10747365359",
-			["unlink"] = "rbxassetid://10747365771",
-			["unlink2"] = "rbxassetid://10747397871",
-			["unlock"] = "rbxassetid://10747366027",
-			["upload"] = "rbxassetid://10747366434",
-			["uploadcloud"] = "rbxassetid://10747366266",
-			["usb"] = "rbxassetid://10747366606",
-			["user"] = "rbxassetid://10747373176",
-			["usercheck"] = "rbxassetid://10747371901",
-			["usercog"] = "rbxassetid://10747372167",
-			["userminus"] = "rbxassetid://10747372346",
-			["userplus"] = "rbxassetid://10747372702",
-			["userx"] = "rbxassetid://10747372992",
-			["users"] = "rbxassetid://10747373426",
-			["utensils"] = "rbxassetid://10747373821",
-			["utensilscrossed"] = "rbxassetid://10747373629",
-			["venetianmask"] = "rbxassetid://10747374003",
-			["verified"] = "rbxassetid://10747374131",
-			["vibrate"] = "rbxassetid://10747374489",
-			["vibrateoff"] = "rbxassetid://10747374269",
-			["video"] = "rbxassetid://10747374938",
-			["videooff"] = "rbxassetid://10747374721",
-			["view"] = "rbxassetid://10747375132",
-			["voicemail"] = "rbxassetid://10747375281",
-			["volume"] = "rbxassetid://10747376008",
-			["volume1"] = "rbxassetid://10747375450",
-			["volume2"] = "rbxassetid://10747375679",
-			["volumex"] = "rbxassetid://10747375880",
-			["wallet"] = "rbxassetid://10747376205",
-			["wand"] = "rbxassetid://10747376565",
-			["wand2"] = "rbxassetid://10747376349",
-			["watch"] = "rbxassetid://10747376722",
-			["waves"] = "rbxassetid://10747376931",
-			["webcam"] = "rbxassetid://10747381992",
-			["wifi"] = "rbxassetid://10747382504",
-			["wifioff"] = "rbxassetid://10747382268",
-			["wind"] = "rbxassetid://10747382750",
-			["wraptext"] = "rbxassetid://10747383065",
-			["wrench"] = "rbxassetid://10747383470",
-			["x"] = "rbxassetid://10747384394",
-			["xcircle"] = "rbxassetid://10747383819",
-			["xoctagon"] = "rbxassetid://10747384037",
-			["xsquare"] = "rbxassetid://10747384217",
-			["zoomin"] = "rbxassetid://10747384552",
-			["zoomout"] = "rbxassetid://10747384679"
+        ["activity"] = "rbxassetid://10709752035",
     }
 }
 
 local _isfolder = isfolder or function() return true end
 local _makefolder = makefolder or function() end
-local _writefile = writefile or function(path, data) warn("File saving not supported on this executor.") end
+local _writefile = writefile or function(path, data) warn("File saving not supported.") end
 local _readfile = readfile or function() return "{}" end
 local _listfiles = listfiles or function() return {} end
 local _delfile = delfile or function() warn("File deletion not supported.") end
 
 local function Create(className, properties)
     local instance = Instance.new(className)
-    if className == "TextBox" then
-        instance.Text = ""
-    end
-    for k, v in pairs(properties or {}) do
-        instance[k] = v
-    end
+    if className == "TextBox" then instance.Text = "" end
+    for k, v in pairs(properties or {}) do instance[k] = v end
     if (className == "TextLabel" or className == "TextButton" or className == "TextBox") then
         if properties.TextSize and properties.RichText ~= true then
             instance.TextScaled = true
@@ -862,9 +39,7 @@ local function BuildSearchIndex(card)
     local parts = {}
     for _, desc in ipairs(card:GetDescendants()) do
         if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
-            if desc.Text and desc.Text ~= "" then
-                table.insert(parts, desc.Text:lower())
-            end
+            if desc.Text and desc.Text ~= "" then table.insert(parts, desc.Text:lower()) end
         end
     end
     return table.concat(parts, " ")
@@ -879,7 +54,7 @@ local function Tween(instance, properties, duration)
 end
 
 local function AddBounce(button, scaleFactor)
-    scaleFactor = scaleFactor or 0.96
+    scaleFactor = scaleFactor or 0.97
     local scaleObj = button:FindFirstChild("UIScale") or Create("UIScale", {Parent = button, Scale = 1})
     button.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -891,9 +66,7 @@ local function AddBounce(button, scaleFactor)
             Tween(scaleObj, {Scale = 1}, 0.15)
         end
     end)
-    button.MouseLeave:Connect(function()
-        Tween(scaleObj, {Scale = 1}, 0.15)
-    end)
+    button.MouseLeave:Connect(function() Tween(scaleObj, {Scale = 1}, 0.15) end)
 end
 
 local function MakeDraggable(topbar, object)
@@ -906,9 +79,7 @@ local function MakeDraggable(topbar, object)
             dragStart = input.Position
             startPos = object.Position
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
         end
     end)
@@ -931,7 +102,6 @@ local CardColor = Color3.fromRGB(30, 20, 22)
 local HoverColor = Color3.fromRGB(45, 28, 32)
 local TextColor = Color3.fromRGB(240, 240, 240)
 local SubTextColor = Color3.fromRGB(170, 150, 150)
-
 local GlobalNotifContainer
 
 function Library:Notify(options)
@@ -943,7 +113,6 @@ function Library:Notify(options)
     local Notif = Create("Frame", {Parent = GlobalNotifContainer, BackgroundColor3 = Color3.fromRGB(25, 18, 20), Size = UDim2.new(1, 0, 0, 60), BackgroundTransparency = 1, ZIndex = 201, ClipsDescendants = true})
     Create("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 8)})
     local Stroke = Create("UIStroke", {Parent = Notif, Color = AccentColor, Thickness = 1.5, Transparency = 1})
-
     local TitleText = Create("TextLabel", {Parent = Notif, Text = title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 12), Size = UDim2.new(1, -24, 0, 14), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202})
     local DescText = Create("TextLabel", {Parent = Notif, Text = desc, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 28), Size = UDim2.new(1, -24, 0, 14), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202})
 
@@ -963,60 +132,21 @@ function Library:Notify(options)
 end
 
 function Library:CreateWindow(options)
-    local hubName = "Kenz Hub"
-    local subText = "Made By Kenz & Death"
-    local subColor = AccentColor
-    local sphTextToggle = false
-    local sphWords = "KH"
-    local sphImage = "rbxassetid://113406531660767"
-    local topbarLogo = "rbxassetid://113406531660767"
-    local logoSize = 28
-    local sphIconSize = 24
-
-    if type(options) == "table" then
-        hubName = options.Title or hubName
-        subText = options.Subtitle or subText
-        subColor = options.SubtitleColor or AccentColor
-        if options.SphereText ~= nil then
-            sphTextToggle = options.SphereText
-        end
-        if options.SphereWords ~= nil then
-            local wordList = string.split(tostring(options.SphereWords), " ")
-            if #wordList > 2 then
-                sphWords = wordList[1] .. " " .. wordList[2]
-            else
-                sphWords = tostring(options.SphereWords)
-            end
-        end
-        if options.SphereImage ~= nil then
-            sphImage = options.SphereImage
-        end
-        if options.Logo ~= nil then
-            topbarLogo = options.Logo
-        end
-        logoSize = options.LogoSize or 28
-        sphIconSize = options.SphereIconSize or 24
-    elseif type(options) == "string" then
-        hubName = options
-    end
+    local hubName = options.Title or "Kenz Hub"
+    local subText = options.Subtitle or "Made By Kenz & Death"
+    local subColor = options.SubtitleColor or AccentColor
+    local sphTextToggle = options.SphereText or false
+    local sphWords = tostring(options.SphereWords or "KH")
+    local sphImage = options.SphereImage or "rbxassetid://113406531660767"
+    local topbarLogo = options.Logo or "rbxassetid://113406531660767"
+    local logoSize = options.LogoSize or 28
+    local sphIconSize = options.SphereIconSize or 24
 
     local uniqueID = HttpService:GenerateGUID(false)
     local parentGui = (gethui and gethui()) or (RunService:IsStudio() and game.Players.LocalPlayer:WaitForChild("PlayerGui")) or CoreGui
-    local ScreenGui = Create("ScreenGui", {
-        Name = "KenzHub_UI_" .. uniqueID,
-        Parent = parentGui,
-        ResetOnSpawn = false,
-        IgnoreGuiInset = true
-    })
+    local ScreenGui = Create("ScreenGui", {Name = "KenzHub_UI_" .. uniqueID, Parent = parentGui, ResetOnSpawn = false, IgnoreGuiInset = true})
 
-    local NotifContainer = Create("Frame", {
-        Parent = ScreenGui,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(0, 280, 1, -20),
-        Position = UDim2.new(1, -300, 0, 10),
-        ZIndex = 200,
-        Active = false
-    })
+    local NotifContainer = Create("Frame", {Parent = ScreenGui, BackgroundTransparency = 1, Size = UDim2.new(0, 280, 1, -20), Position = UDim2.new(1, -300, 0, 10), ZIndex = 200, Active = false})
     Create("UIListLayout", {Parent = NotifContainer, VerticalAlignment = Enum.VerticalAlignment.Bottom, HorizontalAlignment = Enum.HorizontalAlignment.Right, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10)})
     GlobalNotifContainer = NotifContainer
 
@@ -1034,107 +164,53 @@ function Library:CreateWindow(options)
     local InfoScroll = Create("ScrollingFrame", {Parent = InfoCard, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 1, -50), Position = UDim2.new(0, 15, 0, 40), CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = AccentColor, BorderSizePixel = 0, ZIndex = 152})
     local InfoLayout = Create("UIListLayout", {Parent = InfoScroll, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
     local InfoDesc = Create("TextLabel", {Parent = InfoScroll, Text = "", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y, ZIndex = 152, TextTransparency = 1})
-    local InfoExampleBox = Create("Frame", {Parent = InfoScroll, BackgroundColor3 = Color3.fromRGB(15, 10, 12), Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, ZIndex = 152})
-    Create("UICorner", {Parent = InfoExampleBox, CornerRadius = UDim.new(0, 6)})
-    Create("UIStroke", {Parent = InfoExampleBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
-    local InfoExampleText = Create("TextLabel", {Parent = InfoExampleBox, Text = "", Font = Enum.Font.Code, TextSize = 11, TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 0), Position = UDim2.new(0, 8, 0, 8), TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y, ZIndex = 152, TextTransparency = 1})
-    Create("UIPadding", {Parent = InfoExampleBox, PaddingBottom = UDim.new(0, 8)})
-
     InfoLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() InfoScroll.CanvasSize = UDim2.new(0, 0, 0, InfoLayout.AbsoluteContentSize.Y + 10) end)
-
-    local function OpenInfoWindow(data)
-        InfoTitle.Text = data.Title or "Information"
-        InfoDesc.Text = data.Description or "No description provided."
-        if data.Example then
-            InfoExampleText.Text = data.Example
-            InfoExampleBox.Visible = true
-        else
-            InfoExampleBox.Visible = false
-        end
-        InfoOverlay.Visible = true
-        Tween(InfoOverlay, {BackgroundTransparency = 0.4}, 0.3)
-        Tween(InfoCard, {BackgroundTransparency = 0}, 0.3)
-        Tween(InfoCard:FindFirstChild("UIStroke"), {Transparency = 0.3}, 0.3)
-        Tween(InfoScale, {Scale = 1}, 0.3)
-        Tween(InfoTitle, {TextTransparency = 0}, 0.3)
-        Tween(InfoCloseBtn, {TextTransparency = 0}, 0.3)
-        Tween(InfoDesc, {TextTransparency = 0}, 0.3)
-        if data.Example then Tween(InfoExampleText, {TextTransparency = 0}, 0.3) end
-    end
 
     InfoCloseBtn.MouseButton1Click:Connect(function()
         Tween(InfoOverlay, {BackgroundTransparency = 1}, 0.3)
         Tween(InfoCard, {BackgroundTransparency = 1}, 0.3)
-        Tween(InfoCard:FindFirstChild("UIStroke"), {Transparency = 1}, 0.3)
         Tween(InfoScale, {Scale = 0}, 0.3)
-        Tween(InfoTitle, {TextTransparency = 1}, 0.3)
-        Tween(InfoCloseBtn, {TextTransparency = 1}, 0.3)
-        Tween(InfoDesc, {TextTransparency = 1}, 0.3)
-        if InfoExampleBox.Visible then Tween(InfoExampleText, {TextTransparency = 1}, 0.3) end
         task.wait(0.3)
         InfoOverlay.Visible = false
     end)
 
+    local function OpenInfoWindow(data)
+        InfoTitle.Text = data.Title or "Information"
+        InfoDesc.Text = data.Description or "No description provided."
+        InfoOverlay.Visible = true
+        Tween(InfoOverlay, {BackgroundTransparency = 0.4}, 0.3)
+        Tween(InfoCard, {BackgroundTransparency = 0}, 0.3)
+        Tween(InfoScale, {Scale = 1}, 0.3)
+        Tween(InfoTitle, {TextTransparency = 0}, 0.3)
+        Tween(InfoCloseBtn, {TextTransparency = 0}, 0.3)
+        Tween(InfoDesc, {TextTransparency = 0}, 0.3)
+    end
+
     local function AddInfoIcon(parent, pos, data)
         if not data then return end
-        local Btn = Create("TextButton", {Parent = parent, Text = "?", Font = Enum.Font.GothamBold, TextSize = 9, TextColor3 = SubTextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32), Size = UDim2.new(0, 15, 0, 15), Position = pos, AutoButtonColor = false, ZIndex = 5})
+        local Btn = Create("TextButton", {Parent = parent, Text = "?", Font = Enum.Font.GothamBold, TextSize = 9, TextColor3 = SubTextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32), Size = UDim2.new(0, 16, 0, 16), Position = pos, AutoButtonColor = false, ZIndex = 5})
         Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(1, 0)})
         AddBounce(Btn)
-        Btn.MouseEnter:Connect(function() Tween(Btn, {TextColor3 = TextColor, BackgroundColor3 = AccentColor}, 0.2) end)
-        Btn.MouseLeave:Connect(function() Tween(Btn, {TextColor3 = SubTextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32)}, 0.2) end)
         Btn.MouseButton1Click:Connect(function() OpenInfoWindow(data) end)
     end
 
-    local MainFrame = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 500, 0, 320), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ClipsDescendants = true, BackgroundTransparency = 1, Active = true})
+    local MainFrame = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 560, 0, 360), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ClipsDescendants = true, BackgroundTransparency = 1, Active = true})
     local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.75})
     Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 8)})
     Create("UIStroke", {Parent = MainFrame, Color = AccentColor, Thickness = 1.5})
-
     Tween(MainScale, {Scale = 1}, 0.5)
     Tween(MainFrame, {BackgroundTransparency = 0}, 0.5)
 
-    local BottomDragHitbox = Create("Frame", {
-        Parent = ScreenGui,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(0, 300, 0, 26),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        ZIndex = 145,
-        Active = true
-    })
-
-    local FloatingBottomBar = Create("Frame", {
-        Parent = BottomDragHitbox,
-        BackgroundColor3 = CardColor,
-        BackgroundTransparency = 0,
-        Size = UDim2.new(1, 0, 0, 5),
-        Position = UDim2.new(0, 0, 0.5, -2.5),
-        ZIndex = 146
-    })
+    local BottomDragHitbox = Create("Frame", {Parent = ScreenGui, BackgroundTransparency = 1, Size = UDim2.new(0, 300, 0, 26), AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 145, Active = true})
+    local FloatingBottomBar = Create("Frame", {Parent = BottomDragHitbox, BackgroundColor3 = CardColor, BackgroundTransparency = 0, Size = UDim2.new(1, 0, 0, 5), Position = UDim2.new(0, 0, 0.5, -2.5), ZIndex = 146})
     Create("UICorner", {Parent = FloatingBottomBar, CornerRadius = UDim.new(1, 0)})
-    local BottomBarStroke = Create("UIStroke", {
-        Parent = FloatingBottomBar, 
-        Color = Color3.fromRGB(60, 35, 40), 
-        Thickness = 1, 
-        Transparency = 0
-    })
-
     MakeDraggable(BottomDragHitbox, MainFrame)
 
     RunService.RenderStepped:Connect(function()
         if MainFrame and MainFrame.Visible then
             BottomDragHitbox.Visible = true
             local currentScale = MainScale.Scale
-            local frameHeight = 320 * currentScale
-            local frameWidth = 500 * currentScale
-            BottomDragHitbox.Position = UDim2.new(
-                MainFrame.Position.X.Scale,
-                MainFrame.Position.X.Offset,
-                MainFrame.Position.Y.Scale,
-                MainFrame.Position.Y.Offset + (frameHeight / 2) + 16
-            )
-            BottomDragHitbox.Size = UDim2.new(0, frameWidth * 0.6, 0, 26 * currentScale)
-            FloatingBottomBar.Size = UDim2.new(1, 0, 0, 5 * currentScale)
-            FloatingBottomBar.Position = UDim2.new(0, 0, 0.5, -(2.5 * currentScale))
+            BottomDragHitbox.Position = UDim2.new(MainFrame.Position.X.Scale, MainFrame.Position.X.Offset, MainFrame.Position.Y.Scale, MainFrame.Position.Y.Offset + ((360 * currentScale) / 2) + 16)
         else
             BottomDragHitbox.Visible = false
         end
@@ -1143,32 +219,23 @@ function Library:CreateWindow(options)
     local TopBar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 35), Position = UDim2.new(0, 0, 0, 0), Active = true})
     MakeDraggable(TopBar, MainFrame)
     
-    local titleOffsetX = 12
     if topbarLogo then
-        local TopbarIcon = Create("ImageLabel", {
-            Parent = TopBar,
-            BackgroundTransparency = 1,
-            Size = UDim2.new(0, logoSize, 0, logoSize),
-            Position = UDim2.new(0, 6, 0.5, -(logoSize / 2)),
-            Image = topbarLogo,
-            ScaleType = Enum.ScaleType.Fit
-        })
-        titleOffsetX = 6 + logoSize + 6
+        Create("ImageLabel", {Parent = TopBar, BackgroundTransparency = 1, Size = UDim2.new(0, logoSize, 0, logoSize), Position = UDim2.new(0, 6, 0.5, -(logoSize / 2)), Image = topbarLogo, ScaleType = Enum.ScaleType.Fit})
     end
 
-    local TitleContainer = Create("Frame", {Parent = TopBar, BackgroundTransparency = 1, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(0, titleOffsetX, 0, 0)})
-    local Title = Create("TextLabel", {Parent = TitleContainer, Text = hubName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = AccentColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(1, 0, 0, 14), TextXAlignment = Enum.TextXAlignment.Left})
-    local Subtitle = Create("TextLabel", {Parent = TitleContainer, Text = subText, Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = subColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 18), Size = UDim2.new(1, 0, 0, 10), TextXAlignment = Enum.TextXAlignment.Left})
+    local TitleContainer = Create("Frame", {Parent = TopBar, BackgroundTransparency = 1, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(0, 40, 0, 0)})
+    Create("TextLabel", {Parent = TitleContainer, Text = hubName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = AccentColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(1, 0, 0, 14), TextXAlignment = Enum.TextXAlignment.Left})
+    Create("TextLabel", {Parent = TitleContainer, Text = subText, Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = subColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 18), Size = UDim2.new(1, 0, 0, 10), TextXAlignment = Enum.TextXAlignment.Left})
 
-    local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 180, 0, 22), Position = UDim2.new(0, 150, 0.5, -11)})
+    local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 200, 0, 22), Position = UDim2.new(0, 180, 0.5, -11)})
     Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 5)})
-    local SearchIcon = Create("ImageLabel", {Parent = SearchBar, BackgroundTransparency = 1, Image = "rbxassetid://6031154871", ImageColor3 = SubTextColor, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(0, 6, 0.5, -6)})
-    local SearchInput = Create("TextBox", {Parent = SearchBar, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 24, 0, 0), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, PlaceholderText = "Search..", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+    Create("ImageLabel", {Parent = SearchBar, BackgroundTransparency = 1, Image = "rbxassetid://6031154871", ImageColor3 = SubTextColor, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(0, 6, 0.5, -6)})
+    local SearchInput = Create("TextBox", {Parent = SearchBar, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 24, 0, 0), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, PlaceholderText = "Search features...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
 
     local CloseBtn = Create("TextButton", {Parent = TopBar, Text = "X", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 25, 1, 0), Position = UDim2.new(1, -28, 0, 0)})
     local MinBtn = Create("TextButton", {Parent = TopBar, Text = "—", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 25, 1, 0), Position = UDim2.new(1, -53, 0, 0)})
 
-    local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 130, 1, -35), Position = UDim2.new(0, 0, 0, 35), Active = true})
+    local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 145, 1, -35), Position = UDim2.new(0, 0, 0, 35), Active = true})
     local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -16, 0, 22), Position = UDim2.new(0, 8, 0, 4), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
@@ -1176,9 +243,9 @@ function Library:CreateWindow(options)
     
     local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, -32), Position = UDim2.new(0, 8, 0, 30), ScrollBarThickness = 0})
     Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
-    Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(50, 35, 40), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -35), Position = UDim2.new(0, 130, 0, 35)})
+    Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(50, 35, 40), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -35), Position = UDim2.new(0, 145, 0, 35)})
 
-    local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -132, 1, -35), Position = UDim2.new(0, 132, 0, 35), Active = true})
+    local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -147, 1, -35), Position = UDim2.new(0, 147, 0, 35), Active = true})
 
     local Sphere = Create("ImageButton", {Parent = ScreenGui, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 0.2, Size = UDim2.new(0, 46, 0, 46), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), Visible = false, AutoButtonColor = false, ImageTransparency = 1, ClipsDescendants = true})
     Create("UICorner", {Parent = Sphere, CornerRadius = UDim.new(0, 8)})
@@ -1187,31 +254,17 @@ function Library:CreateWindow(options)
     local SphereTextLabel = Create("TextLabel", {Parent = Sphere, Text = sphWords, Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), TextTransparency = 1, Visible = sphTextToggle})
     MakeDraggable(Sphere, Sphere)
 
-    local Window = {CurrentTab = nil, Tabs = {}, Title = Title, AllCards = {}, MainFrame = MainFrame, CurrentTransparency = 0, ConfigElements = {}}
-
-    function Window:SetTransparency(val)
-        Window.CurrentTransparency = val
-        if MainFrame.Visible then
-            Tween(MainFrame, {BackgroundTransparency = val}, 0.3)
-            Tween(FloatingBottomBar, {BackgroundTransparency = val > 0 and 0.2 or 0}, 0.3)
-        end
-    end
+    local Window = {CurrentTab = nil, Tabs = {}, AllCards = {}, MainFrame = MainFrame, ConfigElements = {}}
 
     MinBtn.MouseButton1Click:Connect(function()
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
-        Tween(FloatingBottomBar, {BackgroundTransparency = 1}, 0.4)
-        Tween(BottomBarStroke, {Transparency = 1}, 0.4)
         task.wait(0.3)
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
         Sphere.Visible = true
         Tween(Sphere, {Size = UDim2.new(0, 46, 0, 46)}, 0.4)
-        if not sphTextToggle then
-            Tween(SphereImageLabel, {ImageTransparency = 0}, 0.4)
-        else
-            Tween(SphereTextLabel, {TextTransparency = 0}, 0.4)
-        end
+        if not sphTextToggle then Tween(SphereImageLabel, {ImageTransparency = 0}, 0.4) else Tween(SphereTextLabel, {TextTransparency = 0}, 0.4) end
     end)
 
     Sphere.MouseButton1Click:Connect(function()
@@ -1223,246 +276,112 @@ function Library:CreateWindow(options)
         MainFrame.Visible = true
         BottomDragHitbox.Visible = true
         Tween(MainScale, {Scale = 1}, 0.4)
-        Tween(MainFrame, {BackgroundTransparency = Window.CurrentTransparency}, 0.4)
-        Tween(FloatingBottomBar, {BackgroundTransparency = Window.CurrentTransparency > 0 and 0.2 or 0}, 0.4)
-        Tween(BottomBarStroke, {Transparency = 0}, 0.4)
+        Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
     end)
 
-    local Popup = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 100, Visible = false, Active = true})
-    local PopupCard = Create("Frame", {Parent = Popup, BackgroundColor3 = Color3.fromRGB(22, 16, 18), Size = UDim2.new(0, 290, 0, 150), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 101, BackgroundTransparency = 1, ClipsDescendants = false})
-    Create("UICorner", {Parent = PopupCard, CornerRadius = UDim.new(0, 12)})
-    local PopupScale = Create("UIScale", {Parent = PopupCard, Scale = 0.8})
-    local PopupStroke = Create("UIStroke", {Parent = PopupCard, Color = Color3.fromRGB(60, 35, 40), Thickness = 1, Transparency = 1})
-    local PopupTitle = Create("TextLabel", {Parent = PopupCard, Text = "Exit Application", Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 20), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center})
-    local PopupText = Create("TextLabel", {Parent = PopupCard, Text = "Are you sure you want to close Kenz Hub? Unsaved configurations might be lost.", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 50), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true})
-    local YesBtn = Create("TextButton", {Parent = PopupCard, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = AccentColor, Size = UDim2.new(0, 115, 0, 32), Position = UDim2.new(0.5, 8, 0, 98), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
-    Create("UICorner", {Parent = YesBtn, CornerRadius = UDim.new(0, 6)})
-    AddBounce(YesBtn)
-    local NoBtn = Create("TextButton", {Parent = PopupCard, Text = "Cancel", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32), Size = UDim2.new(0, 115, 0, 32), Position = UDim2.new(0.5, -123, 0, 98), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
-    Create("UICorner", {Parent = NoBtn, CornerRadius = UDim.new(0, 6)})
-    AddBounce(NoBtn)
-
-    CloseBtn.MouseButton1Click:Connect(function()
-        Popup.Visible = true
-        Tween(Popup, {BackgroundTransparency = 0.5}, 0.3)
-        Tween(PopupCard, {BackgroundTransparency = 0}, 0.3)
-        Tween(PopupScale, {Scale = 1}, 0.3)
-        Tween(PopupStroke, {Transparency = 0}, 0.3)
-        Tween(PopupTitle, {TextTransparency = 0}, 0.3)
-        Tween(PopupText, {TextTransparency = 0}, 0.3)
-        Tween(YesBtn, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
-        Tween(NoBtn, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
-    end)
-
-    YesBtn.MouseButton1Click:Connect(function()
-        Tween(Popup, {BackgroundTransparency = 1}, 0.3)
-        Tween(PopupCard, {BackgroundTransparency = 1}, 0.3)
-        Tween(PopupStroke, {Transparency = 1}, 0.3)
-        Tween(PopupTitle, {TextTransparency = 1}, 0.3)
-        Tween(PopupText, {TextTransparency = 1}, 0.3)
-        Tween(YesBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
-        Tween(NoBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
-        Tween(MainScale, {Scale = 0.8}, 0.3)
-        Tween(MainFrame, {BackgroundTransparency = 1}, 0.3)
-        Tween(FloatingBottomBar, {BackgroundTransparency = 1}, 0.3)
-        Tween(BottomBarStroke, {Transparency = 1}, 0.3)
-
-        for _, desc in ipairs(MainFrame:GetDescendants()) do
-            if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then Tween(desc, {TextTransparency = 1}, 0.3) if desc.BackgroundTransparency < 1 then Tween(desc, {BackgroundTransparency = 1}, 0.3) end
-            elseif desc:IsA("ImageLabel") or desc:IsA("ImageButton") then Tween(desc, {ImageTransparency = 1}, 0.3)
-            elseif desc:IsA("Frame") or desc:IsA("ScrollingFrame") then if desc.BackgroundTransparency < 1 then Tween(desc, {BackgroundTransparency = 1}, 0.3) end
-            elseif desc:IsA("UIStroke") then Tween(desc, {Transparency = 1}, 0.3) end
-        end
-        task.wait(0.35)
-        ScreenGui:Destroy()
-    end)
-
-    NoBtn.MouseButton1Click:Connect(function()
-        Tween(Popup, {BackgroundTransparency = 1}, 0.3)
-        Tween(PopupCard, {BackgroundTransparency = 1}, 0.3)
-        Tween(PopupScale, {Scale = 0.8}, 0.3)
-        Tween(PopupStroke, {Transparency = 1}, 0.3)
-        Tween(PopupTitle, {TextTransparency = 1}, 0.3)
-        Tween(PopupText, {TextTransparency = 1}, 0.3)
-        Tween(YesBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
-        Tween(NoBtn, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
-        task.wait(0.3)
-        Popup.Visible = false
-    end)
+    CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         local query = TabSearchBox.Text:lower()
         for _, tabInfo in ipairs(Window.Tabs) do
-            if query == "" or string.find(tabInfo.Txt.Text:lower(), query) then
-                tabInfo.Button.Visible = true
-            else
-                tabInfo.Button.Visible = false
-            end
+            tabInfo.Button.Visible = (query == "" or string.find(tabInfo.Txt.Text:lower(), query) ~= nil)
         end
     end)
 
     SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
         local query = SearchInput.Text:lower()
         if query == "" then
-            for _, data in ipairs(Window.AllCards) do
-                data.Card.Parent = data.OrigParent
-                data.Card.Visible = true
-            end
+            for _, data in ipairs(Window.AllCards) do data.Card.Visible = true end
         else
             if not Window.CurrentTab or not Window.CurrentTab.CurrentPage then return end
-            local activeLeft = Window.CurrentTab.CurrentPage.LeftCol
-            local activeRight = Window.CurrentTab.CurrentPage.RightCol
-            local placeLeft = true
             for _, data in ipairs(Window.AllCards) do
                 local card = data.Card
                 if data.Tab == Window.CurrentTab then
-                    if not data.SearchIndex then
-                        data.SearchIndex = BuildSearchIndex(card)
-                    end
-                    local match = string.find(data.SearchIndex, query, 1, true)
-                    if match then
-                        card.Parent = placeLeft and activeLeft or activeRight
-                        placeLeft = not placeLeft
-                        card.Visible = true
-                    else
-                        card.Visible = false
-                    end
+                    if not data.SearchIndex then data.SearchIndex = BuildSearchIndex(card) end
+                    card.Visible = string.find(data.SearchIndex, query, 1, true) ~= nil
                 else
-                    card.Parent = data.OrigParent
                     card.Visible = true
                 end
             end
         end
     end)
 
-    function Window:CreateTab(tabName, icon, isDefault, isLocked)
-        local isWhitelisted = false
-        local player = game:GetService("Players").LocalPlayer
-        if player then
-            for _, allowedUser in ipairs(Library.WhitelistedUsers) do
-                if player.Name == allowedUser or player.DisplayName == allowedUser then
-                    isWhitelisted = true
-                    break
-                end
-            end
-        end
-
+    function Window:CreateTab(tabName, icon)
         local TabBtn = Create("TextButton", {Parent = TabContainer, Text = "", BackgroundColor3 = HoverColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30), AutoButtonColor = false})
         Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 5)})
         AddBounce(TabBtn, 0.98)
-        local Indicator = Create("Frame", {Name = "Indicator", Parent = TabBtn, BackgroundColor3 = isLocked and Color3.fromRGB(255, 215, 0) or AccentColor, Size = UDim2.new(0, 3, 0, 0), Position = UDim2.new(0, 0, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)})
+        local Indicator = Create("Frame", {Parent = TabBtn, BackgroundColor3 = AccentColor, Size = UDim2.new(0, 3, 0, 0), Position = UDim2.new(0, 0, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)})
         Create("UICorner", {Parent = Indicator, CornerRadius = UDim.new(1, 0)})
 
         local textOffset = 12
         if icon then
             local resolvedIcon = Library.Icons[icon] or icon
-            Create("ImageLabel", {
-                Parent = TabBtn,
-                BackgroundTransparency = 1,
-                Image = resolvedIcon,
-                ImageColor3 = SubTextColor,
-                Size = UDim2.new(0, 16, 0, 16),
-                Position = UDim2.new(0, 10, 0.5, -8),
-                Name = "TabIcon"
-            })
+            Create("ImageLabel", {Parent = TabBtn, BackgroundTransparency = 1, Image = resolvedIcon, ImageColor3 = SubTextColor, Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 10, 0.5, -8), Name = "TabIcon"})
             textOffset = 30
         end
 
         local Txt = Create("TextLabel", {Parent = TabBtn, Text = tabName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -(textOffset + 18), 1, 0), Position = UDim2.new(0, textOffset, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-
-        if isLocked then
-            Create("ImageLabel", {Parent = TabBtn, Image = "rbxassetid://6031082533", ImageColor3 = Color3.fromRGB(255, 215, 0), BackgroundTransparency = 1, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(1, -18, 0.5, -6)})
-        end
-
         local TabContent = Create("Frame", {Parent = ContentArea, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Visible = false})
         local PageNav = Create("Frame", {Parent = TabContent, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30)})
         Create("UIListLayout", {Parent = PageNav, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), VerticalAlignment = Enum.VerticalAlignment.Center})
         local PageContainer = Create("Frame", {Parent = TabContent, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -30), Position = UDim2.new(0, 0, 0, 30)})
 
-        local TabConfig = {
-            Button = TabBtn, 
-            Content = TabContent, 
-            Indicator = Indicator, 
-            Txt = Txt, 
-            Pages = {}, 
-            CurrentPage = nil,
-            LastSection = nil,
-            DefaultPage = nil
-        }
+        local TabConfig = {Button = TabBtn, Content = TabContent, Indicator = Indicator, Txt = Txt, Pages = {}, CurrentPage = nil, LastSection = nil, DefaultPage = nil}
         table.insert(Window.Tabs, TabConfig)
 
         local function ensureDefaultPageAndSection()
-            if #TabConfig.Pages == 0 then
-                TabConfig.DefaultPage = TabConfig:CreatePage("Overview")
-            end
-            if not TabConfig.LastSection and TabConfig.DefaultPage then
-                TabConfig.LastSection = TabConfig.DefaultPage:CreateSection("General")
-            end
+            if #TabConfig.Pages == 0 then TabConfig.DefaultPage = TabConfig:CreatePage("Overview") end
+            if not TabConfig.LastSection and TabConfig.DefaultPage then TabConfig.LastSection = TabConfig.DefaultPage:CreateSection("General") end
         end
 
-        function TabConfig:AddSection(data)
-            if #TabConfig.Pages == 0 then
-                TabConfig.DefaultPage = TabConfig:CreatePage("Overview")
-            end
-            local secName = type(data) == "table" and data[1] or data
+        function TabConfig:AddSection(secName)
+            if #TabConfig.Pages == 0 then TabConfig.DefaultPage = TabConfig:CreatePage("Overview") end
             TabConfig.LastSection = TabConfig.DefaultPage:CreateSection(secName)
             return TabConfig.LastSection
         end
 
-        function TabConfig:AddParagraph(data)
+        function TabConfig:AddParagraph(title, desc)
             ensureDefaultPageAndSection()
-            local title = type(data) == "table" and data[1] or ""
-            local desc = type(data) == "table" and data[2] or data
             return TabConfig.LastSection:AddParagraph(title, desc)
         end
 
-        function TabConfig:AddButton(data)
+        function TabConfig:AddButton(name, cb)
             ensureDefaultPageAndSection()
-            local name = type(data) == "table" and data[1] or "Button"
-            local cb = type(data) == "table" and data[2] or nil
             return TabConfig.LastSection:AddButton(name, cb)
         end
 
+        function TabConfig:AddToggle(name, def, cb)
+            ensureDefaultPageAndSection()
+            return TabConfig.LastSection:AddToggle(name, def, cb)
+        end
+
+        function TabConfig:AddSlider(name, min, max, def, cb)
+            ensureDefaultPageAndSection()
+            return TabConfig.LastSection:AddSlider(name, min, max, def, cb)
+        end
+
+        function TabConfig:AddDropdown(name, opts, def, cb)
+            ensureDefaultPageAndSection()
+            return TabConfig.LastSection:AddDropdown(name, opts, def, cb)
+        end
+
         TabBtn.MouseButton1Click:Connect(function()
-            if isLocked and not isWhitelisted then
-                return
-            end
             if Window.CurrentTab == TabConfig then return end
             if Window.CurrentTab then
                 Tween(Window.CurrentTab.Button, {BackgroundTransparency = 1}, 0.2)
                 Tween(Window.CurrentTab.Indicator, {Size = UDim2.new(0, 3, 0, 0)}, 0.2)
                 Tween(Window.CurrentTab.Txt, {TextColor3 = SubTextColor}, 0.2)
-                local oldIcon = Window.CurrentTab.Button:FindFirstChild("TabIcon")
-                if oldIcon then Tween(oldIcon, {ImageColor3 = SubTextColor}, 0.2) end
                 Window.CurrentTab.Content.Visible = false
             end
             Window.CurrentTab = TabConfig
             TabConfig.Content.Visible = true
-            TabConfig.Content.Position = UDim2.new(0, 0, 0, 12)
-            Tween(TabConfig.Content, {Position = UDim2.new(0, 0, 0, 0)}, 0.35)
-
             Tween(TabBtn, {BackgroundTransparency = 0}, 0.2)
             Tween(Indicator, {Size = UDim2.new(0, 3, 0, 16)}, 0.3)
             Tween(Txt, {TextColor3 = TextColor}, 0.2)
-            local currentIcon = TabBtn:FindFirstChild("TabIcon")
-            if currentIcon then Tween(currentIcon, {ImageColor3 = TextColor}, 0.2) end
 
-            if #TabConfig.Pages > 0 then
-                local firstPage = TabConfig.Pages[1]
-                if TabConfig.CurrentPage ~= firstPage then
-                    if TabConfig.CurrentPage then
-                        Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0)
-                        Tween(TabConfig.CurrentPage.Highlight, {Size = UDim2.new(0, 0, 0, 2), BackgroundTransparency = 1}, 0)
-                        TabConfig.CurrentPage.Scroll.Visible = false
-                    end
-                    TabConfig.CurrentPage = firstPage
-                    firstPage.Scroll.Visible = true
-                    firstPage.Scroll.Position = UDim2.new(0, 4, 0, 12)
-                    Tween(firstPage.Scroll, {Position = UDim2.new(0, 4, 0, 4)}, 0.35)
-
-                    Tween(firstPage.Btn, {TextColor3 = TextColor}, 0)
-                    Tween(firstPage.Highlight, {Size = UDim2.new(1, 0, 0, 2), BackgroundTransparency = 0}, 0)
-                end
+            if #TabConfig.Pages > 0 and not TabConfig.CurrentPage then
+                TabConfig.CurrentPage = TabConfig.Pages[1]
+                TabConfig.CurrentPage.Scroll.Visible = true
             end
         end)
 
@@ -1471,15 +390,13 @@ function Library:CreateWindow(options)
             local PageHighlight = Create("Frame", {Parent = PageBtn, BackgroundColor3 = AccentColor, Size = UDim2.new(0, 0, 0, 2), Position = UDim2.new(0.5, 0, 1, -4), AnchorPoint = Vector2.new(0.5, 0), BackgroundTransparency = 1})
             local PageScroll = Create("ScrollingFrame", {Parent = PageContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -8, 1, -8), Position = UDim2.new(0, 4, 0, 4), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(60, 40, 45), Visible = false, BorderSizePixel = 0})
 
-            local LeftColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(0.5, -4, 1, 0)})
-            local RightColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0.5, 4, 0, 0)})
-            local L_Layout = Create("UIListLayout", {Parent = LeftColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
-            local R_Layout = Create("UIListLayout", {Parent = RightColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
-            
-            L_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() PageScroll.CanvasSize = UDim2.new(0, 0, 0, math.max(L_Layout.AbsoluteContentSize.Y, R_Layout.AbsoluteContentSize.Y) + 16) end)
-            R_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() PageScroll.CanvasSize = UDim2.new(0, 0, 0, math.max(L_Layout.AbsoluteContentSize.Y, R_Layout.AbsoluteContentSize.Y) + 16) end)
+            local MainColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, 0)})
+            local M_Layout = Create("UIListLayout", {Parent = MainColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+            M_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
+                PageScroll.CanvasSize = UDim2.new(0, 0, 0, M_Layout.AbsoluteContentSize.Y + 20) 
+            end)
 
-            local PageObj = {Scroll = PageScroll, Btn = PageBtn, Highlight = PageHighlight, Left = true, LeftCol = LeftColumn, RightCol = RightColumn}
+            local PageObj = {Scroll = PageScroll, Btn = PageBtn, Highlight = PageHighlight, MainColumn = MainColumn}
             table.insert(TabConfig.Pages, PageObj)
 
             PageBtn.MouseButton1Click:Connect(function()
@@ -1491,14 +408,11 @@ function Library:CreateWindow(options)
                 end
                 TabConfig.CurrentPage = PageObj
                 PageObj.Scroll.Visible = true
-                PageObj.Scroll.Position = UDim2.new(0, 4, 0, 16)
-                Tween(PageObj.Scroll, {Position = UDim2.new(0, 4, 0, 4)}, 0.35)
-
                 Tween(PageBtn, {TextColor3 = TextColor}, 0.2)
                 Tween(PageHighlight, {Size = UDim2.new(1, 0, 0, 2), BackgroundTransparency = 0}, 0.3)
             end)
 
-            if #TabConfig.Pages == 1 and not isLocked then
+            if #TabConfig.Pages == 1 then
                 TabConfig.CurrentPage = PageObj
                 PageObj.Scroll.Visible = true
                 PageBtn.TextColor3 = TextColor
@@ -1506,109 +420,105 @@ function Library:CreateWindow(options)
                 PageHighlight.BackgroundTransparency = 0
             end
 
-            function PageObj:CreateSection(sectionName)
-                local targetColumn = PageObj.Left and LeftColumn or RightColumn
-                PageObj.Left = not PageObj.Left
-
-                local SectionContainer = Create("Frame", {Parent = targetColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 26), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = true})
+            function PageObj:CreateSection(secName)
+                local SectionContainer = Create("Frame", {Parent = MainColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 26), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = true})
                 Create("UICorner", {Parent = SectionContainer, CornerRadius = UDim.new(0, 6)})
-                table.insert(Window.AllCards, {
-                    Card = SectionContainer,
-                    OrigParent = targetColumn,
-                    Tab = TabConfig,
-                    Page = PageObj,
-                    SearchIndex = nil 
-                })
-                Create("TextLabel", {Parent = SectionContainer, Text = sectionName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 26), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                table.insert(Window.AllCards, {Card = SectionContainer, OrigParent = MainColumn, Tab = TabConfig, Page = PageObj, SearchIndex = nil})
+                Create("TextLabel", {Parent = SectionContainer, Text = secName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 26), Position = UDim2.new(0, 12, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
                 local ItemContainer = Create("Frame", {Parent = SectionContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 26), AutomaticSize = Enum.AutomaticSize.Y})
-                Create("UIPadding", {Parent = ItemContainer, PaddingBottom = UDim.new(0, 8), PaddingTop = UDim.new(0, 4)})
+                Create("UIPadding", {Parent = ItemContainer, PaddingBottom = UDim.new(0, 10), PaddingTop = UDim.new(0, 4), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
                 Create("UIListLayout", {Parent = ItemContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6)})
 
                 local Elements = {}
 
                 function Elements:AddParagraph(title, desc)
                     local ParaFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y})
-                    Create("TextLabel", {Parent = ParaFrame, Text = title, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 14), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                    Create("TextLabel", {Parent = ParaFrame, Text = tostring(desc), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 0), Position = UDim2.new(0, 8, 0, 16), TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y})
+                    Create("TextLabel", {Parent = ParaFrame, Text = title, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 14), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    Create("TextLabel", {Parent = ParaFrame, Text = tostring(desc), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 16), TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y})
                     Create("UIPadding", {Parent = ParaFrame, PaddingBottom = UDim.new(0, 6)})
                 end
 
                 function Elements:AddProfile(imageUrl, playerName)
                     local ProfFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 48)})
-                    local AvatarImg = Create("ImageLabel", {Parent = ProfFrame, Image = imageUrl, BackgroundColor3 = CardColor, Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 8, 0.5, -19)})
+                    local AvatarImg = Create("ImageLabel", {Parent = ProfFrame, Image = imageUrl, BackgroundColor3 = CardColor, Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 0, 0.5, -19)})
                     Create("UICorner", {Parent = AvatarImg, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = AvatarImg, Color = AccentColor, Thickness = 1})
-                    Create("TextLabel", {Parent = ProfFrame, Text = "Welcome,", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 0, 12), Position = UDim2.new(0, 52, 0.5, -12), TextXAlignment = Enum.TextXAlignment.Left})
-                    Create("TextLabel", {Parent = ProfFrame, Text = playerName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 0, 16), Position = UDim2.new(0, 52, 0.5, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    Create("TextLabel", {Parent = ProfFrame, Text = "Welcome,", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -45, 0, 12), Position = UDim2.new(0, 45, 0.5, -12), TextXAlignment = Enum.TextXAlignment.Left})
+                    Create("TextLabel", {Parent = ProfFrame, Text = playerName, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -45, 0, 16), Position = UDim2.new(0, 45, 0.5, 0), TextXAlignment = Enum.TextXAlignment.Left})
                 end
 
                 function Elements:AddButton(name, callback, infoData)
-                    local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 26)})
-                    local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0), AutoButtonColor = false})
-                    Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
+                    local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30)})
+                    local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false})
+                    Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 5)})
                     Create("UIStroke", {Parent = Btn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
                     AddBounce(Btn)
                     Btn.MouseEnter:Connect(function() Tween(Btn, {BackgroundColor3 = HoverColor}, 0.2) end)
                     Btn.MouseLeave:Connect(function() Tween(Btn, {BackgroundColor3 = BackgroundColor}, 0.2) end)
                     Btn.MouseButton1Click:Connect(function() if callback then callback() end end)
-                    AddInfoIcon(BtnFrame, UDim2.new(1, -32, 0.5, -7), infoData)
+                    AddInfoIcon(BtnFrame, UDim2.new(1, -20, 0.5, -8), infoData)
                 end
 
                 function Elements:AddToggle(name, default, callback, infoData)
                     local state = default or false
-                    local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22)})
-                    Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40), Size = UDim2.new(0, 32, 0, 16), Position = UDim2.new(1, -40, 0.5, -8), AutoButtonColor = false})
+                    local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 26)})
+                    Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40), Size = UDim2.new(0, 36, 0, 18), Position = UDim2.new(1, -40, 0.5, -9), AutoButtonColor = false})
                     Create("UICorner", {Parent = Lever, CornerRadius = UDim.new(1, 0)})
                     AddBounce(Lever)
-                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)})
+                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 14, 0, 14), Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)})
                     Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
 
                     local function internalSet(val)
                         state = val
                         Tween(Lever, {BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 35, 40)}, 0.3)
-                        Tween(Knob, {Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)}, 0.3)
+                        Tween(Knob, {Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)}, 0.3)
                         if callback then callback(state) end
                     end
 
                     Lever.MouseButton1Click:Connect(function() internalSet(not state) end)
-                    AddInfoIcon(TogFrame, UDim2.new(1, -58, 0.5, -7), infoData)
+                    AddInfoIcon(TogFrame, UDim2.new(1, -62, 0.5, -8), infoData)
                     Window.ConfigElements[name] = { Set = internalSet, Get = function() return state end }
                 end
 
-                -- [BARU] Penambahan Slider
                 function Elements:AddSlider(name, min, max, default, callback, infoData)
                     min = min or 0
                     max = max or 100
                     default = default or min
                     local value = math.clamp(default, min, max)
 
-                    local SliderFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 38)})
-                    Create("TextLabel", {Parent = SliderFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 16), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
+                    local SliderFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 42)})
+                    Create("TextLabel", {Parent = SliderFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -65, 0, 18), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
                     
-                    local ValueLabel = Create("TextLabel", {Parent = SliderFrame, Text = tostring(value), Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 50, 0, 16), Position = UDim2.new(1, -58, 0, 0), TextXAlignment = Enum.TextXAlignment.Right})
-                    
-                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(1, -16, 0, 6), Position = UDim2.new(0, 8, 0, 24)})
+                    local ValueBox = Create("TextBox", {Parent = SliderFrame, Text = tostring(value), Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 44, 0, 18), Position = UDim2.new(1, -44, 0, 0), TextXAlignment = Enum.TextXAlignment.Center, ClearTextOnFocus = false})
+                    Create("UICorner", {Parent = ValueBox, CornerRadius = UDim.new(0, 4)})
+                    Create("UIStroke", {Parent = ValueBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
+
+                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 26)})
                     Create("UICorner", {Parent = SliderBar, CornerRadius = UDim.new(1, 0)})
-                    
                     local SliderFill = Create("Frame", {Parent = SliderBar, BackgroundColor3 = AccentColor, Size = UDim2.new((value - min) / (max - min), 0, 1, 0)})
                     Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
 
                     local SliderBtn = Create("TextButton", {Parent = SliderBar, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), AutoButtonColor = false})
 
+                    local function setSliderValue(newVal, ignoreCallback)
+                        value = math.clamp(math.floor(tonumber(newVal) or min), min, max)
+                        ValueBox.Text = tostring(value)
+                        local percentage = (max == min) and 0 or ((value - min) / (max - min))
+                        SliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+                        if callback and not ignoreCallback then callback(value) end
+                    end
+
                     local dragging = false
-                    local function updateValue(input)
+                    local function updateFromInput(input)
                         local sizeX = math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
-                        value = math.floor(min + ((max - min) * sizeX))
-                        ValueLabel.Text = tostring(value)
-                        SliderFill.Size = UDim2.new(sizeX, 0, 1, 0)
-                        if callback then callback(value) end
+                        setSliderValue(min + ((max - min) * sizeX))
                     end
 
                     SliderBtn.InputBegan:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                             dragging = true
-                            updateValue(input)
+                            updateFromInput(input)
                         end
                     end)
 
@@ -1620,52 +530,31 @@ function Library:CreateWindow(options)
 
                     UserInputService.InputChanged:Connect(function(input)
                         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                            updateValue(input)
+                            updateFromInput(input)
                         end
                     end)
 
-                    AddInfoIcon(SliderFrame, UDim2.new(1, -16, 0, -2), infoData)
-                    Window.ConfigElements[name] = { Set = function(val) 
-                        value = math.clamp(val, min, max)
-                        ValueLabel.Text = tostring(value)
-                        SliderFill.Size = UDim2.new((value - min) / (max - min), 0, 1, 0)
-                        if callback then callback(value) end
-                    end, Get = function() return value end }
-                end
-
-                -- [BARU] Penambahan TextBox
-                function Elements:AddTextBox(name, default, callback, infoData)
-                    default = default or ""
-                    local TextFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 44)})
-                    Create("TextLabel", {Parent = TextFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 16), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                    
-                    local TBox = Create("TextBox", {Parent = TextFrame, Text = default, PlaceholderText = "Type here...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 22), Position = UDim2.new(0, 8, 0, 18), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
-                    Create("UIPadding", {Parent = TBox, PaddingLeft = UDim.new(0, 6)})
-                    Create("UICorner", {Parent = TBox, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = TBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
-
-                    TBox.FocusLost:Connect(function(enterPressed)
-                        if callback then callback(TBox.Text, enterPressed) end
+                    ValueBox.FocusLost:Connect(function()
+                        local num = tonumber(ValueBox.Text)
+                        if num then setSliderValue(num) else ValueBox.Text = tostring(value) end
                     end)
 
-                    AddInfoIcon(TextFrame, UDim2.new(1, -16, 0, -2), infoData)
-                    Window.ConfigElements[name] = { Set = function(val) TBox.Text = tostring(val) if callback then callback(TBox.Text, false) end end, Get = function() return TBox.Text end }
+                    AddInfoIcon(SliderFrame, UDim2.new(1, -52, 0, 1), infoData)
+                    Window.ConfigElements[name] = { Set = function(val) setSliderValue(val) end, Get = function() return value end }
                 end
 
-                -- [BARU] Penambahan Dropdown
                 function Elements:AddDropdown(name, options, default, callback, infoData)
                     options = options or {}
                     local selected = default or options[1] or ""
                     local opened = false
 
-                    local DropFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28), ClipsDescendants = true})
-                    local DropBtn = Create("TextButton", {Parent = DropFrame, Text = "", BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 26), Position = UDim2.new(0, 8, 0, 0), AutoButtonColor = false})
+                    local DropFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30), ClipsDescendants = true})
+                    local DropBtn = Create("TextButton", {Parent = DropFrame, Text = "", BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, 0, 0, 28), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false})
                     Create("UICorner", {Parent = DropBtn, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = DropBtn, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
 
                     local TitleLbl = Create("TextLabel", {Parent = DropBtn, Text = name .. ": " .. tostring(selected), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                    
-                    local ListFrame = Create("ScrollingFrame", {Parent = DropFrame, BackgroundColor3 = Color3.fromRGB(18, 12, 14), Size = UDim2.new(1, -16, 0, 0), Position = UDim2.new(0, 8, 0, 28), ScrollBarThickness = 2, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), Visible = false})
+                    local ListFrame = Create("ScrollingFrame", {Parent = DropFrame, BackgroundColor3 = Color3.fromRGB(18, 12, 14), Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 30), ScrollBarThickness = 2, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), Visible = false})
                     Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = ListFrame, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
                     local ListLayout = Create("UIListLayout", {Parent = ListFrame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2)})
@@ -1674,301 +563,54 @@ function Library:CreateWindow(options)
                         ListFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 4)
                     end)
 
-                    local function rebuildOptions()
-                        for _, v in ipairs(ListFrame:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
-                        for _, opt in ipairs(options) do
-                            local OptBtn = Create("TextButton", {Parent = ListFrame, Text = tostring(opt), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22), AutoButtonColor = false})
-                            OptBtn.MouseButton1Click:Connect(function()
-                                selected = opt
-                                TitleLbl.Text = name .. ": " .. tostring(selected)
-                                opened = false
-                                Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 28)}, 0.2)
-                                Tween(ListFrame, {Size = UDim2.new(1, -16, 0, 0)}, 0.2)
-                                task.wait(0.2)
-                                ListFrame.Visible = false
-                                if callback then callback(selected) end
-                            end)
-                            OptBtn.MouseEnter:Connect(function() Tween(OptBtn, {TextColor3 = TextColor}, 0.1) end)
-                            OptBtn.MouseLeave:Connect(function() Tween(OptBtn, {TextColor3 = SubTextColor}, 0.1) end)
-                        end
+                    for _, opt in ipairs(options) do
+                        local OptBtn = Create("TextButton", {Parent = ListFrame, Text = tostring(opt), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), AutoButtonColor = false})
+                        OptBtn.MouseButton1Click:Connect(function()
+                            selected = opt
+                            TitleLbl.Text = name .. ": " .. tostring(selected)
+                            opened = false
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 30)}, 0.2)
+                            Tween(ListFrame, {Size = UDim2.new(1, 0, 0, 0)}, 0.2)
+                            task.wait(0.2)
+                            ListFrame.Visible = false
+                            if callback then callback(selected) end
+                        end)
                     end
-                    rebuildOptions()
 
                     DropBtn.MouseButton1Click:Connect(function()
                         opened = not opened
                         if opened then
                             ListFrame.Visible = true
-                            local targetHeight = math.clamp(#options * 24, 0, 120)
-                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 32 + targetHeight)}, 0.2)
-                            Tween(ListFrame, {Size = UDim2.new(1, -16, 0, targetHeight)}, 0.2)
+                            local targetHeight = math.clamp(#options * 26, 0, 130)
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 34 + targetHeight)}, 0.2)
+                            Tween(ListFrame, {Size = UDim2.new(1, 0, 0, targetHeight)}, 0.2)
                         else
-                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 28)}, 0.2)
-                            Tween(ListFrame, {Size = UDim2.new(1, -16, 0, 0)}, 0.2)
+                            Tween(DropFrame, {Size = UDim2.new(1, 0, 0, 30)}, 0.2)
+                            Tween(ListFrame, {Size = UDim2.new(1, 0, 0, 0)}, 0.2)
                             task.wait(0.2)
                             ListFrame.Visible = false
                         end
                     end)
 
-                    AddInfoIcon(DropFrame, UDim2.new(1, -16, 0, 6), infoData)
+                    AddInfoIcon(DropFrame, UDim2.new(1, -20, 0, 6), infoData)
                     Window.ConfigElements[name] = { Set = function(val) selected = val TitleLbl.Text = name .. ": " .. tostring(selected) if callback then callback(selected) end end, Get = function() return selected end }
                 end
 
                 function Elements:AddConfigManager(folderName)
                     folderName = folderName or "kenzhubSavers"
                     if not _isfolder(folderName) then _makefolder(folderName) end
-
-                    local ManagerFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 220)})
-                    local ManagerSearch = Create("TextBox", {Parent = ManagerFrame, PlaceholderText = "Search Saves...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, -16, 0, 24), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
-                    Create("UIPadding", {Parent = ManagerSearch, PaddingLeft = UDim.new(0, 6)})
-                    Create("UICorner", {Parent = ManagerSearch, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = ManagerSearch, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
-
-                    local Monitor = Create("ScrollingFrame", {Parent = ManagerFrame, BackgroundColor3 = Color3.fromRGB(18, 12, 14), Size = UDim2.new(1, -16, 0, 100), Position = UDim2.new(0, 8, 0, 30), ScrollBarThickness = 2, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0)})
-                    Create("UICorner", {Parent = Monitor, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = Monitor, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
-                    local MonitorLayout = Create("UIListLayout", {Parent = Monitor, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
-                    Create("UIPadding", {Parent = Monitor, PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
-
-                    MonitorLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                        Monitor.CanvasSize = UDim2.new(0, 0, 0, MonitorLayout.AbsoluteContentSize.Y + 8)
-                    end)
-
-                    local deleteMode = false
-                    local editMode = false
-                    local selectedForDelete = {}
-                    local editTargetFile = ""
-
-                    local Controls = Create("Frame", {Parent = ManagerFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 0, 72), Position = UDim2.new(0, 8, 0, 138)})
-                    local NameBox = Create("TextBox", {Parent = Controls, PlaceholderText = "Enter save name...", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, 0, 0, 24), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
-                    Create("UIPadding", {Parent = NameBox, PaddingLeft = UDim.new(0, 6)})
-                    Create("UICorner", {Parent = NameBox, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = NameBox, Color = Color3.fromRGB(50, 35, 40), Thickness = 1})
-
-                    local CreateBtn = Create("TextButton", {Parent = Controls, Text = "Create Save", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255,255,255), BackgroundColor3 = AccentColor, Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0, 0, 0, 30), AutoButtonColor = false})
-                    Create("UICorner", {Parent = CreateBtn, CornerRadius = UDim.new(0, 4)})
-                    AddBounce(CreateBtn)
-
-                    local DeleteTogBtn = Create("TextButton", {Parent = Controls, Text = "Delete: OFF", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0.5, 4, 0, 30), AutoButtonColor = false})
-                    Create("UICorner", {Parent = DeleteTogBtn, CornerRadius = UDim.new(0, 4)})
-                    AddBounce(DeleteTogBtn)
-
-                    local ActionArea = Create("Frame", {Parent = Controls, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), Position = UDim2.new(0, 0, 0, 30), Visible = false})
-                    local ConfirmActionBtn = Create("TextButton", {Parent = ActionArea, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255,255,255), BackgroundColor3 = Color3.fromRGB(200, 50, 50), Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false})
-                    Create("UICorner", {Parent = ConfirmActionBtn, CornerRadius = UDim.new(0, 4)})
-                    AddBounce(ConfirmActionBtn)
-
-                    local CancelActionBtn = Create("TextButton", {Parent = ActionArea, Text = "Cancel", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(50, 40, 45), Size = UDim2.new(0.5, -4, 0, 24), Position = UDim2.new(0.5, 4, 0, 0), AutoButtonColor = false})
-                    Create("UICorner", {Parent = CancelActionBtn, CornerRadius = UDim.new(0, 4)})
-                    AddBounce(CancelActionBtn)
-
-                    AddInfoIcon(ManagerFrame, UDim2.new(1, -16, 0, -18), {
-                        Title = "Config Protocol",
-                        Description = "Manage your configuration saves securely."
-                    })
-
-                    local InternalConfirmPopup = Create("Frame", {Parent = ManagerFrame, BackgroundColor3 = Color3.fromRGB(22, 16, 18), Size = UDim2.new(1, -16, 1, -16), Position = UDim2.new(0, 8, 0, 8), ZIndex = 60, BackgroundTransparency = 1, Visible = false})
-                    Create("UICorner", {Parent = InternalConfirmPopup, CornerRadius = UDim.new(0, 8)})
-                    Create("UIStroke", {Parent = InternalConfirmPopup, Color = Color3.fromRGB(180, 50, 50), Thickness = 1, Transparency = 1})
-                    local P_Title = Create("TextLabel", {Parent = InternalConfirmPopup, Text = "Confirm Deletion?", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = Color3.fromRGB(255, 60, 60), BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 30), TextTransparency = 1, ZIndex = 61})
-                    local P_Desc = Create("TextLabel", {Parent = InternalConfirmPopup, Text = "Permanently erase selected saves?", Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 55), TextWrapped = true, TextTransparency = 1, ZIndex = 61})
-                    local P_Yes = Create("TextButton", {Parent = InternalConfirmPopup, Text = "Yes", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = Color3.fromRGB(180, 50, 50), Size = UDim2.new(0.5, -20, 0, 28), Position = UDim2.new(0, 15, 0, 100), AutoButtonColor = false, BackgroundTransparency = 1, TextTransparency = 1, ZIndex = 61})
-                    Create("UICorner", {Parent = P_Yes, CornerRadius = UDim.new(0, 4)})
-                    AddBounce(P_Yes)
-                    local P_No = Create("TextButton", {Parent = InternalConfirmPopup, Text = "No", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(50, 35, 40), Size = UDim2.new(0.5, 5, 0, 100), AutoButtonColor = false, BackgroundTransparency = 1, TextTransparency = 1, ZIndex = 61})
-                    Create("UICorner", {Parent = P_No, CornerRadius = UDim.new(0, 4)})
-                    AddBounce(P_No)
-
-                    local function HideInternalPopup()
-                        Tween(InternalConfirmPopup, {BackgroundTransparency = 1}, 0.3)
-                        Tween(InternalConfirmPopup:FindFirstChild("UIStroke"), {Transparency = 1}, 0.3)
-                        Tween(P_Title, {TextTransparency = 1}, 0.3)
-                        Tween(P_Desc, {TextTransparency = 1}, 0.3)
-                        Tween(P_Yes, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
-                        Tween(P_No, {BackgroundTransparency = 1, TextTransparency = 1}, 0.3)
-                        task.wait(0.3)
-                        InternalConfirmPopup.Visible = false
-                    end
-
-                    local function RefreshMonitor()
-                        for _, v in ipairs(Monitor:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
-                        selectedForDelete = {}
-                        local files = {}
-                        local success, result = pcall(function()
-                            return _listfiles(folderName)
-                        end)
-                        if success and type(result) == "table" then
-                            files = result
-                        end
-                        for _, filepath in ipairs(files) do
-                            local rawName = filepath:match("([^/\\]+)%.json$")
-                            if rawName then
-                                local displayFName = rawName:gsub("_%d+%.%d+$", ""):gsub("_%d+$", "")
-                                local Row = Create("Frame", {Parent = Monitor, BackgroundColor3 = BackgroundColor, Size = UDim2.new(1, 0, 0, 26)})
-                                Create("UICorner", {Parent = Row, CornerRadius = UDim.new(0, 4)})
-                                Create("TextLabel", {Parent = Row, Text = displayFName, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 1, 0), Position = UDim2.new(0, 8, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
-                                local LoadBtn = Create("TextButton", {Parent = Row, Text = "Load", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(45, 120, 60), Size = UDim2.new(0, 30, 0, 18), Position = UDim2.new(1, -62, 0.5, -9), AutoButtonColor = false})
-                                Create("UICorner", {Parent = LoadBtn, CornerRadius = UDim.new(0, 4)})
-                                AddBounce(LoadBtn)
-                                local EditBtn = Create("TextButton", {Parent = Row, Text = "Edit", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(150, 100, 45), Size = UDim2.new(0, 26, 0, 18), Position = UDim2.new(1, -30, 0.5, -9), AutoButtonColor = false})
-                                Create("UICorner", {Parent = EditBtn, CornerRadius = UDim.new(0, 4)})
-                                AddBounce(EditBtn)
-                                local SelectionMask = Create("TextButton", {Parent = Row, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, -70, 1, 0), ZIndex = 2})
-                                SelectionMask.MouseButton1Click:Connect(function()
-                                    if deleteMode then
-                                        if selectedForDelete[filepath] then
-                                            selectedForDelete[filepath] = nil
-                                            Tween(Row, {BackgroundColor3 = BackgroundColor}, 0.2)
-                                        else
-                                            selectedForDelete[filepath] = true
-                                            Tween(Row, {BackgroundColor3 = Color3.fromRGB(180, 50, 50)}, 0.2)
-                                        end
-                                    end
-                                end)
-                                LoadBtn.MouseButton1Click:Connect(function()
-                                    if deleteMode or editMode then return end
-                                    local s, data = pcall(function() return HttpService:JSONDecode(_readfile(filepath)) end)
-                                    if s and type(data) == "table" then
-                                        for k, v in pairs(data) do
-                                            if Window.ConfigElements[k] and Window.ConfigElements[k].Set then
-                                                Window.ConfigElements[k].Set(v)
-                                            end
-                                        end
-                                        Library:Notify({Title = "Saves Loader", Description = "Loaded " .. displayFName})
-                                    end
-                                end)
-                                EditBtn.MouseButton1Click:Connect(function()
-                                    if deleteMode then return end
-                                    editMode = true
-                                    editTargetFile = filepath
-                                    NameBox.Text = displayFName
-                                    CreateBtn.Visible = false
-                                    DeleteTogBtn.Visible = false
-                                    ActionArea.Visible = true
-                                    ConfirmActionBtn.Text = "Save Edit"
-                                    ConfirmActionBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 200)
-                                end)
-                            end
-                        end
-                    end
-
-                    local function ExecuteSave(saveName)
-                        local payload = {}
-                        for k, el in pairs(Window.ConfigElements) do
-                            if el.Get then payload[k] = el.Get() end
-                        end
-                        local encoded = HttpService:JSONEncode(payload)
-                        local uniqueKey = tostring(math.floor(tick()))
-                        local finalPath = folderName .. "/" .. saveName .. "_" .. uniqueKey .. ".json"
-                        _writefile(finalPath, encoded)
-                        RefreshMonitor()
-                        Library:Notify({Title = "Saved Successfully", Description = "[" .. saveName .. "] secured."})
-                    end
-
-                    CreateBtn.MouseButton1Click:Connect(function()
-                        if NameBox.Text ~= "" then ExecuteSave(NameBox.Text) end
-                    end)
-
-                    DeleteTogBtn.MouseButton1Click:Connect(function()
-                        if editMode then return end
-                        deleteMode = not deleteMode
-                        DeleteTogBtn.Text = deleteMode and "Delete: ON" or "Delete: OFF"
-                        Tween(DeleteTogBtn, {BackgroundColor3 = deleteMode and Color3.fromRGB(180, 50, 50) or Color3.fromRGB(50, 35, 40)}, 0.2)
-                        ActionArea.Visible = deleteMode
-                        CreateBtn.Visible = not deleteMode
-                        if deleteMode then
-                            ConfirmActionBtn.Text = "Delete Selected"
-                            ConfirmActionBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-                        else
-                            RefreshMonitor()
-                        end
-                    end)
-
-                    ConfirmActionBtn.MouseButton1Click:Connect(function()
-                        if deleteMode then
-                            InternalConfirmPopup.Visible = true
-                            Tween(InternalConfirmPopup, {BackgroundTransparency = 0.1}, 0.3)
-                            Tween(InternalConfirmPopup:FindFirstChild("UIStroke"), {Transparency = 0.5}, 0.3)
-                            Tween(P_Title, {TextTransparency = 0}, 0.3)
-                            Tween(P_Desc, {TextTransparency = 0}, 0.3)
-                            Tween(P_Yes, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
-                            Tween(P_No, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
-                        elseif editMode then
-                            local newName = NameBox.Text
-                            if newName ~= "" then
-                                pcall(function() _delfile(editTargetFile) end)
-                                ExecuteSave(newName)
-                            end
-                            editMode = false
-                            ActionArea.Visible = false
-                            CreateBtn.Visible = true
-                            DeleteTogBtn.Visible = true
-                            RefreshMonitor()
-                        end
-                    end)
-
-                    P_Yes.MouseButton1Click:Connect(function()
-                        for file, _ in pairs(selectedForDelete) do pcall(function() _delfile(file) end) end
-                        deleteMode = false
-                        DeleteTogBtn.Text = "Delete: OFF"
-                        DeleteTogBtn.BackgroundColor3 = Color3.fromRGB(50, 35, 40)
-                        ActionArea.Visible = false
-                        CreateBtn.Visible = true
-                        RefreshMonitor()
-                        Library:Notify({Title = "Deletions Complete", Description = "Selected saves erased."})
-                        HideInternalPopup()
-                    end)
-
-                    P_No.MouseButton1Click:Connect(function()
-                        HideInternalPopup()
-                    end)
-
-                    CancelActionBtn.MouseButton1Click:Connect(function()
-                        editMode = false
-                        deleteMode = false
-                        DeleteTogBtn.Text = "Delete: OFF"
-                        DeleteTogBtn.BackgroundColor3 = Color3.fromRGB(50, 35, 40)
-                        ActionArea.Visible = false
-                        CreateBtn.Visible = true
-                        DeleteTogBtn.Visible = true
-                        NameBox.Text = ""
-                        RefreshMonitor()
-                    end)
-
-                    ManagerSearch:GetPropertyChangedSignal("Text"):Connect(function()
-                        local q = ManagerSearch.Text:lower()
-                        for _, v in ipairs(Monitor:GetChildren()) do
-                            if v:IsA("Frame") then
-                                local lbl = v:FindFirstChildOfClass("TextLabel")
-                                if lbl then v.Visible = (q == "" or string.find(lbl.Text:lower(), q) ~= nil) end
-                            end
-                        end
-                    end)
-
-                    RefreshMonitor()
+                    Create("TextLabel", {Parent = ItemContainer, Text = "Config Manager (Folder: " .. folderName .. ")", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), TextXAlignment = Enum.TextXAlignment.Left})
                 end
 
                 return Elements
             end
             return PageObj
         end
-
-        if isDefault then
-            TabBtn.BackgroundTransparency = 0
-            Indicator.Size = UDim2.new(0, 3, 0, 16)
-            Txt.TextColor3 = TextColor
-            local initIcon = TabBtn:FindFirstChild("TabIcon")
-            if initIcon then initIcon.ImageColor3 = TextColor end
-            TabContent.Visible = true
-            Window.CurrentTab = TabConfig
-        end
         return TabConfig
     end
 
-    function Window:MakeTab(data)
-        local name = type(data) == "table" and data[1] or data
-        local icon = type(data) == "table" and data[2] or nil
-        local isDef = #Window.Tabs == 0
-        return self:CreateTab(name, icon, isDef, false)
+    function Window:MakeTab(tabName, icon)
+        return self:CreateTab(tabName, icon)
     end
 
     return Window

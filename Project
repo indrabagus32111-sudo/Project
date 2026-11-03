@@ -179,6 +179,7 @@ function Library:CreateWindow(options)
     Create("TextLabel", {Parent = TitleContainer, Text = hubName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = AccentColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 3), Size = UDim2.new(1, 0, 0, 13), TextXAlignment = Enum.TextXAlignment.Left})
     Create("TextLabel", {Parent = TitleContainer, Text = subText, Font = Enum.Font.Gotham, TextSize = 8, TextColor3 = subColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 16), Size = UDim2.new(1, 0, 0, 10), TextXAlignment = Enum.TextXAlignment.Left})
 
+    -- SearchBar (Tanpa sudut dekoratif)
     local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 160, 0, 22), Position = UDim2.new(0, 172, 0.5, -11)})
     Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 4)})
     Create("UIStroke", {Parent = SearchBar, Color = AccentColor, Thickness = 1.2})
@@ -188,6 +189,7 @@ function Library:CreateWindow(options)
     local CloseBtn = Create("TextButton", {Parent = TopBar, Text = "X", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 1, 0), Position = UDim2.new(1, -26, 0, 0)})
     local MinBtn = Create("TextButton", {Parent = TopBar, Text = "—", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 1, 0), Position = UDim2.new(1, -52, 0, 0)})
 
+    -- StatsWidget / FPS (Tanpa sudut dekoratif)
     local StatsWidget = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 70, 0, 20), Position = UDim2.new(1, -128, 0.5, -10)})
     Create("UICorner", {Parent = StatsWidget, CornerRadius = UDim.new(0, 3)})
     Create("UIStroke", {Parent = StatsWidget, Color = AccentColor, Thickness = 1.2})
@@ -216,9 +218,20 @@ function Library:CreateWindow(options)
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
     Create("UIStroke", {Parent = TabSearchBox, Color = AccentColor, Thickness = 1.2})
     
-    -- TabContainer dengan Auto Canvas Size (Hanya bisa scroll jika tab sudah banyak)
-    local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -10, 1, -32), Position = UDim2.new(0, 5, 0, 30), ScrollBarThickness = 2, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(0, 0, 0, 0)})
+    -- TabContainer sebagai ScrollingFrame dengan Auto Scrolling Enabled (Hanya bisa di-scroll jika tab sudah banyak)
+    local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -10, 1, -32), Position = UDim2.new(0, 5, 0, 30), ScrollBarThickness = 0})
     local TabListLayout = Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
+    
+    local function updateTabScrolling()
+        local contentHeight = TabListLayout.AbsoluteContentSize.Y
+        local containerHeight = TabContainer.AbsoluteSize.Y
+        TabContainer.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
+        TabContainer.ScrollingEnabled = contentHeight > containerHeight
+    end
+
+    TabListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateTabScrolling)
+    TabContainer:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateTabScrolling)
+
     Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(70, 40, 46), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -32), Position = UDim2.new(0, 140, 0, 32)})
 
     local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -142, 1, -32), Position = UDim2.new(0, 142, 0, 32), Active = true})
@@ -296,6 +309,7 @@ function Library:CreateWindow(options)
         for _, tabInfo in ipairs(Window.Tabs) do
             tabInfo.Button.Visible = (query == "" or string.find(tabInfo.Txt.Text:lower(), query) ~= nil)
         end
+        task.defer(updateTabScrolling)
     end)
 
     SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
@@ -338,6 +352,7 @@ function Library:CreateWindow(options)
 
         local TabConfig = {Button = TabBtn, Content = TabContent, Indicator = Indicator, Txt = Txt, Pages = {}, CurrentPage = nil, LastSection = nil, DefaultPage = nil}
         table.insert(Window.Tabs, TabConfig)
+        task.defer(updateTabScrolling)
 
         local function ensureDefaultPageAndSection()
             if #TabConfig.Pages == 0 then TabConfig.DefaultPage = TabConfig:CreatePage("Overview") end
@@ -599,10 +614,10 @@ function Library:CreateWindow(options)
                     Create("UICorner", {Parent = DropBtn, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = DropBtn, Color = AccentColor, Thickness = 1.2})
 
-                    Create("TextLabel", {Parent = DropBtn, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0.4, 0, 1, 0), Position = UDim2.new(0, 10, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 27})
+                    -- Judul Dropdown (Lebar disesuaikan agar tidak menutupi PreviewBox / kotak panjang)
+                    Create("TextLabel", {Parent = DropBtn, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -130, 1, 0), Position = UDim2.new(0, 10, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 27})
 
-                    -- Ukuran kotak preview aman di dalam card (tidak keluar UI)
-                    local PreviewBox = Create("Frame", {Parent = DropBtn, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 100, 0, 18), Position = UDim2.new(1, -108, 0.5, -9), ZIndex = 27})
+                    local PreviewBox = Create("Frame", {Parent = DropBtn, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 110, 0, 18), Position = UDim2.new(1, -118, 0.5, -9), ZIndex = 27})
                     Create("UICorner", {Parent = PreviewBox, CornerRadius = UDim.new(0, 3)})
                     Create("UIStroke", {Parent = PreviewBox, Color = AccentColor, Thickness = 1.2})
 

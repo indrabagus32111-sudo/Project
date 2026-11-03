@@ -30,6 +30,21 @@ local function Create(className, properties)
     return instance
 end
 
+local function AddCornerBorders(parent, color)
+    color = color or Color3.fromRGB(255, 40, 40)
+    local size = 5
+    local thickness = 1.2
+
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 1, -size), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 1, -size), BorderSizePixel = 0, ZIndex = 5})
+end
+
 local function BuildSearchIndex(card)
     local parts = {}
     for _, desc in ipairs(card:GetDescendants()) do
@@ -218,20 +233,8 @@ function Library:CreateWindow(options)
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
     Create("UIStroke", {Parent = TabSearchBox, Color = AccentColor, Thickness = 1.2})
     
-    -- TabContainer sebagai ScrollingFrame dengan Auto Scrolling Enabled (Hanya bisa di-scroll jika tab sudah banyak)
     local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -10, 1, -32), Position = UDim2.new(0, 5, 0, 30), ScrollBarThickness = 0})
-    local TabListLayout = Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
-    
-    local function updateTabScrolling()
-        local contentHeight = TabListLayout.AbsoluteContentSize.Y
-        local containerHeight = TabContainer.AbsoluteSize.Y
-        TabContainer.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
-        TabContainer.ScrollingEnabled = contentHeight > containerHeight
-    end
-
-    TabListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateTabScrolling)
-    TabContainer:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateTabScrolling)
-
+    Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
     Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(70, 40, 46), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -32), Position = UDim2.new(0, 140, 0, 32)})
 
     local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -142, 1, -32), Position = UDim2.new(0, 142, 0, 32), Active = true})
@@ -309,7 +312,6 @@ function Library:CreateWindow(options)
         for _, tabInfo in ipairs(Window.Tabs) do
             tabInfo.Button.Visible = (query == "" or string.find(tabInfo.Txt.Text:lower(), query) ~= nil)
         end
-        task.defer(updateTabScrolling)
     end)
 
     SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
@@ -352,7 +354,6 @@ function Library:CreateWindow(options)
 
         local TabConfig = {Button = TabBtn, Content = TabContent, Indicator = Indicator, Txt = Txt, Pages = {}, CurrentPage = nil, LastSection = nil, DefaultPage = nil}
         table.insert(Window.Tabs, TabConfig)
-        task.defer(updateTabScrolling)
 
         local function ensureDefaultPageAndSection()
             if #TabConfig.Pages == 0 then TabConfig.DefaultPage = TabConfig:CreatePage("Overview") end
@@ -464,12 +465,14 @@ function Library:CreateWindow(options)
 
                 local Elements = {}
 
+                -- Widget Profil Player dengan Bingkai Garis Merah Sepenuhnya
                 function Elements:AddUserProfile()
                     local localPlayer = Players.LocalPlayer
                     local ProfileFrame = Create("Frame", {Parent = ItemContainer, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 0, 50), ZIndex = 7})
                     Create("UICorner", {Parent = ProfileFrame, CornerRadius = UDim.new(0, 5)})
                     Create("UIStroke", {Parent = ProfileFrame, Color = AccentColor, Thickness = 1.2})
 
+                    -- Avatar Image
                     local AvatarImg = Create("ImageLabel", {Parent = ProfileFrame, BackgroundTransparency = 1, Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 6, 0.5, -19), Image = "rbxassetid://0", ZIndex = 8})
                     Create("UICorner", {Parent = AvatarImg, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = AvatarImg, Color = AccentColor, Thickness = 1})
@@ -479,7 +482,9 @@ function Library:CreateWindow(options)
                         if isReady then AvatarImg.Image = content end
                     end)
 
+                    -- Text Container (Display Name & Username)
                     local TextInfo = Create("Frame", {Parent = ProfileFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -56, 1, 0), Position = UDim2.new(0, 50, 0, 0), ZIndex = 8})
+                    
                     Create("TextLabel", {Parent = TextInfo, Text = localPlayer.DisplayName, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 0, 9), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 9})
                     Create("TextLabel", {Parent = TextInfo, Text = "@" .. localPlayer.Name, Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 14), Position = UDim2.new(0, 0, 0, 26), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 9})
                 end
@@ -614,8 +619,7 @@ function Library:CreateWindow(options)
                     Create("UICorner", {Parent = DropBtn, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = DropBtn, Color = AccentColor, Thickness = 1.2})
 
-                    -- Judul Dropdown (Lebar disesuaikan agar tidak menutupi PreviewBox / kotak panjang)
-                    Create("TextLabel", {Parent = DropBtn, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -130, 1, 0), Position = UDim2.new(0, 10, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 27})
+                    Create("TextLabel", {Parent = DropBtn, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0.4, 0, 1, 0), Position = UDim2.new(0, 10, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 27})
 
                     local PreviewBox = Create("Frame", {Parent = DropBtn, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 110, 0, 18), Position = UDim2.new(1, -118, 0.5, -9), ZIndex = 27})
                     Create("UICorner", {Parent = PreviewBox, CornerRadius = UDim.new(0, 3)})

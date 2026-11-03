@@ -3,6 +3,7 @@ local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
+local Stats = game:GetService("Stats")
 
 local Library = {
     WhitelistedUsers = {},
@@ -42,20 +43,20 @@ local function AddCornerBorders(parent, color)
     local thickness = 1.5
 
     -- Top-Left
-    local tl1 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
-    local tl2 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
 
     -- Top-Right
-    local tr1 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 0, 0), BorderSizePixel = 0, ZIndex = 5})
-    local tr2 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 0, 0), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 0, 0), BorderSizePixel = 0, ZIndex = 5})
 
     -- Bottom-Left
-    local bl1 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
-    local bl2 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 1, -size), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 1, -size), BorderSizePixel = 0, ZIndex = 5})
 
     -- Bottom-Right
-    local br1 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
-    local br2 = Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 1, -size), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
+    Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 1, -size), BorderSizePixel = 0, ZIndex = 5})
 end
 
 local function BuildSearchIndex(card)
@@ -185,6 +186,7 @@ function Library:CreateWindow(options)
     local BottomDragHitbox = Create("Frame", {Parent = ScreenGui, BackgroundTransparency = 1, Size = UDim2.new(0, 300, 0, 26), AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 145, Active = true})
     local FloatingBottomBar = Create("Frame", {Parent = BottomDragHitbox, BackgroundColor3 = CardColor, BackgroundTransparency = 0, Size = UDim2.new(1, 0, 0, 5), Position = UDim2.new(0, 0, 0.5, -2.5), ZIndex = 146})
     Create("UICorner", {Parent = FloatingBottomBar, CornerRadius = UDim.new(1, 0)})
+    local BottomBarStroke = Create("UIStroke", {Parent = FloatingBottomBar, Color = Color3.fromRGB(60, 35, 40), Thickness = 1, Transparency = 0})
     MakeDraggable(BottomDragHitbox, MainFrame)
 
     RunService.RenderStepped:Connect(function()
@@ -217,6 +219,25 @@ function Library:CreateWindow(options)
     local CloseBtn = Create("TextButton", {Parent = TopBar, Text = "X", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 25, 1, 0), Position = UDim2.new(1, -28, 0, 0)})
     local MinBtn = Create("TextButton", {Parent = TopBar, Text = "—", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 25, 1, 0), Position = UDim2.new(1, -53, 0, 0)})
 
+    -- Label Real-time FPS & Ping di samping tombol Minimize (—)
+    local StatsLabel = Create("TextLabel", {Parent = TopBar, Text = "FPS: 60 | Ping: 0ms", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 130, 1, 0), Position = UDim2.new(1, -186, 0, 0), TextXAlignment = Enum.TextXAlignment.Right})
+
+    -- Update Loop FPS & Ping
+    local lastUpdate = 0
+    RunService.RenderStepped:Connect(function(dt)
+        if tick() - lastUpdate >= 0.5 then
+            lastUpdate = tick()
+            local fps = math.floor(1 / dt)
+            local ping = "0"
+            local network = Stats:FindFirstChild("Network")
+            local serverStats = network and network:FindFirstChild("ServerStatsItem")
+            if serverStats and serverStats:FindFirstChild("Data Ping") then
+                ping = math.floor(serverStats["Data Ping"]:GetValue())
+            end
+            StatsLabel.Text = string.format("FPS: %d | Ping: %sms", fps, ping)
+        end
+    end)
+
     local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 155, 1, -35), Position = UDim2.new(0, 0, 0, 35), Active = true})
     local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -16, 0, 24), Position = UDim2.new(0, 8, 0, 4), Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
@@ -237,11 +258,48 @@ function Library:CreateWindow(options)
     local SphereTextLabel = Create("TextLabel", {Parent = Sphere, Text = sphWords, Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = AccentColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), TextTransparency = 1, Visible = sphTextToggle})
     MakeDraggable(Sphere, Sphere)
 
-    local Window = {CurrentTab = nil, Tabs = {}, AllCards = {}, MainFrame = MainFrame, ConfigElements = {}}
+    local Window = {CurrentTab = nil, Tabs = {}, AllCards = {}, MainFrame = MainFrame, CurrentTransparency = 0, ConfigElements = {}}
+
+    -- Popup Konfirmasi Keluar (Exit)
+    local Popup = Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 100, Visible = false, Active = true})
+    local PopupCard = Create("Frame", {Parent = Popup, BackgroundColor3 = Color3.fromRGB(22, 16, 18), Size = UDim2.new(0, 290, 0, 150), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 101, BackgroundTransparency = 1, ClipsDescendants = false})
+    Create("UICorner", {Parent = PopupCard, CornerRadius = UDim.new(0, 12)})
+    local PopupScale = Create("UIScale", {Parent = PopupCard, Scale = 0.8})
+    local PopupStroke = Create("UIStroke", {Parent = PopupCard, Color = Color3.fromRGB(60, 35, 40), Thickness = 1, Transparency = 1})
+    local PopupTitle = Create("TextLabel", {Parent = PopupCard, Text = "Exit Application", Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 20), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center})
+    local PopupText = Create("TextLabel", {Parent = PopupCard, Text = "Are you sure you want to close Kenz Hub? Unsaved configurations might be lost.", Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 50), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true})
+    local YesBtn = Create("TextButton", {Parent = PopupCard, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = AccentColor, Size = UDim2.new(0, 115, 0, 32), Position = UDim2.new(0.5, 8, 0, 98), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
+    Create("UICorner", {Parent = YesBtn, CornerRadius = UDim.new(0, 6)})
+    AddBounce(YesBtn)
+    local NoBtn = Create("TextButton", {Parent = PopupCard, Text = "Cancel", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = TextColor, BackgroundColor3 = Color3.fromRGB(45, 28, 32), Size = UDim2.new(0, 115, 0, 32), Position = UDim2.new(0.5, -123, 0, 98), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
+    Create("UICorner", {Parent = NoBtn, CornerRadius = UDim.new(0, 6)})
+    AddBounce(NoBtn)
+
+    CloseBtn.MouseButton1Click:Connect(function()
+        Popup.Visible = true
+        Tween(Popup, {BackgroundTransparency = 0.5}, 0.3)
+        Tween(PopupCard, {BackgroundTransparency = 0}, 0.3)
+        Tween(PopupScale, {Scale = 1}, 0.3)
+        Tween(PopupStroke, {Transparency = 0}, 0.3)
+        Tween(PopupTitle, {TextTransparency = 0}, 0.3)
+        Tween(PopupText, {TextTransparency = 0}, 0.3)
+        Tween(YesBtn, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
+        Tween(NoBtn, {BackgroundTransparency = 0, TextTransparency = 0}, 0.3)
+    end)
+
+    YesBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+    NoBtn.MouseButton1Click:Connect(function()
+        Tween(Popup, {BackgroundTransparency = 1}, 0.3)
+        Tween(PopupCard, {BackgroundTransparency = 1}, 0.3)
+        task.wait(0.3)
+        Popup.Visible = false
+    end)
 
     MinBtn.MouseButton1Click:Connect(function()
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
+        Tween(FloatingBottomBar, {BackgroundTransparency = 1}, 0.4)
+        Tween(BottomBarStroke, {Transparency = 1}, 0.4)
         task.wait(0.3)
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
@@ -259,10 +317,10 @@ function Library:CreateWindow(options)
         MainFrame.Visible = true
         BottomDragHitbox.Visible = true
         Tween(MainScale, {Scale = 1}, 0.4)
-        Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
+        Tween(MainFrame, {BackgroundTransparency = Window.CurrentTransparency}, 0.4)
+        Tween(FloatingBottomBar, {BackgroundTransparency = Window.CurrentTransparency > 0 and 0.2 or 0}, 0.4)
+        Tween(BottomBarStroke, {Transparency = 0}, 0.4)
     end)
-
-    CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         local query = TabSearchBox.Text:lower()
@@ -435,10 +493,9 @@ function Library:CreateWindow(options)
                     Btn.MouseEnter:Connect(function() Tween(Btn, {BackgroundColor3 = HoverColor}, 0.2) end)
                     Btn.MouseLeave:Connect(function() Tween(Btn, {BackgroundColor3 = CardColor}, 0.2) end)
                     Btn.MouseButton1Click:Connect(function() if callback then callback() end end)
-                    AddInfoIcon(BtnFrame, UDim2.new(1, -22, 0.5, -8), infoData)
                 end
 
-                function Elements:AddToggle(name, default, callback, infoData)
+                function Elements:AddToggle(name, default, callback)
                     local state = default or false
                     local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30)})
                     Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -55, 1, 0), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
@@ -457,11 +514,10 @@ function Library:CreateWindow(options)
                     end
 
                     Lever.MouseButton1Click:Connect(function() internalSet(not state) end)
-                    AddInfoIcon(TogFrame, UDim2.new(1, -70, 0.5, -8), infoData)
                     Window.ConfigElements[name] = { Set = internalSet, Get = function() return state end }
                 end
 
-                function Elements:AddSlider(name, min, max, default, callback, infoData)
+                function Elements:AddSlider(name, min, max, default, callback)
                     min = min or 0
                     max = max or 100
                     default = default or min
@@ -519,7 +575,6 @@ function Library:CreateWindow(options)
                         if num then setSliderValue(num) else ValueBox.Text = tostring(value) end
                     end)
 
-                    AddInfoIcon(SliderFrame, UDim2.new(1, -58, 0, 1), infoData)
                     Window.ConfigElements[name] = { Set = function(val) setSliderValue(val) end, Get = function() return value end }
                 end
 
@@ -548,7 +603,6 @@ function Library:CreateWindow(options)
 
                     Create("TextLabel", {Parent = DropBtn, Text = name, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.new(0, 12, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 11})
 
-                    -- Kotak Preview Pilihan Player di Ujung Kanan Dropdown
                     local PreviewBox = Create("Frame", {Parent = DropBtn, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 140, 0, 22), Position = UDim2.new(1, -152, 0.5, -11), ZIndex = 11})
                     Create("UICorner", {Parent = PreviewBox, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = PreviewBox, Color = AccentColor, Thickness = 1})

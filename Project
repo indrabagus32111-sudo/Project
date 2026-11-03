@@ -196,8 +196,8 @@ function Library:CreateWindow(options)
 
     local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 160, 0, 22), Position = UDim2.new(0, 172, 0.5, -11)})
     Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 4)})
-    AddCornerBorders(SearchBar, Color3.fromRGB(255, 60, 60))
-    Create("UIStroke", {Parent = SearchBar, Color = Color3.fromRGB(90, 45, 50), Thickness = 1})
+    AddCornerBorders(SearchBar, AccentColor)
+    Create("UIStroke", {Parent = SearchBar, Color = AccentColor, Thickness = 1.2})
     Create("ImageLabel", {Parent = SearchBar, BackgroundTransparency = 1, Image = "rbxassetid://6031154871", ImageColor3 = SubTextColor, Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(0, 6, 0.5, -5)})
     local SearchInput = Create("TextBox", {Parent = SearchBar, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 1, 0), Position = UDim2.new(0, 20, 0, 0), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = TextColor, PlaceholderText = "Search...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
 
@@ -206,8 +206,8 @@ function Library:CreateWindow(options)
 
     local StatsWidget = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 70, 0, 20), Position = UDim2.new(1, -128, 0.5, -10)})
     Create("UICorner", {Parent = StatsWidget, CornerRadius = UDim.new(0, 3)})
-    AddCornerBorders(StatsWidget, Color3.fromRGB(255, 60, 60))
-    Create("UIStroke", {Parent = StatsWidget, Color = Color3.fromRGB(90, 45, 50), Thickness = 1})
+    AddCornerBorders(StatsWidget, AccentColor)
+    Create("UIStroke", {Parent = StatsWidget, Color = AccentColor, Thickness = 1.2})
     local StatsText = Create("TextLabel", {Parent = StatsWidget, Text = "FPS: 60 | 0ms", Font = Enum.Font.GothamBold, TextSize = 8, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), TextXAlignment = Enum.TextXAlignment.Center})
 
     local lastTick = tick()
@@ -231,7 +231,7 @@ function Library:CreateWindow(options)
     local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -14, 0, 22), Position = UDim2.new(0, 7, 0, 5), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
-    Create("UIStroke", {Parent = TabSearchBox, Color = Color3.fromRGB(70, 40, 46), Thickness = 1})
+    Create("UIStroke", {Parent = TabSearchBox, Color = AccentColor, Thickness = 1.2})
     
     local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -10, 1, -32), Position = UDim2.new(0, 5, 0, 30), ScrollBarThickness = 0})
     Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
@@ -261,7 +261,7 @@ function Library:CreateWindow(options)
     AddBounce(YesBtn)
     local NoBtn = Create("TextButton", {Parent = PopupCard, Text = "Cancel", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(0, 115, 0, 28), Position = UDim2.new(0.5, -121, 0, 88), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
     Create("UICorner", {Parent = NoBtn, CornerRadius = UDim.new(0, 4)})
-    Create("UIStroke", {Parent = NoBtn, Color = Color3.fromRGB(90, 45, 50), Thickness = 1})
+    Create("UIStroke", {Parent = NoBtn, Color = AccentColor, Thickness = 1.2})
     AddBounce(NoBtn)
 
     CloseBtn.MouseButton1Click:Connect(function()
@@ -454,7 +454,7 @@ function Library:CreateWindow(options)
             function PageObj:CreateSection(secName)
                 local SectionContainer = Create("Frame", {Parent = MainColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 28), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = false})
                 Create("UICorner", {Parent = SectionContainer, CornerRadius = UDim.new(0, 5)})
-                Create("UIStroke", {Parent = SectionContainer, Color = Color3.fromRGB(85, 45, 52), Thickness = 1.2})
+                Create("UIStroke", {Parent = SectionContainer, Color = AccentColor, Thickness = 1.2})
                 
                 table.insert(Window.AllCards, {Card = SectionContainer, OrigParent = MainColumn, Tab = TabConfig, Page = PageObj, SearchIndex = nil})
                 
@@ -465,12 +465,12 @@ function Library:CreateWindow(options)
 
                 local Elements = {}
 
-                -- Widget Profil Player (Menampilkan Avatar, Display Name, & Username)
+                -- Widget Profil Player dengan Bingkai Garis Merah Sepenuhnya
                 function Elements:AddUserProfile()
                     local localPlayer = Players.LocalPlayer
                     local ProfileFrame = Create("Frame", {Parent = ItemContainer, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 0, 50)})
                     Create("UICorner", {Parent = ProfileFrame, CornerRadius = UDim.new(0, 5)})
-                    Create("UIStroke", {Parent = ProfileFrame, Color = Color3.fromRGB(90, 50, 56), Thickness = 1.2})
+                    Create("UIStroke", {Parent = ProfileFrame, Color = AccentColor, Thickness = 1.2})
 
                     -- Avatar Image
                     local AvatarImg = Create("ImageLabel", {Parent = ProfileFrame, BackgroundTransparency = 1, Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 6, 0.5, -19), Image = "rbxassetid://0"})
@@ -500,7 +500,7 @@ function Library:CreateWindow(options)
                     local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30)})
                     local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false})
                     Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = Btn, Color = Color3.fromRGB(95, 50, 58), Thickness = 1.2})
+                    Create("UIStroke", {Parent = Btn, Color = AccentColor, Thickness = 1.2})
                     AddBounce(Btn)
                     Btn.MouseEnter:Connect(function() Tween(Btn, {BackgroundColor3 = HoverColor}, 0.2) end)
                     Btn.MouseLeave:Connect(function() Tween(Btn, {BackgroundColor3 = ButtonColor}, 0.2) end)
@@ -513,7 +513,7 @@ function Library:CreateWindow(options)
                     Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -45, 1, 0), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
                     local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(60, 38, 44), Size = UDim2.new(0, 34, 0, 16), Position = UDim2.new(1, -34, 0.5, -8), AutoButtonColor = false})
                     Create("UICorner", {Parent = Lever, CornerRadius = UDim.new(1, 0)})
-                    Create("UIStroke", {Parent = Lever, Color = Color3.fromRGB(90, 55, 62), Thickness = 1})
+                    Create("UIStroke", {Parent = Lever, Color = AccentColor, Thickness = 1.2})
                     AddBounce(Lever)
                     local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)})
                     Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
@@ -529,6 +529,7 @@ function Library:CreateWindow(options)
                     Window.ConfigElements[name] = { Set = internalSet, Get = function() return state end }
                 end
 
+                -- Slider dengan Bulatan Putih (Knob) di Ujung Garis Slider
                 function Elements:AddSlider(name, min, max, default, callback)
                     min = min or 0
                     max = max or 100
@@ -540,20 +541,28 @@ function Library:CreateWindow(options)
                     
                     local ValueBox = Create("TextBox", {Parent = SliderFrame, Text = tostring(value), Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(0, 45, 0, 16), Position = UDim2.new(1, -45, 0, 0), TextXAlignment = Enum.TextXAlignment.Center, ClearTextOnFocus = false})
                     Create("UICorner", {Parent = ValueBox, CornerRadius = UDim.new(0, 3)})
-                    Create("UIStroke", {Parent = ValueBox, Color = Color3.fromRGB(90, 50, 56), Thickness = 1})
+                    Create("UIStroke", {Parent = ValueBox, Color = AccentColor, Thickness = 1.2})
 
                     local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(60, 38, 44), Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 24)})
                     Create("UICorner", {Parent = SliderBar, CornerRadius = UDim.new(1, 0)})
+                    Create("UIStroke", {Parent = SliderBar, Color = AccentColor, Thickness = 1.2})
+
                     local SliderFill = Create("Frame", {Parent = SliderBar, BackgroundColor3 = AccentColor, Size = UDim2.new((value - min) / (max - min), 0, 1, 0)})
                     Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
 
-                    local SliderBtn = Create("TextButton", {Parent = SliderBar, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), AutoButtonColor = false})
+                    -- Bulatan Putih (Knob) di Ujung Garis Slider
+                    local SliderKnob = Create("Frame", {Parent = SliderBar, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((value - min) / (max - min), -6, 0.5, -6), ZIndex = 3})
+                    Create("UICorner", {Parent = SliderKnob, CornerRadius = UDim.new(1, 0)})
+                    Create("UIStroke", {Parent = SliderKnob, Color = AccentColor, Thickness = 1.2})
+
+                    local SliderBtn = Create("TextButton", {Parent = SliderBar, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), AutoButtonColor = false, ZIndex = 4})
 
                     local function setSliderValue(newVal, ignoreCallback)
                         value = math.clamp(math.floor(tonumber(newVal) or min), min, max)
                         ValueBox.Text = tostring(value)
                         local percentage = (max == min) and 0 or ((value - min) / (max - min))
                         SliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+                        SliderKnob.Position = UDim2.new(percentage, -6, 0.5, -6)
                         if callback and not ignoreCallback then callback(value) end
                     end
 
@@ -610,19 +619,19 @@ function Library:CreateWindow(options)
                     local DropFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28), ClipsDescendants = false, ZIndex = 10})
                     local DropBtn = Create("TextButton", {Parent = DropFrame, Text = "", BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 0, 28), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false, ZIndex = 10})
                     Create("UICorner", {Parent = DropBtn, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = DropBtn, Color = Color3.fromRGB(90, 50, 56), Thickness = 1.2})
+                    Create("UIStroke", {Parent = DropBtn, Color = AccentColor, Thickness = 1.2})
 
                     Create("TextLabel", {Parent = DropBtn, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0.4, 0, 1, 0), Position = UDim2.new(0, 10, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 11})
 
                     local PreviewBox = Create("Frame", {Parent = DropBtn, BackgroundColor3 = BackgroundColor, Size = UDim2.new(0, 110, 0, 18), Position = UDim2.new(1, -118, 0.5, -9), ZIndex = 11})
                     Create("UICorner", {Parent = PreviewBox, CornerRadius = UDim.new(0, 3)})
-                    Create("UIStroke", {Parent = PreviewBox, Color = AccentColor, Thickness = 1})
+                    Create("UIStroke", {Parent = PreviewBox, Color = AccentColor, Thickness = 1.2})
 
                     local PreviewText = Create("TextLabel", {Parent = PreviewBox, Text = "", Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -6, 1, 0), Position = UDim2.new(0, 3, 0, 0), TextXAlignment = Enum.TextXAlignment.Right, TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 11})
 
                     local ListFrame = Create("ScrollingFrame", {Parent = DropFrame, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 28), ScrollBarThickness = 2, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), Visible = false, ZIndex = 25})
                     Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0, 4)})
-                    Create("UIStroke", {Parent = ListFrame, Color = AccentColor, Thickness = 1.2})
+                    Create("UIStroke", {Parent = ListFrame, Color = AccentColor, Thickness = 1.4})
                     local ListLayout = Create("UIListLayout", {Parent = ListFrame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2)})
                     Create("UIPadding", {Parent = ListFrame, PaddingTop = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3), PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 3)})
 
@@ -657,6 +666,7 @@ function Library:CreateWindow(options)
                     for _, opt in ipairs(options) do
                         local OptBtn = Create("TextButton", {Parent = ListFrame, Text = "  " .. tostring(opt), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 0.5, Size = UDim2.new(1, 0, 0, 22), AutoButtonColor = false, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 26})
                         Create("UICorner", {Parent = OptBtn, CornerRadius = UDim.new(0, 3)})
+                        Create("UIStroke", {Parent = OptBtn, Color = AccentColor, Thickness = 0.8})
                         
                         local CheckMark = Create("TextLabel", {Parent = OptBtn, Name = "CheckMark", Text = "", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -22, 0, 0), TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 27})
 

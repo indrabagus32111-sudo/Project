@@ -3,22 +3,16 @@ local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
-local Stats = game:GetService("Stats")
+local Players = game:GetService("Players")
 
 local Library = {
     WhitelistedUsers = {},
     Icons = {
         ["accessibility"] = "rbxassetid://10709751939",
         ["activity"] = "rbxassetid://10709752035",
+        ["user"] = "rbxassetid://10709752002",
     }
 }
-
-local _isfolder = isfolder or function() return true end
-local _makefolder = makefolder or function() end
-local _writefile = writefile or function(path, data) warn("File saving not supported.") end
-local _readfile = readfile or function() return "{}" end
-local _listfiles = listfiles or function() return {} end
-local _delfile = delfile or function() warn("File deletion not supported.") end
 
 local function Create(className, properties)
     local instance = Instance.new(className)
@@ -36,7 +30,6 @@ local function Create(className, properties)
     return instance
 end
 
--- Fungsi Dekorasi Garis Sudut (Hanya untuk Search & FPS/Ping)
 local function AddCornerBorders(parent, color)
     color = color or Color3.fromRGB(255, 40, 40)
     local size = 5
@@ -44,13 +37,10 @@ local function AddCornerBorders(parent, color)
 
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, ZIndex = 5})
-
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 0, 0), BorderSizePixel = 0, ZIndex = 5})
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 0, 0), BorderSizePixel = 0, ZIndex = 5})
-
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(0, 0, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(0, 0, 1, -size), BorderSizePixel = 0, ZIndex = 5})
-
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, size, 0, thickness), Position = UDim2.new(1, -size, 1, -thickness), BorderSizePixel = 0, ZIndex = 5})
     Create("Frame", {Parent = parent, BackgroundColor3 = color, Size = UDim2.new(0, thickness, 0, size), Position = UDim2.new(1, -thickness, 1, -size), BorderSizePixel = 0, ZIndex = 5})
 end
@@ -118,9 +108,9 @@ end
 
 local AccentColor = Color3.fromRGB(255, 40, 40)
 local BackgroundColor = Color3.fromRGB(24, 16, 18)
-local CardColor = Color3.fromRGB(38, 20, 24) -- Ditingkatkan nuansa merahnya agar lebih jelas
+local CardColor = Color3.fromRGB(38, 20, 24)
 local HoverColor = Color3.fromRGB(55, 30, 36)
-local ButtonColor = Color3.fromRGB(42, 22, 26) -- Warna latar tombol lebih kelihatan
+local ButtonColor = Color3.fromRGB(42, 22, 26)
 local TextColor = Color3.fromRGB(240, 240, 240)
 local SubTextColor = Color3.fromRGB(180, 155, 155)
 local GlobalNotifContainer
@@ -229,7 +219,7 @@ function Library:CreateWindow(options)
             local fps = math.round(frameCount / (currentTick - lastTick))
             local ping = 0
             pcall(function()
-                ping = math.round(game:GetService("Players").LocalPlayer:GetNetworkPing() * 1000)
+                ping = math.round(Players.LocalPlayer:GetNetworkPing() * 1000)
             end)
             StatsText.Text = string.format("FPS: %d | %dms", fps, ping)
             frameCount = 0
@@ -401,6 +391,11 @@ function Library:CreateWindow(options)
             return TabConfig.LastSection:AddDropdown(name, opts, def, cb, multi)
         end
 
+        function TabConfig:AddUserProfile()
+            ensureDefaultPageAndSection()
+            return TabConfig.LastSection:AddUserProfile()
+        end
+
         TabBtn.MouseButton1Click:Connect(function()
             if Window.CurrentTab == TabConfig then return end
             if Window.CurrentTab then
@@ -457,7 +452,6 @@ function Library:CreateWindow(options)
             end
 
             function PageObj:CreateSection(secName)
-                -- Kotak panjang (Section) dibuat sedikit lebih bernuansa merah
                 local SectionContainer = Create("Frame", {Parent = MainColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 28), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = false})
                 Create("UICorner", {Parent = SectionContainer, CornerRadius = UDim.new(0, 5)})
                 Create("UIStroke", {Parent = SectionContainer, Color = Color3.fromRGB(85, 45, 52), Thickness = 1.2})
@@ -471,6 +465,30 @@ function Library:CreateWindow(options)
 
                 local Elements = {}
 
+                -- Widget Profil Player (Menampilkan Avatar, Display Name, & Username)
+                function Elements:AddUserProfile()
+                    local localPlayer = Players.LocalPlayer
+                    local ProfileFrame = Create("Frame", {Parent = ItemContainer, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 0, 50)})
+                    Create("UICorner", {Parent = ProfileFrame, CornerRadius = UDim.new(0, 5)})
+                    Create("UIStroke", {Parent = ProfileFrame, Color = Color3.fromRGB(90, 50, 56), Thickness = 1.2})
+
+                    -- Avatar Image
+                    local AvatarImg = Create("ImageLabel", {Parent = ProfileFrame, BackgroundTransparency = 1, Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 6, 0.5, -19), Image = "rbxassetid://0"})
+                    Create("UICorner", {Parent = AvatarImg, CornerRadius = UDim.new(1, 0)})
+                    Create("UIStroke", {Parent = AvatarImg, Color = AccentColor, Thickness = 1})
+
+                    pcall(function()
+                        local content, isReady = Players:GetUserThumbnailAsync(localPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+                        if isReady then AvatarImg.Image = content end
+                    end)
+
+                    -- Text Container (Display Name & Username)
+                    local TextInfo = Create("Frame", {Parent = ProfileFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -56, 1, 0), Position = UDim2.new(0, 50, 0, 0)})
+                    
+                    Create("TextLabel", {Parent = TextInfo, Text = localPlayer.DisplayName, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 0, 9), TextXAlignment = Enum.TextXAlignment.Left})
+                    Create("TextLabel", {Parent = TextInfo, Text = "@" .. localPlayer.Name, Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 14), Position = UDim2.new(0, 0, 0, 26), TextXAlignment = Enum.TextXAlignment.Left})
+                end
+
                 function Elements:AddParagraph(title, desc)
                     local ParaFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y})
                     Create("TextLabel", {Parent = ParaFrame, Text = title, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 12), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left})
@@ -478,9 +496,8 @@ function Library:CreateWindow(options)
                     Create("UIPadding", {Parent = ParaFrame, PaddingBottom = UDim.new(0, 4)})
                 end
 
-                function Elements:AddButton(name, callback, infoData)
+                function Elements:AddButton(name, callback)
                     local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30)})
-                    -- Tombol dibuat lebih terlihat (menggunakan ButtonColor yang lebih terang & kontras)
                     local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false})
                     Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = Btn, Color = Color3.fromRGB(95, 50, 58), Thickness = 1.2})
@@ -619,11 +636,9 @@ function Library:CreateWindow(options)
                         PreviewText.Text = table.concat(list, ", ")
                         if PreviewText.Text == "" then PreviewText.Text = "None" end
 
-                        -- Update warna latar dan tanda centang pada opsi yang aktif
                         for opt, btn in pairs(optionButtons) do
                             local checkMark = btn:FindFirstChild("CheckMark")
                             if selected[opt] then
-                                -- Warna merah saat opsi dipilih
                                 Tween(btn, {BackgroundColor3 = Color3.fromRGB(80, 30, 35), BackgroundTransparency = 0.2}, 0.2)
                                 btn.TextColor3 = Color3.fromRGB(255, 255, 255)
                                 if checkMark then checkMark.Text = "✓" end

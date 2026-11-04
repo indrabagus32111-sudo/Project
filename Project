@@ -403,11 +403,11 @@ function Library:CreateWindow(options)
             local PageBtn = Create("TextButton", {Parent = PageNav, Text = pageName, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X})
             local PageHighlight = Create("Frame", {Parent = PageBtn, BackgroundColor3 = AccentColor, Size = UDim2.new(0, 0, 0, 2), Position = UDim2.new(0.5, 0, 1, -3), AnchorPoint = Vector2.new(0.5, 0), BackgroundTransparency = 1})
             
-            -- Ukuran diperkecil sedikit (-12 pixel) agar garis merah terlihat jelas di sekeliling kotak tanpa mentok
             local PageScroll = Create("ScrollingFrame", {Parent = PageContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, -6), Position = UDim2.new(0, 6, 0, 3), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(70, 40, 46), Visible = false, BorderSizePixel = 0, ClipsDescendants = true})
 
-            local MainColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(1, -8, 1, 0), ClipsDescendants = true})
-            local M_Layout = Create("UIListLayout", {Parent = MainColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+            -- MainColumn diset agar konten berada di tengah secara horizontal dengan ruang yang cukup untuk garis border
+            local MainColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ClipsDescendants = false})
+            local M_Layout = Create("UIListLayout", {Parent = MainColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), HorizontalAlignment = Enum.HorizontalAlignment.Center})
             M_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
                 PageScroll.CanvasSize = UDim2.new(0, 0, 0, M_Layout.AbsoluteContentSize.Y + 16) 
             end)
@@ -437,8 +437,8 @@ function Library:CreateWindow(options)
             end
 
             function PageObj:CreateSection(secName)
-                -- Card / Kotak panjang disesuaikan agar garis merah di pinggir terlihat jelas dan pas
-                local SectionContainer = Create("Frame", {Parent = MainColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, 0, 0, 28), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = true, ZIndex = 5})
+                -- Kotak panjang dikecilkan sedikit ukurannya (Size width = 1, -8) agar garis UIStroke di sekelilingnya terlihat utuh dan tidak terpotong
+                local SectionContainer = Create("Frame", {Parent = MainColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, -8, 0, 28), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = false, ZIndex = 5})
                 Create("UICorner", {Parent = SectionContainer, CornerRadius = UDim.new(0, 5)})
                 Create("UIStroke", {Parent = SectionContainer, Color = AccentColor, Thickness = 1.2})
                 
@@ -708,7 +708,7 @@ function Library:CreateWindow(options)
                         Get = function() 
                             if multi then
                                 local result = {}
-                                for _, o in ipairs(options) do if selected[o] then table.init(result, o) end end
+                                for _, o in ipairs(options) do if selected[o] then table.insert(result, o) end end
                                 return result
                             else
                                 for o, v in pairs(selected) do if v then return o end end

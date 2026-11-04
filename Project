@@ -109,21 +109,37 @@ function Library:Notify(options)
     local Notif = Create("Frame", {Parent = GlobalNotifContainer, BackgroundColor3 = Color3.fromRGB(30, 18, 21), Size = UDim2.new(1, 0, 0, 52), BackgroundTransparency = 1, ZIndex = 201, ClipsDescendants = true})
     Create("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 6)})
     Create("UIStroke", {Parent = Notif, Color = AccentColor, Thickness = 1.2, Transparency = 1})
-    local TitleText = Create("TextLabel", {Parent = Notif, Text = title, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0, 8), Size = UDim2.new(1, -20, 0, 12), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202})
+    
+    local TitleText = Create("TextLabel", {Parent = Notif, Text = title, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = TextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0, 8), Size = UDim2.new(1, -34, 0, 12), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202})
     local DescText = Create("TextLabel", {Parent = Notif, Text = desc, Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0, 22), Size = UDim2.new(1, -20, 0, 20), TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1, ZIndex = 202, TextWrapped = true})
+
+    -- Tombol X pada Notifikasi
+    local CloseNotifBtn = Create("TextButton", {Parent = Notif, Text = "×", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(1, -22, 0, 6), TextTransparency = 1, ZIndex = 203})
+    AddBounce(CloseNotifBtn)
+
+    local destroyed = false
+    local function removeNotif()
+        if destroyed then return end
+        destroyed = true
+        Tween(Notif, {BackgroundTransparency = 1}, 0.3)
+        Tween(Notif:FindFirstChildOfClass("UIStroke"), {Transparency = 1}, 0.3)
+        Tween(TitleText, {TextTransparency = 1}, 0.3)
+        Tween(DescText, {TextTransparency = 1}, 0.3)
+        Tween(CloseNotifBtn, {TextTransparency = 1}, 0.3)
+        task.wait(0.3)
+        Notif:Destroy()
+    end
+
+    CloseNotifBtn.MouseButton1Click:Connect(removeNotif)
 
     Tween(Notif, {BackgroundTransparency = 0}, 0.3)
     Tween(Notif:FindFirstChildOfClass("UIStroke"), {Transparency = 0}, 0.3)
     Tween(TitleText, {TextTransparency = 0}, 0.3)
     Tween(DescText, {TextTransparency = 0}, 0.3)
+    Tween(CloseNotifBtn, {TextTransparency = 0}, 0.3)
 
     task.delay(duration, function()
-        Tween(Notif, {BackgroundTransparency = 1}, 0.4)
-        Tween(Notif:FindFirstChildOfClass("UIStroke"), {Transparency = 1}, 0.4)
-        Tween(TitleText, {TextTransparency = 1}, 0.4)
-        Tween(DescText, {TextTransparency = 1}, 0.4)
-        task.wait(0.4)
-        Notif:Destroy()
+        if not destroyed then removeNotif() end
     end)
 end
 
@@ -214,7 +230,8 @@ function Library:CreateWindow(options)
     local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -14, 0, 22), Position = UDim2.new(0, 7, 0, 5), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
-    Create("UIStroke", {Parent = TabSearchBox, Color = AccentColor, Thickness = 1.2})
+    -- Warna Border Search Tab diubah menjadi SubTextColor (normal) agar tidak merah
+    Create("UIStroke", {Parent = TabSearchBox, Color = SubTextColor, Thickness = 1.0})
     
     local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -10, 1, -32), Position = UDim2.new(0, 5, 0, 30), ScrollBarThickness = 2, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(0, 0, 0, 0)})
     local TabListLayout = Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
@@ -408,7 +425,6 @@ function Library:CreateWindow(options)
             local MainColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ClipsDescendants = false})
             local M_Layout = Create("UIListLayout", {Parent = MainColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), HorizontalAlignment = Enum.HorizontalAlignment.Center})
             
-            -- Menambahkan PaddingTop agar posisi dari atas kotak panjang diturunkan sedikit dengan jarak yang pas
             Create("UIPadding", {Parent = MainColumn, PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6)})
 
             M_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
@@ -526,7 +542,8 @@ function Library:CreateWindow(options)
                     Create("UICorner", {Parent = ValueBox, CornerRadius = UDim.new(0, 3)})
                     Create("UIStroke", {Parent = ValueBox, Color = AccentColor, Thickness = 1.2})
 
-                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(60, 38, 44), Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 24), ZIndex = 8})
+                    -- Ukuran SliderBar diperpendek dikit di kiri-kanan agar bola slider tidak tenggelam/keluar batas ujung
+                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(60, 38, 44), Size = UDim2.new(1, -12, 0, 6), Position = UDim2.new(0, 6, 0, 24), ZIndex = 8})
                     Create("UICorner", {Parent = SliderBar, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = SliderBar, Color = AccentColor, Thickness = 1.2})
 

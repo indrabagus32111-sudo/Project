@@ -405,9 +405,12 @@ function Library:CreateWindow(options)
             
             local PageScroll = Create("ScrollingFrame", {Parent = PageContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, -6), Position = UDim2.new(0, 6, 0, 3), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(70, 40, 46), Visible = false, BorderSizePixel = 0, ClipsDescendants = true})
 
-            -- MainColumn diset agar konten berada di tengah secara horizontal dengan ruang yang cukup untuk garis border
             local MainColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ClipsDescendants = false})
             local M_Layout = Create("UIListLayout", {Parent = MainColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), HorizontalAlignment = Enum.HorizontalAlignment.Center})
+            
+            -- Menambahkan PaddingTop agar posisi dari atas kotak panjang diturunkan sedikit dengan jarak yang pas
+            Create("UIPadding", {Parent = MainColumn, PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6)})
+
             M_Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
                 PageScroll.CanvasSize = UDim2.new(0, 0, 0, M_Layout.AbsoluteContentSize.Y + 16) 
             end)
@@ -437,7 +440,6 @@ function Library:CreateWindow(options)
             end
 
             function PageObj:CreateSection(secName)
-                -- Kotak panjang dikecilkan sedikit ukurannya (Size width = 1, -8) agar garis UIStroke di sekelilingnya terlihat utuh dan tidak terpotong
                 local SectionContainer = Create("Frame", {Parent = MainColumn, BackgroundColor3 = CardColor, Size = UDim2.new(1, -8, 0, 28), AutomaticSize = Enum.AutomaticSize.Y, ClipsDescendants = false, ZIndex = 5})
                 Create("UICorner", {Parent = SectionContainer, CornerRadius = UDim.new(0, 5)})
                 Create("UIStroke", {Parent = SectionContainer, Color = AccentColor, Thickness = 1.2})

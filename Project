@@ -194,8 +194,8 @@ function Library:CreateWindow(options)
     Create("TextLabel", {Parent = TitleContainer, Text = hubName, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = AccentColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 3), Size = UDim2.new(1, 0, 0, 13), TextXAlignment = Enum.TextXAlignment.Left})
     Create("TextLabel", {Parent = TitleContainer, Text = subText, Font = Enum.Font.Gotham, TextSize = 8, TextColor3 = subColor, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 16), Size = UDim2.new(1, 0, 0, 10), TextXAlignment = Enum.TextXAlignment.Left})
 
-    local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 160, 0, 20), Position = UDim2.new(1, -204, 0.5, -10)})
-    Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 3)})
+    local SearchBar = Create("Frame", {Parent = TopBar, BackgroundColor3 = CardColor, Size = UDim2.new(0, 160, 0, 22), Position = UDim2.new(0, 172, 0.5, -11)})
+    Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 4)})
     Create("UIStroke", {Parent = SearchBar, Color = AccentColor, Thickness = 1.2})
     Create("ImageLabel", {Parent = SearchBar, BackgroundTransparency = 1, Image = "rbxassetid://6031154871", ImageColor3 = SubTextColor, Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(0, 6, 0.5, -5)})
     local SearchInput = Create("TextBox", {Parent = SearchBar, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 1, 0), Position = UDim2.new(0, 20, 0, 0), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = TextColor, PlaceholderText = "Search...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
@@ -540,7 +540,7 @@ function Library:CreateWindow(options)
                     Create("UICorner", {Parent = ValueBox, CornerRadius = UDim.new(0, 3)})
                     Create("UIStroke", {Parent = ValueBox, Color = AccentColor, Thickness = 1.2})
 
-                    -- SliderBar diberi padding kiri-kanan agar knob tidak tenggelam di ujung
+                    -- Menggunakan padding 12px agar bulatan slider tidak tenggelam/keluar batas di ujung kiri & kanan
                     local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(60, 38, 44), Size = UDim2.new(1, -12, 0, 6), Position = UDim2.new(0, 6, 0, 24), ZIndex = 8})
                     Create("UICorner", {Parent = SliderBar, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = SliderBar, Color = AccentColor, Thickness = 1.2})
@@ -661,7 +661,7 @@ function Library:CreateWindow(options)
                     end)
 
                     for _, opt in ipairs(options) do
-                        -- Garis tepi (UIStroke) pada opsi dropdown telah dihapus sesuai permintaan
+                        -- Garis/UIStroke pada pilihan di dropdown telah dihapus sepenuhnya
                         local OptBtn = Create("TextButton", {Parent = ListFrame, Text = "  " .. tostring(opt), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 0.5, Size = UDim2.new(1, 0, 0, 22), AutoButtonColor = false, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 51})
                         Create("UICorner", {Parent = OptBtn, CornerRadius = UDim.new(0, 3)})
                         

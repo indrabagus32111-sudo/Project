@@ -228,7 +228,7 @@ function Library:CreateWindow(options)
 
     local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 140, 1, -32), Position = UDim2.new(0, 0, 0, 32), Active = true})
     
-    -- TAB SEARCH BOX (DIUBAH MENJADI WARNA BIASA / SUBTEXTCOLOR)
+    -- TAB SEARCH BOX TANPA EFEK GLOW BERWARNA
     local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -14, 0, 22), Position = UDim2.new(0, 7, 0, 5), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
@@ -459,7 +459,7 @@ function Library:CreateWindow(options)
                 function Elements:AddButton(name, callback)
                     local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30), ZIndex = 7, ClipsDescendants = true})
                     
-                    -- TOMBOL (TextColor3 DIUBAH MENJADI SubTextColor AGAR WARNA TEKS BIASA / TIDAK MENYALA TERANG)
+                    -- TOMBOL DENGAN TULISAN BIASA TANPA EFEK GLOW / WARNA MENYALA
                     local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = SubTextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false, ZIndex = 8})
                     
                     Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
@@ -515,7 +515,8 @@ function Library:CreateWindow(options)
                     local SliderFill = Create("Frame", {Parent = SliderBar, BackgroundColor3 = AccentColor, Size = UDim2.new((value - min) / (max - min), 0, 1, 0), ZIndex = 9})
                     Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
 
-                    local SliderKnob = Create("Frame", {Parent = SliderBar, BackgroundColor3 = Color3.fromRGB(0, 0, 0), Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((value - min) / (max - min), -6, 0.5, -6), ZIndex = 10})
+                    -- BULATAN SLIDER DIUBAH MENJADI WARNA PUTIH PEKAT
+                    local SliderKnob = Create("Frame", {Parent = SliderBar, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((value - min) / (max - min), -6, 0.5, -6), ZIndex = 10})
                     Create("UICorner", {Parent = SliderKnob, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = SliderKnob, Color = AccentColor, Thickness = 1.2})
 

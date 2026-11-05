@@ -515,10 +515,9 @@ function Library:CreateWindow(options)
                     local SliderFill = Create("Frame", {Parent = SliderBar, BackgroundColor3 = AccentColor, Size = UDim2.new((value - min) / (max - min), 0, 1, 0), ZIndex = 9})
                     Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
 
-                    -- BULATAN SLIDER DIUBAH MENJADI WARNA PUTIH PEKAT
+                    -- BULATAN SLIDER WARNA PUTIH TANPA GARIS PUTIH (UIStroke dihapus)
                     local SliderKnob = Create("Frame", {Parent = SliderBar, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((value - min) / (max - min), -6, 0.5, -6), ZIndex = 10})
                     Create("UICorner", {Parent = SliderKnob, CornerRadius = UDim.new(1, 0)})
-                    Create("UIStroke", {Parent = SliderKnob, Color = AccentColor, Thickness = 1.2})
 
                     local SliderBtn = Create("TextButton", {Parent = SliderBar, Text = "", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), AutoButtonColor = false, ZIndex = 11})
 

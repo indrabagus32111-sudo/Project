@@ -91,13 +91,14 @@ local function MakeDraggable(topbar, object)
     end)
 end
 
-local AccentColor = Color3.fromRGB(255, 40, 40)
-local BackgroundColor = Color3.fromRGB(24, 16, 18)
-local CardColor = Color3.fromRGB(38, 20, 24)
-local HoverColor = Color3.fromRGB(55, 30, 36)
-local ButtonColor = Color3.fromRGB(52, 24, 28)
-local TextColor = Color3.fromRGB(240, 240, 240)
-local SubTextColor = Color3.fromRGB(180, 155, 155)
+-- TEMA HITAM PUTIH & PUTIH MENYALA (ACCENT)
+local AccentColor = Color3.fromRGB(255, 255, 255)     -- Putih Menyala
+local BackgroundColor = Color3.fromRGB(15, 15, 15)    -- Hitam Pekat
+local CardColor = Color3.fromRGB(25, 25, 25)          -- Hitam Elegan untuk Card
+local HoverColor = Color3.fromRGB(45, 45, 45)          -- Abu-abu Gelap untuk Hover
+local ButtonColor = Color3.fromRGB(35, 35, 35)        -- Abu-abu Gelap untuk Tombol
+local TextColor = Color3.fromRGB(240, 240, 240)       -- Putih Terang
+local SubTextColor = Color3.fromRGB(160, 160, 160)     -- Abu-abu Terang
 local GlobalNotifContainer
 
 function Library:Notify(options)
@@ -106,7 +107,7 @@ function Library:Notify(options)
     local desc = options.Description or "Information updated."
     local duration = options.Duration or 3
 
-    local Notif = Create("Frame", {Parent = GlobalNotifContainer, BackgroundColor3 = Color3.fromRGB(30, 18, 21), Size = UDim2.new(1, 0, 0, 52), BackgroundTransparency = 1, ZIndex = 201, ClipsDescendants = true})
+    local Notif = Create("Frame", {Parent = GlobalNotifContainer, BackgroundColor3 = Color3.fromRGB(20, 20, 20), Size = UDim2.new(1, 0, 0, 52), BackgroundTransparency = 1, ZIndex = 201, ClipsDescendants = true})
     Create("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 6)})
     Create("UIStroke", {Parent = Notif, Color = AccentColor, Thickness = 1.2, Transparency = 1})
     
@@ -233,7 +234,7 @@ function Library:CreateWindow(options)
     
     local TabContainer = Create("ScrollingFrame", {Parent = Sidebar, BackgroundTransparency = 1, Size = UDim2.new(1, -10, 1, -32), Position = UDim2.new(0, 5, 0, 30), ScrollBarThickness = 2, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(0, 0, 0, 0)})
     local TabListLayout = Create("UIListLayout", {Parent = TabContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
-    Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(70, 40, 46), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -32), Position = UDim2.new(0, 140, 0, 32)})
+    Create("Frame", {Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(50, 50, 50), BorderSizePixel = 0, Size = UDim2.new(0, 1, 1, -32), Position = UDim2.new(0, 140, 0, 32)})
 
     local ContentArea = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -142, 1, -32), Position = UDim2.new(0, 142, 0, 32), Active = true})
 
@@ -253,7 +254,7 @@ function Library:CreateWindow(options)
     local PopupScale = Create("UIScale", {Parent = PopupCard, Scale = 0.8})
     local PopupTitle = Create("TextLabel", {Parent = PopupCard, Text = "Exit Application", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 14), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center})
     local PopupText = Create("TextLabel", {Parent = PopupCard, Text = "Are you sure you want to close Kenz Hub?", Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 30), Position = UDim2.new(0, 12, 0, 38), ZIndex = 102, TextTransparency = 1, TextXAlignment = Enum.TextXAlignment.Center, TextWrapped = true})
-    local YesBtn = Create("TextButton", {Parent = PopupCard, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = AccentColor, Size = UDim2.new(0, 115, 0, 28), Position = UDim2.new(0.5, 6, 0, 88), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
+    local YesBtn = Create("TextButton", {Parent = PopupCard, Text = "Confirm", Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = Color3.fromRGB(0, 0, 0), BackgroundColor3 = AccentColor, Size = UDim2.new(0, 115, 0, 28), Position = UDim2.new(0.5, 6, 0, 88), ZIndex = 102, BackgroundTransparency = 1, TextTransparency = 1, AutoButtonColor = false})
     Create("UICorner", {Parent = YesBtn, CornerRadius = UDim.new(0, 4)})
     Create("UIStroke", {Parent = YesBtn, Color = AccentColor, Thickness = 1})
     AddBounce(YesBtn)
@@ -377,7 +378,7 @@ function Library:CreateWindow(options)
             local PageBtn = Create("TextButton", {Parent = PageNav, Text = pageName, Font = Enum.Font.GothamBold, TextSize = 11, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X})
             local PageHighlight = Create("Frame", {Parent = PageBtn, BackgroundColor3 = AccentColor, Size = UDim2.new(0, 0, 0, 2), Position = UDim2.new(0.5, 0, 1, -3), AnchorPoint = Vector2.new(0.5, 0), BackgroundTransparency = 1})
             
-            local PageScroll = Create("ScrollingFrame", {Parent = PageContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, -6), Position = UDim2.new(0, 6, 0, 3), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(70, 40, 46), Visible = false, BorderSizePixel = 0, ClipsDescendants = true})
+            local PageScroll = Create("ScrollingFrame", {Parent = PageContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -12, 1, -6), Position = UDim2.new(0, 6, 0, 3), ScrollBarThickness = 2, ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80), Visible = false, BorderSizePixel = 0, ClipsDescendants = true})
 
             local MainColumn = Create("Frame", {Parent = PageScroll, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ClipsDescendants = false})
             local M_Layout = Create("UIListLayout", {Parent = MainColumn, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), HorizontalAlignment = Enum.HorizontalAlignment.Center})
@@ -468,17 +469,20 @@ function Library:CreateWindow(options)
                     local state = default or false
                     local TogFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28), ZIndex = 7, ClipsDescendants = true})
                     Create("TextLabel", {Parent = TogFrame, Text = name, Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, BackgroundTransparency = 1, Size = UDim2.new(1, -45, 1, 0), Position = UDim2.new(0, 0, 0, 0), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 8})
-                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(60, 38, 44), Size = UDim2.new(0, 34, 0, 16), Position = UDim2.new(1, -34, 0.5, -8), AutoButtonColor = false, ZIndex = 8})
+                    local Lever = Create("TextButton", {Parent = TogFrame, Text = "", BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 50, 50), Size = UDim2.new(0, 34, 0, 16), Position = UDim2.new(1, -34, 0.5, -8), AutoButtonColor = false, ZIndex = 8})
                     Create("UICorner", {Parent = Lever, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = Lever, Color = AccentColor, Thickness = 1.2})
                     AddBounce(Lever)
-                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6), ZIndex = 9})
+                    local Knob = Create("Frame", {Parent = Lever, BackgroundColor3 = state and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6), ZIndex = 9})
                     Create("UICorner", {Parent = Knob, CornerRadius = UDim.new(1, 0)})
 
                     local function internalSet(val)
                         state = val
-                        Tween(Lever, {BackgroundColor3 = state and AccentColor or Color3.fromRGB(60, 38, 44)}, 0.3)
-                        Tween(Knob, {Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)}, 0.3)
+                        Tween(Lever, {BackgroundColor3 = state and AccentColor or Color3.fromRGB(50, 50, 50)}, 0.3)
+                        Tween(Knob, {
+                            Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+                            BackgroundColor3 = state and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
+                        }, 0.3)
                         if callback then callback(state) end
                     end
 
@@ -499,14 +503,14 @@ function Library:CreateWindow(options)
                     Create("UICorner", {Parent = ValueBox, CornerRadius = UDim.new(0, 3)})
                     Create("UIStroke", {Parent = ValueBox, Color = AccentColor, Thickness = 1.2})
 
-                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(60, 38, 44), Size = UDim2.new(1, -12, 0, 6), Position = UDim2.new(0, 6, 0, 24), ZIndex = 8})
+                    local SliderBar = Create("Frame", {Parent = SliderFrame, BackgroundColor3 = Color3.fromRGB(50, 50, 50), Size = UDim2.new(1, -12, 0, 6), Position = UDim2.new(0, 6, 0, 24), ZIndex = 8})
                     Create("UICorner", {Parent = SliderBar, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = SliderBar, Color = AccentColor, Thickness = 1.2})
 
                     local SliderFill = Create("Frame", {Parent = SliderBar, BackgroundColor3 = AccentColor, Size = UDim2.new((value - min) / (max - min), 0, 1, 0), ZIndex = 9})
                     Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
 
-                    local SliderKnob = Create("Frame", {Parent = SliderBar, BackgroundColor3 = Color3.fromRGB(255, 255, 255), Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((value - min) / (max - min), -6, 0.5, -6), ZIndex = 10})
+                    local SliderKnob = Create("Frame", {Parent = SliderBar, BackgroundColor3 = Color3.fromRGB(0, 0, 0), Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((value - min) / (max - min), -6, 0.5, -6), ZIndex = 10})
                     Create("UICorner", {Parent = SliderKnob, CornerRadius = UDim.new(1, 0)})
                     Create("UIStroke", {Parent = SliderKnob, Color = AccentColor, Thickness = 1.2})
 
@@ -603,7 +607,7 @@ function Library:CreateWindow(options)
                         for opt, btn in pairs(optionButtons) do
                             local checkMark = btn:FindFirstChild("CheckMark")
                             if selected[opt] then
-                                Tween(btn, {BackgroundColor3 = Color3.fromRGB(80, 30, 35), BackgroundTransparency = 0.2}, 0.2)
+                                Tween(btn, {BackgroundColor3 = Color3.fromRGB(60, 60, 60), BackgroundTransparency = 0.2}, 0.2)
                                 btn.TextColor3 = Color3.fromRGB(255, 255, 255)
                                 if checkMark then checkMark.Text = "✓" end
                             else

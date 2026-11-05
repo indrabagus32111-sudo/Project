@@ -227,7 +227,9 @@ function Library:CreateWindow(options)
     end)
 
     local Sidebar = Create("Frame", {Parent = MainFrame, BackgroundColor3 = BackgroundColor, BackgroundTransparency = 1, Size = UDim2.new(0, 140, 1, -32), Position = UDim2.new(0, 0, 0, 32), Active = true})
-    local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -14, 0, 22), Position = UDim2.new(0, 7, 0, 5), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = TextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
+    
+    -- TAB SEARCH BOX (DIUBAH MENJADI WARNA BIASA / SUBTEXTCOLOR)
+    local TabSearchBox = Create("TextBox", {Parent = Sidebar, BackgroundColor3 = CardColor, Size = UDim2.new(1, -14, 0, 22), Position = UDim2.new(0, 7, 0, 5), Font = Enum.Font.Gotham, TextSize = 10, TextColor3 = SubTextColor, PlaceholderText = "Search tabs...", TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false})
     Create("UIPadding", {Parent = TabSearchBox, PaddingLeft = UDim.new(0, 6)})
     Create("UICorner", {Parent = TabSearchBox, CornerRadius = UDim.new(0, 4)})
     Create("UIStroke", {Parent = TabSearchBox, Color = AccentColor, Thickness = 1.2})
@@ -456,7 +458,10 @@ function Library:CreateWindow(options)
 
                 function Elements:AddButton(name, callback)
                     local BtnFrame = Create("Frame", {Parent = ItemContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 30), ZIndex = 7, ClipsDescendants = true})
-                    local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = TextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false, ZIndex = 8})
+                    
+                    -- TOMBOL (TextColor3 DIUBAH MENJADI SubTextColor AGAR WARNA TEKS BIASA / TIDAK MENYALA TERANG)
+                    local Btn = Create("TextButton", {Parent = BtnFrame, Text = name, Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = SubTextColor, BackgroundColor3 = ButtonColor, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), AutoButtonColor = false, ZIndex = 8})
+                    
                     Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
                     Create("UIStroke", {Parent = Btn, Color = AccentColor, Thickness = 1.2})
                     AddBounce(Btn)

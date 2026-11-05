@@ -15,16 +15,33 @@ local Library = {
 }
 
 local function Create(className, properties)
-    local instance = Instance.new(className)
-    if className == "TextBox" then instance.Text = "" end
+    properties = properties or {}
 
-    for k, v in pairs(properties or {}) do
+    if (className == "UICorner" or className == "UIStroke")
+        and properties.Parent
+        and properties.Parent:IsA("TextBox") then
+        return nil
+    end
+
+    local instance = Instance.new(className)
+
+    if className == "TextBox" then
+        instance.Text = ""
+    end
+
+    for k, v in pairs(properties) do
         instance[k] = v
     end
 
+    if className == "TextBox" then
+        instance.BackgroundTransparency = 1
+        instance.BorderSizePixel = 0
+    end
+
     if className == "TextLabel" or className == "TextButton" or className == "TextBox" then
-        if properties and properties.TextSize and properties.RichText ~= true then
+        if properties.TextSize and properties.RichText ~= true then
             instance.TextScaled = true
+
             local constraint = Instance.new("UITextSizeConstraint")
             constraint.MaxTextSize = properties.TextSize
             constraint.MinTextSize = 6
@@ -123,7 +140,6 @@ local function MakeDraggable(topbar, object)
     end)
 end
 
--- THEME
 local AccentColor = Color3.fromRGB(255, 255, 255)
 local BackgroundColor = Color3.fromRGB(15, 15, 15)
 local CardColor = Color3.fromRGB(25, 25, 25)
@@ -523,7 +539,6 @@ function Library:CreateWindow(options)
         Active = true
     })
 
-    -- SEARCH TABS: POLOS / TRANSPARAN / TANPA OUTLINE
     local TabSearchBox = Create("TextBox", {
         Parent = Sidebar,
         BackgroundTransparency = 1,

@@ -544,8 +544,6 @@ function Library:CreateWindow(options)
         PaddingLeft = UDim.new(0, 6)
     })
 
-    -- Tidak ada UICorner dan UIStroke pada TabSearchBox.
-
     local TabContainer = Create("ScrollingFrame", {
         Parent = Sidebar,
         BackgroundTransparency = 1,
@@ -1337,6 +1335,75 @@ function Library:CreateWindow(options)
                             callback()
                         end
                     end)
+                end
+
+                function Elements:AddTextBox(name, placeholder, default, callback)
+                    local textValue = default or ""
+
+                    local BoxContainer = Create("Frame", {
+                        Parent = ItemContainer,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, 0, 0, 28),
+                        ZIndex = 7,
+                        ClipsDescendants = true
+                    })
+
+                    Create("TextLabel", {
+                        Parent = BoxContainer,
+                        Text = name,
+                        Font = Enum.Font.Gotham,
+                        TextSize = 10,
+                        TextColor3 = SubTextColor,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, -115, 1, 0),
+                        Position = UDim2.new(0, 0, 0, 0),
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 8
+                    })
+
+                    local InputBox = Create("TextBox", {
+                        Parent = BoxContainer,
+                        Text = textValue,
+                        PlaceholderText = placeholder or "Input text...",
+                        Font = Enum.Font.Gotham,
+                        TextSize = 10,
+                        TextColor3 = TextColor,
+                        PlaceholderColor3 = SubTextColor,
+                        BackgroundColor3 = ButtonColor,
+                        Size = UDim2.new(0, 110, 0, 24),
+                        Position = UDim2.new(1, -110, 0.5, -12),
+                        TextXAlignment = Enum.TextXAlignment.Center,
+                        ClearTextOnFocus = false,
+                        ZIndex = 8
+                    })
+
+                    Create("UICorner", {
+                        Parent = InputBox,
+                        CornerRadius = UDim.new(0, 4)
+                    })
+
+                    Create("UIStroke", {
+                        Parent = InputBox,
+                        Color = AccentColor,
+                        Thickness = 1.2
+                    })
+
+                    InputBox.FocusLost:Connect(function(enterPressed)
+                        textValue = InputBox.Text
+                        if callback then
+                            callback(textValue, enterPressed)
+                        end
+                    end)
+
+                    Window.ConfigElements[name] = {
+                        Set = function(val)
+                            textValue = tostring(val)
+                            InputBox.Text = textValue
+                        end,
+                        Get = function()
+                            return textValue
+                        end
+                    }
                 end
 
                 function Elements:AddToggle(name, default, callback)

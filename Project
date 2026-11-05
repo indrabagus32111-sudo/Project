@@ -14,16 +14,15 @@ local Library = {
     }
 }
 
-local AccentColor = Color3.fromRGB(255, 255, 255)
-local BackgroundColor = Color3.fromRGB(15, 15, 15)
-local CardColor = Color3.fromRGB(25, 25, 25)
-local HoverColor = Color3.fromRGB(45, 45, 45)
-local ButtonColor = Color3.fromRGB(35, 35, 35)
-local TextColor = Color3.fromRGB(240, 240, 240)
-local SubTextColor = Color3.fromRGB(160, 160, 160)
-
 local function Create(className, properties)
     properties = properties or {}
+
+    if (className == "UICorner" or className == "UIStroke")
+        and properties.Parent
+        and properties.Parent:IsA("TextBox") then
+        return nil
+    end
+
     local instance = Instance.new(className)
 
     if className == "TextBox" then
@@ -34,26 +33,9 @@ local function Create(className, properties)
         instance[k] = v
     end
 
-    -- KHUSUS TEXTBOX: Otomatis tambahkan Background, UICorner, dan UIStroke (garis putih)
     if className == "TextBox" then
-        if properties.BackgroundTransparency == nil then
-            instance.BackgroundTransparency = 0
-        end
-        if properties.BackgroundColor3 == nil then
-            instance.BackgroundColor3 = ButtonColor
-        end
-        if properties.BorderSizePixel == nil then
-            instance.BorderSizePixel = 0
-        end
-
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 4)
-        corner.Parent = instance
-
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = AccentColor
-        stroke.Thickness = 1.2
-        stroke.Parent = instance
+        instance.BackgroundTransparency = 1
+        instance.BorderSizePixel = 0
     end
 
     if className == "TextLabel" or className == "TextButton" or className == "TextBox" then
@@ -157,6 +139,14 @@ local function MakeDraggable(topbar, object)
         end
     end)
 end
+
+local AccentColor = Color3.fromRGB(255, 255, 255)
+local BackgroundColor = Color3.fromRGB(15, 15, 15)
+local CardColor = Color3.fromRGB(25, 25, 25)
+local HoverColor = Color3.fromRGB(45, 45, 45)
+local ButtonColor = Color3.fromRGB(35, 35, 35)
+local TextColor = Color3.fromRGB(240, 240, 240)
+local SubTextColor = Color3.fromRGB(160, 160, 160)
 
 local GlobalNotifContainer
 
@@ -1380,13 +1370,12 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -95, 1, 0),
+                        Size = UDim2.new(1, -115, 1, 0),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
-                    -- UKURAN TEXTBOX DIPERKEECIL (Lebar 90, Tinggi 22) AGAR GARIS PUTIH TERLIHAT JELAS
                     local InputBox = Create("TextBox", {
                         Parent = BoxContainer,
                         Text = textValue,
@@ -1396,11 +1385,22 @@ function Library:CreateWindow(options)
                         TextColor3 = TextColor,
                         PlaceholderColor3 = SubTextColor,
                         BackgroundColor3 = ButtonColor,
-                        Size = UDim2.new(0, 90, 0, 22),
-                        Position = UDim2.new(1, -90, 0.5, -11),
+                        Size = UDim2.new(0, 110, 0, 24),
+                        Position = UDim2.new(1, -110, 0.5, -12),
                         TextXAlignment = Enum.TextXAlignment.Center,
                         ClearTextOnFocus = false,
                         ZIndex = 8
+                    })
+
+                    Create("UICorner", {
+                        Parent = InputBox,
+                        CornerRadius = UDim.new(0, 4)
+                    })
+
+                    Create("UIStroke", {
+                        Parent = InputBox,
+                        Color = AccentColor,
+                        Thickness = 1.2
                     })
 
                     InputBox.FocusLost:Connect(function(enterPressed)
@@ -1551,6 +1551,17 @@ function Library:CreateWindow(options)
                         TextXAlignment = Enum.TextXAlignment.Center,
                         ClearTextOnFocus = false,
                         ZIndex = 8
+                    })
+
+                    Create("UICorner", {
+                        Parent = ValueBox,
+                        CornerRadius = UDim.new(0, 3)
+                    })
+
+                    Create("UIStroke", {
+                        Parent = ValueBox,
+                        Color = AccentColor,
+                        Thickness = 1.2
                     })
 
                     local SliderBar = Create("Frame", {

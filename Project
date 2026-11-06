@@ -1352,6 +1352,7 @@ function Library:CreateWindow(options)
                         ClipsDescendants = true
                     })
 
+                    -- Lebar TextLabel disesuaikan agar tidak bertabrakan dengan InputWrapper yang digeser ke kiri
                     Create("TextLabel", {
                         Parent = BoxContainer,
                         Text = name,
@@ -1359,18 +1360,19 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -80, 1, 0),
+                        Size = UDim2.new(1, -88, 1, 0),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
+                    -- InputWrapper digeser sedikit ke kiri (X offset -82) dan lebarnya dijadikan 82
                     local InputWrapper = Create("Frame", {
                         Parent = BoxContainer,
                         BackgroundColor3 = ButtonColor,
                         BackgroundTransparency = 0,
-                        Size = UDim2.new(0, 75, 0, 20),
-                        Position = UDim2.new(1, -75, 0.5, -10),
+                        Size = UDim2.new(0, 82, 0, 20),
+                        Position = UDim2.new(1, -82, 0.5, -10),
                         ZIndex = 8
                     })
 
@@ -1537,7 +1539,6 @@ function Library:CreateWindow(options)
                         ZIndex = 8
                     })
 
-                    -- Wrapper Kotak Nomor Slider (Digeser sedikit ke kiri: Position X offset dari -34 ke -38)
                     local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
                         BackgroundColor3 = ButtonColor,
@@ -1558,7 +1559,6 @@ function Library:CreateWindow(options)
                         Thickness = 1.2
                     })
 
-                    -- TextBox di dalam Wrapper
                     local ValueBox = Create("TextBox", {
                         Parent = ValueWrapper,
                         Text = tostring(value),

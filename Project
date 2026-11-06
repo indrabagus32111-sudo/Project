@@ -17,12 +17,6 @@ local Library = {
 local function Create(className, properties)
     properties = properties or {}
 
-    if (className == "UICorner" or className == "UIStroke")
-        and properties.Parent
-        and properties.Parent:IsA("TextBox") then
-        return nil
-    end
-
     local instance = Instance.new(className)
 
     if className == "TextBox" then
@@ -1370,7 +1364,7 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -115, 1, 0),
+                        Size = UDim2.new(1, -100, 1, 0),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
@@ -1385,8 +1379,8 @@ function Library:CreateWindow(options)
                         TextColor3 = TextColor,
                         PlaceholderColor3 = SubTextColor,
                         BackgroundColor3 = ButtonColor,
-                        Size = UDim2.new(0, 110, 0, 24),
-                        Position = UDim2.new(1, -110, 0.5, -12),
+                        Size = UDim2.new(0, 95, 0, 22),
+                        Position = UDim2.new(1, -95, 0.5, -11),
                         TextXAlignment = Enum.TextXAlignment.Center,
                         ClearTextOnFocus = false,
                         ZIndex = 8
@@ -1399,8 +1393,9 @@ function Library:CreateWindow(options)
 
                     Create("UIStroke", {
                         Parent = InputBox,
-                        Color = AccentColor,
-                        Thickness = 1.2
+                        Color = Color3.fromRGB(255, 255, 255),
+                        Thickness = 1.2,
+                        Transparency = 0
                     })
 
                     InputBox.FocusLost:Connect(function(enterPressed)

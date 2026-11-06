@@ -1359,19 +1359,19 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -95, 1, 0),
+                        Size = UDim2.new(1, -80, 1, 0),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
-                    -- Frame Pembungkus TextBox (Kotak Kecil Bergaris Putih)
+                    -- Frame Pembungkus TextBox (Dibuat Lebih Kecil: Lebar 75, Tinggi 20)
                     local InputWrapper = Create("Frame", {
                         Parent = BoxContainer,
                         BackgroundColor3 = ButtonColor,
                         BackgroundTransparency = 0,
-                        Size = UDim2.new(0, 90, 0, 22),
-                        Position = UDim2.new(1, -90, 0.5, -11),
+                        Size = UDim2.new(0, 75, 0, 20),
+                        Position = UDim2.new(1, -75, 0.5, -10),
                         ZIndex = 8
                     })
 
@@ -1390,14 +1390,14 @@ function Library:CreateWindow(options)
                     local InputBox = Create("TextBox", {
                         Parent = InputWrapper,
                         Text = textValue,
-                        PlaceholderText = placeholder or "Input text...",
+                        PlaceholderText = placeholder or "Input...",
                         Font = Enum.Font.Gotham,
                         TextSize = 10,
                         TextColor3 = TextColor,
                         PlaceholderColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -8, 1, 0),
-                        Position = UDim2.new(0, 4, 0, 0),
+                        Size = UDim2.new(1, -6, 1, 0),
+                        Position = UDim2.new(0, 3, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Center,
                         ClearTextOnFocus = false,
                         ZIndex = 9
@@ -1533,35 +1533,46 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -55, 0, 16),
+                        Size = UDim2.new(1, -45, 0, 16),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
-                    local ValueBox = Create("TextBox", {
+                    -- Wrapper untuk Kotak Nomor Slider (Lebar 35, Tinggi 16 dengan Garis Putih)
+                    local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
-                        Text = tostring(value),
-                        Font = Enum.Font.GothamBold,
-                        TextSize = 10,
-                        TextColor3 = TextColor,
                         BackgroundColor3 = ButtonColor,
-                        Size = UDim2.new(0, 45, 0, 16),
-                        Position = UDim2.new(1, -45, 0, 0),
-                        TextXAlignment = Enum.TextXAlignment.Center,
-                        ClearTextOnFocus = false,
+                        BackgroundTransparency = 0,
+                        Size = UDim2.new(0, 35, 0, 16),
+                        Position = UDim2.new(1, -35, 0, 0),
                         ZIndex = 8
                     })
 
                     Create("UICorner", {
-                        Parent = ValueBox,
+                        Parent = ValueWrapper,
                         CornerRadius = UDim.new(0, 3)
                     })
 
                     Create("UIStroke", {
-                        Parent = ValueBox,
+                        Parent = ValueWrapper,
                         Color = AccentColor,
                         Thickness = 1.2
+                    })
+
+                    -- TextBox Polos di dalam Wrapper Slider
+                    local ValueBox = Create("TextBox", {
+                        Parent = ValueWrapper,
+                        Text = tostring(value),
+                        Font = Enum.Font.GothamBold,
+                        TextSize = 9,
+                        TextColor3 = TextColor,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, -4, 1, 0),
+                        Position = UDim2.new(0, 2, 0, 0),
+                        TextXAlignment = Enum.TextXAlignment.Center,
+                        ClearTextOnFocus = false,
+                        ZIndex = 9
                     })
 
                     local SliderBar = Create("Frame", {

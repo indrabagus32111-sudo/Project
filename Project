@@ -1365,7 +1365,6 @@ function Library:CreateWindow(options)
                         ZIndex = 8
                     })
 
-                    -- Frame Pembungkus TextBox (Dibuat Lebih Kecil: Lebar 75, Tinggi 20)
                     local InputWrapper = Create("Frame", {
                         Parent = BoxContainer,
                         BackgroundColor3 = ButtonColor,
@@ -1386,7 +1385,6 @@ function Library:CreateWindow(options)
                         Thickness = 1.2
                     })
 
-                    -- TextBox Polos di dalam Wrapper
                     local InputBox = Create("TextBox", {
                         Parent = InputWrapper,
                         Text = textValue,
@@ -1533,19 +1531,19 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -45, 0, 16),
+                        Size = UDim2.new(1, -36, 0, 16),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
-                    -- Wrapper untuk Kotak Nomor Slider (Lebar 35, Tinggi 16 dengan Garis Putih)
+                    -- Wrapper untuk Kotak Nomor Slider (Diperkecil: Lebar 26, Tinggi 14 dengan Garis Putih)
                     local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
                         BackgroundColor3 = ButtonColor,
                         BackgroundTransparency = 0,
-                        Size = UDim2.new(0, 35, 0, 16),
-                        Position = UDim2.new(1, -35, 0, 0),
+                        Size = UDim2.new(0, 26, 0, 14),
+                        Position = UDim2.new(1, -26, 0, 0),
                         ZIndex = 8
                     })
 
@@ -1565,7 +1563,7 @@ function Library:CreateWindow(options)
                         Parent = ValueWrapper,
                         Text = tostring(value),
                         Font = Enum.Font.GothamBold,
-                        TextSize = 9,
+                        TextSize = 8,
                         TextColor3 = TextColor,
                         BackgroundTransparency = 1,
                         Size = UDim2.new(1, -4, 1, 0),

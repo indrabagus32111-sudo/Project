@@ -14,6 +14,14 @@ local Library = {
     }
 }
 
+local AccentColor = Color3.fromRGB(255, 255, 255)
+local BackgroundColor = Color3.fromRGB(15, 15, 15)
+local CardColor = Color3.fromRGB(25, 25, 25)
+local HoverColor = Color3.fromRGB(45, 45, 45)
+local ButtonColor = Color3.fromRGB(35, 35, 35)
+local TextColor = Color3.fromRGB(240, 240, 240)
+local SubTextColor = Color3.fromRGB(160, 160, 160)
+
 local function Create(className, properties)
     properties = properties or {}
 
@@ -25,11 +33,6 @@ local function Create(className, properties)
 
     for k, v in pairs(properties) do
         instance[k] = v
-    end
-
-    if className == "TextBox" then
-        instance.BackgroundTransparency = 1
-        instance.BorderSizePixel = 0
     end
 
     if className == "TextLabel" or className == "TextButton" or className == "TextBox" then
@@ -133,14 +136,6 @@ local function MakeDraggable(topbar, object)
         end
     end)
 end
-
-local AccentColor = Color3.fromRGB(255, 255, 255)
-local BackgroundColor = Color3.fromRGB(15, 15, 15)
-local CardColor = Color3.fromRGB(25, 25, 25)
-local HoverColor = Color3.fromRGB(45, 45, 45)
-local ButtonColor = Color3.fromRGB(35, 35, 35)
-local TextColor = Color3.fromRGB(240, 240, 240)
-local SubTextColor = Color3.fromRGB(160, 160, 160)
 
 local GlobalNotifContainer
 
@@ -1364,38 +1359,48 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -100, 1, 0),
+                        Size = UDim2.new(1, -95, 1, 0),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
-                    local InputBox = Create("TextBox", {
+                    -- Frame Pembungkus TextBox (Kotak Kecil Bergaris Putih)
+                    local InputWrapper = Create("Frame", {
                         Parent = BoxContainer,
+                        BackgroundColor3 = ButtonColor,
+                        BackgroundTransparency = 0,
+                        Size = UDim2.new(0, 90, 0, 22),
+                        Position = UDim2.new(1, -90, 0.5, -11),
+                        ZIndex = 8
+                    })
+
+                    Create("UICorner", {
+                        Parent = InputWrapper,
+                        CornerRadius = UDim.new(0, 4)
+                    })
+
+                    Create("UIStroke", {
+                        Parent = InputWrapper,
+                        Color = AccentColor,
+                        Thickness = 1.2
+                    })
+
+                    -- TextBox Polos di dalam Wrapper
+                    local InputBox = Create("TextBox", {
+                        Parent = InputWrapper,
                         Text = textValue,
                         PlaceholderText = placeholder or "Input text...",
                         Font = Enum.Font.Gotham,
                         TextSize = 10,
                         TextColor3 = TextColor,
                         PlaceholderColor3 = SubTextColor,
-                        BackgroundColor3 = ButtonColor,
-                        Size = UDim2.new(0, 95, 0, 22),
-                        Position = UDim2.new(1, -95, 0.5, -11),
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, -8, 1, 0),
+                        Position = UDim2.new(0, 4, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Center,
                         ClearTextOnFocus = false,
-                        ZIndex = 8
-                    })
-
-                    Create("UICorner", {
-                        Parent = InputBox,
-                        CornerRadius = UDim.new(0, 4)
-                    })
-
-                    Create("UIStroke", {
-                        Parent = InputBox,
-                        Color = Color3.fromRGB(255, 255, 255),
-                        Thickness = 1.2,
-                        Transparency = 0
+                        ZIndex = 9
                     })
 
                     InputBox.FocusLost:Connect(function(enterPressed)

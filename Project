@@ -1163,7 +1163,7 @@ function Library:CreateWindow(options)
                     local ProfileFrame = Create("Frame", {
                         Parent = ItemContainer,
                         BackgroundColor3 = ButtonColor,
-                        Size = UDim2.new(1, 0, 0, 50),
+                        Size = UDim2.new(1, 0, 0, 48),
                         ZIndex = 7,
                         ClipsDescendants = true
                     })
@@ -1182,8 +1182,8 @@ function Library:CreateWindow(options)
                     local AvatarImg = Create("ImageLabel", {
                         Parent = ProfileFrame,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(0, 38, 0, 38),
-                        Position = UDim2.new(0, 6, 0.5, -19),
+                        Size = UDim2.new(0, 36, 0, 36),
+                        Position = UDim2.new(0, 6, 0.5, -18),
                         Image = "rbxassetid://0",
                         ZIndex = 8
                     })
@@ -1214,8 +1214,8 @@ function Library:CreateWindow(options)
                     local TextInfo = Create("Frame", {
                         Parent = ProfileFrame,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -56, 1, 0),
-                        Position = UDim2.new(0, 50, 0, 0),
+                        Size = UDim2.new(1, -52, 1, 0),
+                        Position = UDim2.new(0, 48, 0, 0),
                         ZIndex = 8
                     })
 
@@ -1226,8 +1226,8 @@ function Library:CreateWindow(options)
                         TextSize = 11,
                         TextColor3 = TextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, 0, 0, 16),
-                        Position = UDim2.new(0, 0, 0, 9),
+                        Size = UDim2.new(1, -8, 0, 16),
+                        Position = UDim2.new(0, 0, 0, 8),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 9
                     })
@@ -1239,8 +1239,8 @@ function Library:CreateWindow(options)
                         TextSize = 9,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, 0, 0, 14),
-                        Position = UDim2.new(0, 0, 0, 26),
+                        Size = UDim2.new(1, -8, 0, 14),
+                        Position = UDim2.new(0, 0, 0, 24),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 9
                     })
@@ -1537,13 +1537,13 @@ function Library:CreateWindow(options)
                         ZIndex = 8
                     })
 
-                    -- Wrapper Kotak Nomor Slider (Digeser sedikit ke kiri: Position X offset dari -30 ke -34)
+                    -- Wrapper Kotak Nomor Slider (Digeser sedikit ke kiri: Position X offset dari -34 ke -38)
                     local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
                         BackgroundColor3 = ButtonColor,
                         BackgroundTransparency = 0,
                         Size = UDim2.new(0, 22, 0, 12),
-                        Position = UDim2.new(1, -34, 0, 2),
+                        Position = UDim2.new(1, -38, 0, 2),
                         ZIndex = 8
                     })
 

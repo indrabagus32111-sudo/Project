@@ -1537,13 +1537,13 @@ function Library:CreateWindow(options)
                         ZIndex = 8
                     })
 
-                    -- Wrapper Kotak Nomor Slider (Diturunkan ke bawah Y offset = 2)
+                    -- Wrapper Kotak Nomor Slider (Digeser sedikit ke kiri: Position X offset dari -30 ke -34)
                     local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
                         BackgroundColor3 = ButtonColor,
                         BackgroundTransparency = 0,
                         Size = UDim2.new(0, 22, 0, 12),
-                        Position = UDim2.new(1, -30, 0, 2),
+                        Position = UDim2.new(1, -34, 0, 2),
                         ZIndex = 8
                     })
 
@@ -1558,7 +1558,7 @@ function Library:CreateWindow(options)
                         Thickness = 1.2
                     })
 
-                    -- TextBox di dalam Wrapper (Diberi margin & padding agar garis stroke terlihat jelas)
+                    -- TextBox di dalam Wrapper
                     local ValueBox = Create("TextBox", {
                         Parent = ValueWrapper,
                         Text = tostring(value),

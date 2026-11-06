@@ -2352,7 +2352,6 @@ function Library:CreateWindow(options)
                         ZIndex = 8
                     })
 
-                    -- Kotak angka pada slider diperbesar (Lebar dari 22 menjadi 32, posisi disesuaikan)
                     local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
                         BackgroundColor3 = ButtonColor,
@@ -2631,8 +2630,99 @@ function Library:CreateWindow(options)
                     })
 
                     local optionButtons = {}
+                    local updatePreview -- Forward declaration
 
-                    local function updatePreview()
+                    local function buildOptionsList(newOptions)
+                        options = newOptions or {}
+                        
+                        -- Hapus tombol opsi yang lama agar tidak menumpuk
+                        for _, btn in pairs(optionButtons) do
+                            if btn and btn.Parent then
+                                btn:Destroy()
+                            end
+                        end
+                        optionButtons = {}
+
+                        for _, opt in ipairs(options) do
+                            local OptBtn = Create("TextButton", {
+                                Parent = ListFrame,
+                                Text = "  " .. tostring(opt),
+                                Font = Enum.Font.Gotham,
+                                TextSize = 10,
+                                TextColor3 = SubTextColor,
+                                BackgroundColor3 = BackgroundColor,
+                                BackgroundTransparency = 0.5,
+                                Size = UDim2.new(1, 0, 0, 22),
+                                AutoButtonColor = false,
+                                TextXAlignment = Enum.TextXAlignment.Left,
+                                ZIndex = 51
+                            })
+
+                            Create("UICorner", {
+                                Parent = OptBtn,
+                                CornerRadius = UDim.new(0, 3)
+                            })
+
+                            local CheckMark = Create("TextLabel", {
+                                Parent = OptBtn,
+                                Name = "CheckMark",
+                                Text = "",
+                                Font = Enum.Font.GothamBold,
+                                TextSize = 10,
+                                TextColor3 = Color3.fromRGB(255, 255, 255),
+                                BackgroundTransparency = 1,
+                                Size = UDim2.new(0, 20, 1, 0),
+                                Position = UDim2.new(1, -22, 0, 0),
+                                TextXAlignment = Enum.TextXAlignment.Center,
+                                ZIndex = 52
+                            })
+
+                            optionButtons[opt] = OptBtn
+
+                            OptBtn.MouseButton1Click:Connect(function()
+                                if multi then
+                                    selected[opt] = not selected[opt]
+                                else
+                                    table.clear(selected)
+                                    selected[opt] = true
+                                    opened = false
+
+                                    Tween(DropFrame, {
+                                        Size = UDim2.new(1, 0, 0, 28)
+                                    }, 0.2)
+
+                                    Tween(ListFrame, {
+                                        Size = UDim2.new(1, 0, 0, 0)
+                                    }, 0.2)
+
+                                    task.wait(0.2)
+                                    ListFrame.Visible = false
+                                end
+
+                                updatePreview()
+
+                                if callback then
+                                    if multi then
+                                        local result = {}
+
+                                        for _, o in ipairs(options) do
+                                            if selected[o] then
+                                                table.insert(result, o)
+                                            end
+                                        end
+
+                                        callback(result)
+                                    else
+                                        callback(opt)
+                                    end
+                                end
+                            end)
+                        end
+
+                        updatePreview()
+                    end
+
+                    updatePreview = function()
                         local list = {}
 
                         for _, opt in ipairs(options) do
@@ -2641,7 +2731,12 @@ function Library:CreateWindow(options)
                             end
                         end
 
-                        PreviewText.Text = table.concat(list, ", ")
+                        -- Fitur: Jika pilihan lebih dari 2, tampilkan 2 item pertama lalu diikuti "..."
+                        if #list > 2 then
+                            PreviewText.Text = string.format("%s, %s, ...", tostring(list[1]), tostring(list[2]))
+                        else
+                            PreviewText.Text = table.concat(list, ", ")
+                        end
 
                         if PreviewText.Text == "" then
                             PreviewText.Text = "None"
@@ -2680,83 +2775,7 @@ function Library:CreateWindow(options)
                         ListFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 6)
                     end)
 
-                    for _, opt in ipairs(options) do
-                        local OptBtn = Create("TextButton", {
-                            Parent = ListFrame,
-                            Text = "  " .. tostring(opt),
-                            Font = Enum.Font.Gotham,
-                            TextSize = 10,
-                            TextColor3 = SubTextColor,
-                            BackgroundColor3 = BackgroundColor,
-                            BackgroundTransparency = 0.5,
-                            Size = UDim2.new(1, 0, 0, 22),
-                            AutoButtonColor = false,
-                            TextXAlignment = Enum.TextXAlignment.Left,
-                            ZIndex = 51
-                        })
-
-                        Create("UICorner", {
-                            Parent = OptBtn,
-                            CornerRadius = UDim.new(0, 3)
-                        })
-
-                        local CheckMark = Create("TextLabel", {
-                            Parent = OptBtn,
-                            Name = "CheckMark",
-                            Text = "",
-                            Font = Enum.Font.GothamBold,
-                            TextSize = 10,
-                            TextColor3 = Color3.fromRGB(255, 255, 255),
-                            BackgroundTransparency = 1,
-                            Size = UDim2.new(0, 20, 1, 0),
-                            Position = UDim2.new(1, -22, 0, 0),
-                            TextXAlignment = Enum.TextXAlignment.Center,
-                            ZIndex = 52
-                        })
-
-                        optionButtons[opt] = OptBtn
-
-                        OptBtn.MouseButton1Click:Connect(function()
-                            if multi then
-                                selected[opt] = not selected[opt]
-                            else
-                                table.clear(selected)
-                                selected[opt] = true
-                                opened = false
-
-                                Tween(DropFrame, {
-                                    Size = UDim2.new(1, 0, 0, 28)
-                                }, 0.2)
-
-                                Tween(ListFrame, {
-                                    Size = UDim2.new(1, 0, 0, 0)
-                                }, 0.2)
-
-                                task.wait(0.2)
-                                ListFrame.Visible = false
-                            end
-
-                            updatePreview()
-
-                            if callback then
-                                if multi then
-                                    local result = {}
-
-                                    for _, o in ipairs(options) do
-                                        if selected[o] then
-                                            table.insert(result, o)
-                                        end
-                                    end
-
-                                    callback(result)
-                                else
-                                    callback(opt)
-                                end
-                            end
-                        end)
-                    end
-
-                    updatePreview()
+                    buildOptionsList(options)
 
                     DropBtn.MouseButton1Click:Connect(function()
                         opened = not opened
@@ -2789,17 +2808,14 @@ function Library:CreateWindow(options)
 
                     Window.ConfigElements[name] = {
                         Set = function(val)
-                            table.clear(selected)
-
+                            -- Jika val berupa tabel baru (seperti list player yang direfresh), perbarui options tanpa menghapus status centang item yang ada
                             if type(val) == "table" then
-                                for _, v in ipairs(val) do
-                                    selected[v] = true
-                                end
+                                buildOptionsList(val)
                             else
+                                table.clear(selected)
                                 selected[val] = true
+                                updatePreview()
                             end
-
-                            updatePreview()
                         end,
 
                         Get = function()

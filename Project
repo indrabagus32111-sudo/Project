@@ -1352,7 +1352,6 @@ function Library:CreateWindow(options)
                         ClipsDescendants = true
                     })
 
-                    -- Lebar TextLabel disesuaikan agar tidak bertabrakan dengan InputWrapper yang digeser ke kiri
                     Create("TextLabel", {
                         Parent = BoxContainer,
                         Text = name,
@@ -1366,7 +1365,6 @@ function Library:CreateWindow(options)
                         ZIndex = 8
                     })
 
-                    -- InputWrapper digeser sedikit ke kiri (X offset -86) dengan ukuran tetap (width 82)
                     local InputWrapper = Create("Frame", {
                         Parent = BoxContainer,
                         BackgroundColor3 = ButtonColor,
@@ -1533,18 +1531,19 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = SubTextColor,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -32, 0, 16),
+                        Size = UDim2.new(1, -48, 0, 16),
                         Position = UDim2.new(0, 0, 0, 0),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ZIndex = 8
                     })
 
+                    -- Kotak angka pada slider diperbesar (Lebar dari 22 menjadi 32, posisi disesuaikan)
                     local ValueWrapper = Create("Frame", {
                         Parent = SliderFrame,
                         BackgroundColor3 = ButtonColor,
                         BackgroundTransparency = 0,
-                        Size = UDim2.new(0, 22, 0, 12),
-                        Position = UDim2.new(1, -38, 0, 2),
+                        Size = UDim2.new(0, 32, 0, 14),
+                        Position = UDim2.new(1, -42, 0, 1),
                         ZIndex = 8
                     })
 
@@ -1563,7 +1562,7 @@ function Library:CreateWindow(options)
                         Parent = ValueWrapper,
                         Text = tostring(value),
                         Font = Enum.Font.GothamBold,
-                        TextSize = 7,
+                        TextSize = 8,
                         TextColor3 = TextColor,
                         BackgroundTransparency = 1,
                         Size = UDim2.new(1, -4, 1, 0),

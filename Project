@@ -783,7 +783,14 @@ function Library:CreateWindow(options)
         Popup.Visible = false
     end)
 
+    -- Variabel penyimpan posisi scroll halaman aktif saat minimize
+    local savedCanvasPosition = Vector2.zero
+
     MinBtn.MouseButton1Click:Connect(function()
+        if Window.CurrentTab and Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
+            savedCanvasPosition = Window.CurrentTab.CurrentPage.Scroll.CanvasPosition
+        end
+
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
 
@@ -821,6 +828,12 @@ function Library:CreateWindow(options)
 
         Tween(MainScale, {Scale = 1}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
+
+        task.defer(function()
+            if Window.CurrentTab and Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
+                Window.CurrentTab.CurrentPage.Scroll.CanvasPosition = savedCanvasPosition
+            end
+        end)
     end)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -1807,7 +1820,7 @@ function Library:CreateWindow(options)
                         TextSize = 10,
                         TextColor3 = TextColor,
                         PlaceholderColor3 = SubTextColor,
-                        PlaceholderText = "Search player...",
+                        PlaceholderText = "Search...",
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ClearTextOnFocus = false,
                         ZIndex = 51

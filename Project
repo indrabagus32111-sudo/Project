@@ -9,7 +9,7 @@ local Library = {
     WhitelistedUsers = {},
     Icons = {
         ["accessibility"] = "rbxassetid://10709751939",
-			["activity"] = "rbxassetid://10709752035",	
+        ["activity"] = "rbxassetid://10709752035",
     }
 }
 
@@ -1797,10 +1797,10 @@ function Library:CreateWindow(options)
                         Thickness = 1.4
                     })
 
-                    -- Search Box untuk Dropdown
                     local DropSearchInput = Create("TextBox", {
                         Parent = ListFrame,
-                        BackgroundColor3 = BackgroundColor,
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
                         Size = UDim2.new(1, -8, 0, 22),
                         Position = UDim2.new(0, 4, 0, 4),
                         Font = Enum.Font.Gotham,
@@ -1811,17 +1811,6 @@ function Library:CreateWindow(options)
                         TextXAlignment = Enum.TextXAlignment.Left,
                         ClearTextOnFocus = false,
                         ZIndex = 51
-                    })
-
-                    Create("UICorner", {
-                        Parent = DropSearchInput,
-                        CornerRadius = UDim.new(0, 3)
-                    })
-
-                    Create("UIStroke", {
-                        Parent = DropSearchInput,
-                        Color = AccentColor,
-                        Thickness = 1
                     })
 
                     Create("UIPadding", {
@@ -1859,11 +1848,11 @@ function Library:CreateWindow(options)
 
                     local function buildOptionsList(newOptions, resetSelected)
                         options = newOptions or {}
-                        
+
                         if resetSelected then
                             table.clear(selected)
                         end
-                        
+
                         for _, btn in pairs(optionButtons) do
                             if btn and btn.Parent then
                                 btn:Destroy()
@@ -1913,7 +1902,6 @@ function Library:CreateWindow(options)
                                 else
                                     table.clear(selected)
                                     selected[opt] = true
-                                    -- Dropdown tidak otomatis tertutup agar user bisa memilih secara manual
                                 end
 
                                 updatePreview()
@@ -1989,7 +1977,6 @@ function Library:CreateWindow(options)
                         ListScrolling.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 6)
                     end)
 
-                    -- Filter pencarian di dropdown
                     DropSearchInput:GetPropertyChangedSignal("Text"):Connect(function()
                         local query = DropSearchInput.Text:lower()
                         for _, opt in ipairs(options) do
@@ -2007,7 +1994,7 @@ function Library:CreateWindow(options)
 
                         if opened then
                             ListFrame.Visible = true
-                            local targetHeight = 130 -- Tinggi maksimal kontainer dropdown
+                            local targetHeight = 130
 
                             Tween(DropFrame, {
                                 Size = UDim2.new(1, 0, 0, 28 + targetHeight)

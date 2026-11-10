@@ -783,12 +783,9 @@ function Library:CreateWindow(options)
         Popup.Visible = false
     end)
 
-    -- Variabel penyimpan posisi scroll halaman aktif saat minimize
-    local savedCanvasPosition = Vector2.zero
-
     MinBtn.MouseButton1Click:Connect(function()
         if Window.CurrentTab and Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
-            savedCanvasPosition = Window.CurrentTab.CurrentPage.Scroll.CanvasPosition
+            Window.CurrentTab.CurrentPage.LastCanvasPosition = Window.CurrentTab.CurrentPage.Scroll.CanvasPosition
         end
 
         Tween(MainScale, {Scale = 0}, 0.4)
@@ -829,9 +826,15 @@ function Library:CreateWindow(options)
         Tween(MainScale, {Scale = 1}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
 
-        task.defer(function()
-            if Window.CurrentTab and Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
-                Window.CurrentTab.CurrentPage.Scroll.CanvasPosition = savedCanvasPosition
+        task.spawn(function()
+            for i = 1, 10 do
+                RunService.RenderStepped:Wait()
+                if Window.CurrentTab and Window.CurrentTab.CurrentPage then
+                    local pObj = Window.CurrentTab.CurrentPage
+                    if pObj and pObj.Scroll then
+                        pObj.Scroll.CanvasPosition = pObj.LastCanvasPosition
+                    end
+                end
             end
         end)
     end)
@@ -1063,8 +1066,15 @@ function Library:CreateWindow(options)
                 Scroll = PageScroll,
                 Btn = PageBtn,
                 Highlight = PageHighlight,
-                MainColumn = MainColumn
+                MainColumn = MainColumn,
+                LastCanvasPosition = Vector2.zero
             }
+
+            PageScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+                if PageScroll.Visible then
+                    PageObj.LastCanvasPosition = PageScroll.CanvasPosition
+                end
+            end)
 
             table.insert(TabConfig.Pages, PageObj)
 
@@ -1091,6 +1101,10 @@ function Library:CreateWindow(options)
                     Size = UDim2.new(1, 0, 0, 2),
                     BackgroundTransparency = 0
                 }, 0.3)
+
+                task.defer(function()
+                    PageObj.Scroll.CanvasPosition = PageObj.LastCanvasPosition
+                end)
             end)
 
             if #TabConfig.Pages == 1 then
@@ -1304,6 +1318,11 @@ function Library:CreateWindow(options)
                 end
 
                 function Elements:AddButton(name, callback)
+                    local isCopy = string.lower(name):find("copy") ~= nil
+                    local customBgColor = isCopy and Color3.fromRGB(255, 255, 255) or ButtonColor
+                    local customHoverColor = isCopy and Color3.fromRGB(220, 220, 220) or HoverColor
+                    local customTextColor = isCopy and Color3.fromRGB(0, 0, 0) or SubTextColor
+
                     local BtnFrame = Create("Frame", {
                         Parent = ItemContainer,
                         BackgroundTransparency = 1,
@@ -1317,8 +1336,8 @@ function Library:CreateWindow(options)
                         Text = name,
                         Font = Enum.Font.GothamBold,
                         TextSize = 10,
-                        TextColor3 = SubTextColor,
-                        BackgroundColor3 = ButtonColor,
+                        TextColor3 = customTextColor,
+                        BackgroundColor3 = customBgColor,
                         Size = UDim2.new(1, 0, 1, 0),
                         Position = UDim2.new(0, 0, 0, 0),
                         AutoButtonColor = false,
@@ -1332,18 +1351,18 @@ function Library:CreateWindow(options)
 
                     Create("UIStroke", {
                         Parent = Btn,
-                        Color = AccentColor,
+                        Color = isCopy and Color3.fromRGB(200, 200, 200) or AccentColor,
                         Thickness = 1.2
                     })
 
                     AddBounce(Btn)
 
                     Btn.MouseEnter:Connect(function()
-                        Tween(Btn, {BackgroundColor3 = HoverColor}, 0.2)
+                        Tween(Btn, {BackgroundColor3 = customHoverColor}, 0.2)
                     end)
 
                     Btn.MouseLeave:Connect(function()
-                        Tween(Btn, {BackgroundColor3 = ButtonColor}, 0.2)
+                        Tween(Btn, {BackgroundColor3 = customBgColor}, 0.2)
                     end)
 
                     Btn.MouseButton1Click:Connect(function()

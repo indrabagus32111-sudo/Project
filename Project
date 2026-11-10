@@ -827,7 +827,7 @@ function Library:CreateWindow(options)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
 
         task.spawn(function()
-            for i = 1, 10 do
+            for i = 1, 15 do
                 RunService.RenderStepped:Wait()
                 if Window.CurrentTab and Window.CurrentTab.CurrentPage then
                     local pObj = Window.CurrentTab.CurrentPage

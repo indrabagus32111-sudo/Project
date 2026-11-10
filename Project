@@ -1776,16 +1776,14 @@ function Library:CreateWindow(options)
                         ZIndex = 27
                     })
 
-                    local ListFrame = Create("ScrollingFrame", {
+                    local ListFrame = Create("Frame", {
                         Parent = DropFrame,
                         BackgroundColor3 = CardColor,
                         Size = UDim2.new(1, 0, 0, 0),
                         Position = UDim2.new(0, 0, 0, 28),
-                        ScrollBarThickness = 2,
-                        BorderSizePixel = 0,
-                        CanvasSize = UDim2.new(0, 0, 0, 0),
                         Visible = false,
-                        ZIndex = 50
+                        ZIndex = 50,
+                        ClipsDescendants = true
                     })
 
                     Create("UICorner", {
@@ -1799,14 +1797,57 @@ function Library:CreateWindow(options)
                         Thickness = 1.4
                     })
 
-                    local ListLayout = Create("UIListLayout", {
+                    -- Search Box untuk Dropdown
+                    local DropSearchInput = Create("TextBox", {
                         Parent = ListFrame,
+                        BackgroundColor3 = BackgroundColor,
+                        Size = UDim2.new(1, -8, 0, 22),
+                        Position = UDim2.new(0, 4, 0, 4),
+                        Font = Enum.Font.Gotham,
+                        TextSize = 10,
+                        TextColor3 = TextColor,
+                        PlaceholderColor3 = SubTextColor,
+                        PlaceholderText = "Search player...",
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ClearTextOnFocus = false,
+                        ZIndex = 51
+                    })
+
+                    Create("UICorner", {
+                        Parent = DropSearchInput,
+                        CornerRadius = UDim.new(0, 3)
+                    })
+
+                    Create("UIStroke", {
+                        Parent = DropSearchInput,
+                        Color = AccentColor,
+                        Thickness = 1
+                    })
+
+                    Create("UIPadding", {
+                        Parent = DropSearchInput,
+                        PaddingLeft = UDim.new(0, 6)
+                    })
+
+                    local ListScrolling = Create("ScrollingFrame", {
+                        Parent = ListFrame,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, 0, 1, -30),
+                        Position = UDim2.new(0, 0, 0, 30),
+                        ScrollBarThickness = 2,
+                        BorderSizePixel = 0,
+                        CanvasSize = UDim2.new(0, 0, 0, 0),
+                        ZIndex = 51
+                    })
+
+                    local ListLayout = Create("UIListLayout", {
+                        Parent = ListScrolling,
                         SortOrder = Enum.SortOrder.LayoutOrder,
                         Padding = UDim.new(0, 2)
                     })
 
                     Create("UIPadding", {
-                        Parent = ListFrame,
+                        Parent = ListScrolling,
                         PaddingTop = UDim.new(0, 3),
                         PaddingBottom = UDim.new(0, 3),
                         PaddingLeft = UDim.new(0, 3),
@@ -1814,7 +1855,7 @@ function Library:CreateWindow(options)
                     })
 
                     local optionButtons = {}
-                    local updatePreview -- Forward declaration
+                    local updatePreview
 
                     local function buildOptionsList(newOptions, resetSelected)
                         options = newOptions or {}
@@ -1823,7 +1864,6 @@ function Library:CreateWindow(options)
                             table.clear(selected)
                         end
                         
-                        -- Hapus tombol opsi yang lama agar tidak menumpuk
                         for _, btn in pairs(optionButtons) do
                             if btn and btn.Parent then
                                 btn:Destroy()
@@ -1833,7 +1873,7 @@ function Library:CreateWindow(options)
 
                         for _, opt in ipairs(options) do
                             local OptBtn = Create("TextButton", {
-                                Parent = ListFrame,
+                                Parent = ListScrolling,
                                 Text = "  " .. tostring(opt),
                                 Font = Enum.Font.Gotham,
                                 TextSize = 10,
@@ -1843,7 +1883,7 @@ function Library:CreateWindow(options)
                                 Size = UDim2.new(1, 0, 0, 22),
                                 AutoButtonColor = false,
                                 TextXAlignment = Enum.TextXAlignment.Left,
-                                ZIndex = 51
+                                ZIndex = 52
                             })
 
                             Create("UICorner", {
@@ -1862,7 +1902,7 @@ function Library:CreateWindow(options)
                                 Size = UDim2.new(0, 20, 1, 0),
                                 Position = UDim2.new(1, -22, 0, 0),
                                 TextXAlignment = Enum.TextXAlignment.Center,
-                                ZIndex = 52
+                                ZIndex = 53
                             })
 
                             optionButtons[opt] = OptBtn
@@ -1873,18 +1913,7 @@ function Library:CreateWindow(options)
                                 else
                                     table.clear(selected)
                                     selected[opt] = true
-                                    opened = false
-
-                                    Tween(DropFrame, {
-                                        Size = UDim2.new(1, 0, 0, 28)
-                                    }, 0.2)
-
-                                    Tween(ListFrame, {
-                                        Size = UDim2.new(1, 0, 0, 0)
-                                    }, 0.2)
-
-                                    task.wait(0.2)
-                                    ListFrame.Visible = false
+                                    -- Dropdown tidak otomatis tertutup agar user bisa memilih secara manual
                                 end
 
                                 updatePreview()
@@ -1892,13 +1921,11 @@ function Library:CreateWindow(options)
                                 if callback then
                                     if multi then
                                         local result = {}
-
                                         for _, o in ipairs(options) do
                                             if selected[o] then
                                                 table.insert(result, o)
                                             end
                                         end
-
                                         callback(result)
                                     else
                                         callback(opt)
@@ -1919,7 +1946,6 @@ function Library:CreateWindow(options)
                             end
                         end
 
-                        -- Fitur: Jika pilihan lebih dari 2, tampilkan 2 item pertama lalu diikuti "..."
                         if #list > 2 then
                             PreviewText.Text = string.format("%s, %s, ...", tostring(list[1]), tostring(list[2]))
                         else
@@ -1960,7 +1986,18 @@ function Library:CreateWindow(options)
                     end
 
                     ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                        ListFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 6)
+                        ListScrolling.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 6)
+                    end)
+
+                    -- Filter pencarian di dropdown
+                    DropSearchInput:GetPropertyChangedSignal("Text"):Connect(function()
+                        local query = DropSearchInput.Text:lower()
+                        for _, opt in ipairs(options) do
+                            local btn = optionButtons[opt]
+                            if btn then
+                                btn.Visible = (query == "" or string.find(tostring(opt):lower(), query, 1, true) ~= nil)
+                            end
+                        end
                     end)
 
                     buildOptionsList(options, false)
@@ -1970,8 +2007,7 @@ function Library:CreateWindow(options)
 
                         if opened then
                             ListFrame.Visible = true
-
-                            local targetHeight = math.clamp(#options * 24 + 6, 0, 110)
+                            local targetHeight = 130 -- Tinggi maksimal kontainer dropdown
 
                             Tween(DropFrame, {
                                 Size = UDim2.new(1, 0, 0, 28 + targetHeight)
@@ -1996,7 +2032,6 @@ function Library:CreateWindow(options)
 
                     Window.ConfigElements[name] = {
                         Set = function(val)
-                            -- Jika val berupa tabel baru (refresh list), options diperbarui DAN pilihan/centang direset kosong
                             if type(val) == "table" then
                                 buildOptionsList(val, true)
                             else
@@ -2009,13 +2044,11 @@ function Library:CreateWindow(options)
                         Get = function()
                             if multi then
                                 local result = {}
-
                                 for _, o in ipairs(options) do
                                     if selected[o] then
                                         table.insert(result, o)
                                     end
                                 end
-
                                 return result
                             else
                                 for o, v in pairs(selected) do

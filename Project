@@ -784,14 +784,18 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
-        if Window.CurrentTab and Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
-            Window.CurrentTab.CurrentPage.LastCanvasPosition = Window.CurrentTab.CurrentPage.Scroll.CanvasPosition
+        if Window.CurrentTab and Window.CurrentTab.CurrentPage then
+            local currentPage = Window.CurrentTab.CurrentPage
+
+            if currentPage.Scroll then
+                currentPage.LastCanvasPosition = currentPage.Scroll.CanvasPosition
+            end
         end
 
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
 
-        task.wait(0.3)
+        task.wait(0.4)
 
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
@@ -811,9 +815,7 @@ function Library:CreateWindow(options)
 
         if not sphTextToggle then
             Tween(SphereImageLabel, {ImageTransparency = 1}, 0.3)
-        end
-
-        if sphTextToggle then
+        else
             Tween(SphereTextLabel, {TextTransparency = 1}, 0.3)
         end
 
@@ -826,17 +828,15 @@ function Library:CreateWindow(options)
         Tween(MainScale, {Scale = 1}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
 
-        task.spawn(function()
-            for i = 1, 15 do
-                RunService.RenderStepped:Wait()
-                if Window.CurrentTab and Window.CurrentTab.CurrentPage then
-                    local pObj = Window.CurrentTab.CurrentPage
-                    if pObj and pObj.Scroll then
-                        pObj.Scroll.CanvasPosition = pObj.LastCanvasPosition
-                    end
-                end
+        task.wait(0.45)
+
+        if Window.CurrentTab and Window.CurrentTab.CurrentPage then
+            local currentPage = Window.CurrentTab.CurrentPage
+
+            if currentPage.Scroll then
+                currentPage.Scroll.CanvasPosition = currentPage.LastCanvasPosition
             end
-        end)
+        end
     end)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -1071,7 +1071,7 @@ function Library:CreateWindow(options)
             }
 
             PageScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-                if PageScroll.Visible then
+                if PageScroll.Visible and MainFrame.Visible then
                     PageObj.LastCanvasPosition = PageScroll.CanvasPosition
                 end
             end)

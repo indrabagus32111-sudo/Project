@@ -1,3 +1,4 @@
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -557,7 +558,7 @@ function Library:CreateWindow(options)
         CanvasSize = UDim2.new(0, 0, 0, 0)
     })
 
-    local TabListLayout = Create("UIListLayout", {
+    Create("UIListLayout", {
         Parent = TabContainer,
         SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 4)
@@ -633,8 +634,45 @@ function Library:CreateWindow(options)
         Tabs = {},
         AllCards = {},
         MainFrame = MainFrame,
-        ConfigElements = {}
+        ConfigElements = {},
+        IsMinimized = false
     }
+
+    local function SaveAllScrollPositions()
+        for _, tab in ipairs(Window.Tabs) do
+            for _, page in ipairs(tab.Pages) do
+                if page.Scroll and page.Scroll.Parent then
+                    page.LastCanvasPosition = page.Scroll.CanvasPosition
+                end
+            end
+        end
+    end
+
+    local function RestoreScrollPosition(page)
+        if not page or not page.Scroll or not page.Scroll.Parent then
+            return
+        end
+
+        task.spawn(function()
+            RunService.RenderStepped:Wait()
+            RunService.RenderStepped:Wait()
+
+            if not page.Scroll or not page.Scroll.Parent then
+                return
+            end
+
+            local maxY = math.max(
+                0,
+                page.Scroll.AbsoluteCanvasSize.Y - page.Scroll.AbsoluteSize.Y
+            )
+
+            local saved = page.LastCanvasPosition
+            page.Scroll.CanvasPosition = Vector2.new(
+                saved.X,
+                math.clamp(saved.Y, 0, maxY)
+            )
+        end)
+    end
 
     local Popup = Create("Frame", {
         Parent = ScreenGui,
@@ -784,13 +822,12 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
-        if Window.CurrentTab and Window.CurrentTab.CurrentPage then
-            local currentPage = Window.CurrentTab.CurrentPage
-
-            if currentPage.Scroll then
-                currentPage.LastCanvasPosition = currentPage.Scroll.CanvasPosition
-            end
+        if Window.IsMinimized then
+            return
         end
+
+        SaveAllScrollPositions()
+        Window.IsMinimized = true
 
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
@@ -811,6 +848,12 @@ function Library:CreateWindow(options)
     end)
 
     Sphere.MouseButton1Click:Connect(function()
+        if not Window.IsMinimized then
+            return
+        end
+
+        SaveAllScrollPositions()
+
         Tween(Sphere, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
 
         if not sphTextToggle then
@@ -824,6 +867,7 @@ function Library:CreateWindow(options)
         Sphere.Visible = false
         MainFrame.Visible = true
         BottomDragHitbox.Visible = true
+        Window.IsMinimized = false
 
         Tween(MainScale, {Scale = 1}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
@@ -831,11 +875,7 @@ function Library:CreateWindow(options)
         task.wait(0.45)
 
         if Window.CurrentTab and Window.CurrentTab.CurrentPage then
-            local currentPage = Window.CurrentTab.CurrentPage
-
-            if currentPage.Scroll then
-                currentPage.Scroll.CanvasPosition = currentPage.LastCanvasPosition
-            end
+            RestoreScrollPosition(Window.CurrentTab.CurrentPage)
         end
     end)
 
@@ -985,6 +1025,8 @@ function Library:CreateWindow(options)
                 return
             end
 
+            SaveAllScrollPositions()
+
             if Window.CurrentTab then
                 Tween(Window.CurrentTab.Button, {BackgroundTransparency = 1}, 0.2)
                 Tween(Window.CurrentTab.Indicator, {Size = UDim2.new(0, 3, 0, 0)}, 0.2)
@@ -1002,6 +1044,10 @@ function Library:CreateWindow(options)
             if #TabConfig.Pages > 0 and not TabConfig.CurrentPage then
                 TabConfig.CurrentPage = TabConfig.Pages[1]
                 TabConfig.CurrentPage.Scroll.Visible = true
+            end
+
+            if TabConfig.CurrentPage then
+                RestoreScrollPosition(TabConfig.CurrentPage)
             end
         end)
 
@@ -1041,7 +1087,7 @@ function Library:CreateWindow(options)
             local MainColumn = Create("Frame", {
                 Parent = PageScroll,
                 BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0),
+                Size = UDim2.new(1, 0, 0, 0),
                 ClipsDescendants = false
             })
 
@@ -1071,7 +1117,7 @@ function Library:CreateWindow(options)
             }
 
             PageScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-                if PageScroll.Visible and MainFrame.Visible then
+                if PageScroll.Visible and MainFrame.Visible and not Window.IsMinimized then
                     PageObj.LastCanvasPosition = PageScroll.CanvasPosition
                 end
             end)
@@ -1084,6 +1130,8 @@ function Library:CreateWindow(options)
                 end
 
                 if TabConfig.CurrentPage then
+                    TabConfig.CurrentPage.LastCanvasPosition = TabConfig.CurrentPage.Scroll.CanvasPosition
+
                     Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0.2)
                     Tween(TabConfig.CurrentPage.Highlight, {
                         Size = UDim2.new(0, 0, 0, 2),
@@ -1102,9 +1150,7 @@ function Library:CreateWindow(options)
                     BackgroundTransparency = 0
                 }, 0.3)
 
-                task.defer(function()
-                    PageObj.Scroll.CanvasPosition = PageObj.LastCanvasPosition
-                end)
+                RestoreScrollPosition(PageObj)
             end)
 
             if #TabConfig.Pages == 1 then

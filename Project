@@ -145,7 +145,6 @@ function Library:Notify(options)
     local desc = options.Description or "Information updated."
     local duration = options.Duration or 3
 
-    -- Notifikasi diperbesar ukurannya (tinggi 64, lebar 100%)
     local Notif = Create("Frame", {
         Parent = GlobalNotifContainer,
         BackgroundColor3 = Color3.fromRGB(20, 20, 20),
@@ -264,7 +263,6 @@ function Library:CreateWindow(options)
         IgnoreGuiInset = true
     })
 
-    -- Container notifikasi dilebarkan (280) agar lebih besar
     local NotifContainer = Create("Frame", {
         Parent = ScreenGui,
         BackgroundTransparency = 1,
@@ -787,9 +785,9 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
-        -- Simpan posisi scroll dari SEMUA halaman pada SEMUA tab saat minimize
         for _, tab in ipairs(Window.Tabs) do
             if tab.CurrentPage and tab.CurrentPage.Scroll then
+                tab.CurrentPage.IsSwitching = true
                 tab.CurrentPage.LastCanvasPosition = tab.CurrentPage.Scroll.CanvasPosition
             end
         end
@@ -802,6 +800,12 @@ function Library:CreateWindow(options)
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
         Sphere.Visible = true
+
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.CurrentPage then
+                tab.CurrentPage.IsSwitching = false
+            end
+        end
 
         Tween(Sphere, {Size = UDim2.new(0, 42, 0, 42)}, 0.4)
 
@@ -832,10 +836,13 @@ function Library:CreateWindow(options)
 
         task.wait(0.45)
 
-        -- Kembalikan posisi scroll halaman yang aktif saat UI dibuka kembali
         for _, tab in ipairs(Window.Tabs) do
             if tab.CurrentPage and tab.CurrentPage.Scroll then
+                tab.CurrentPage.IsSwitching = true
                 tab.CurrentPage.Scroll.CanvasPosition = tab.CurrentPage.LastCanvasPosition
+                task.defer(function()
+                    tab.CurrentPage.IsSwitching = false
+                end)
             end
         end
     end)
@@ -987,8 +994,8 @@ function Library:CreateWindow(options)
             end
 
             if Window.CurrentTab then
-                -- Simpan juga posisi halaman aktif dari tab sebelumnya
                 if Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
+                    Window.CurrentTab.CurrentPage.IsSwitching = true
                     Window.CurrentTab.CurrentPage.LastCanvasPosition = Window.CurrentTab.CurrentPage.Scroll.CanvasPosition
                 end
 
@@ -996,6 +1003,10 @@ function Library:CreateWindow(options)
                 Tween(Window.CurrentTab.Indicator, {Size = UDim2.new(0, 3, 0, 0)}, 0.2)
                 Tween(Window.CurrentTab.Txt, {TextColor3 = SubTextColor}, 0.2)
                 Window.CurrentTab.Content.Visible = false
+
+                if Window.CurrentTab.CurrentPage then
+                    Window.CurrentTab.CurrentPage.IsSwitching = false
+                end
             end
 
             Window.CurrentTab = TabConfig
@@ -1008,6 +1019,12 @@ function Library:CreateWindow(options)
             if #TabConfig.Pages > 0 and not TabConfig.CurrentPage then
                 TabConfig.CurrentPage = TabConfig.Pages[1]
                 TabConfig.CurrentPage.Scroll.Visible = true
+            elseif TabConfig.CurrentPage and TabConfig.CurrentPage.Scroll then
+                TabConfig.CurrentPage.IsSwitching = true
+                TabConfig.CurrentPage.Scroll.CanvasPosition = TabConfig.CurrentPage.LastCanvasPosition
+                task.defer(function()
+                    TabConfig.CurrentPage.IsSwitching = false
+                end)
             end
         end)
 
@@ -1073,11 +1090,12 @@ function Library:CreateWindow(options)
                 Btn = PageBtn,
                 Highlight = PageHighlight,
                 MainColumn = MainColumn,
-                LastCanvasPosition = Vector2.zero
+                LastCanvasPosition = Vector2.zero,
+                IsSwitching = false
             }
 
             PageScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-                if PageScroll.Visible and MainFrame.Visible then
+                if PageScroll.Visible and MainFrame.Visible and not PageObj.IsSwitching then
                     PageObj.LastCanvasPosition = PageScroll.CanvasPosition
                 end
             end)
@@ -1090,6 +1108,7 @@ function Library:CreateWindow(options)
                 end
 
                 if TabConfig.CurrentPage then
+                    TabConfig.CurrentPage.IsSwitching = true
                     TabConfig.CurrentPage.LastCanvasPosition = TabConfig.CurrentPage.Scroll.CanvasPosition
 
                     Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0.2)
@@ -1099,9 +1118,11 @@ function Library:CreateWindow(options)
                     }, 0.2)
 
                     TabConfig.CurrentPage.Scroll.Visible = false
+                    TabConfig.CurrentPage.IsSwitching = false
                 end
 
                 TabConfig.CurrentPage = PageObj
+                PageObj.IsSwitching = true
                 PageObj.Scroll.Visible = true
 
                 Tween(PageBtn, {TextColor3 = TextColor}, 0.2)
@@ -1112,6 +1133,7 @@ function Library:CreateWindow(options)
 
                 task.defer(function()
                     PageObj.Scroll.CanvasPosition = PageObj.LastCanvasPosition
+                    PageObj.IsSwitching = false
                 end)
             end)
 

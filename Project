@@ -784,11 +784,9 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
-        if Window.CurrentTab and Window.CurrentTab.CurrentPage then
-            local currentPage = Window.CurrentTab.CurrentPage
-
-            if currentPage.Scroll then
-                currentPage.LastCanvasPosition = currentPage.Scroll.CanvasPosition
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.CurrentPage and tab.CurrentPage.Scroll then
+                tab.CurrentPage.LastCanvasPosition = tab.CurrentPage.Scroll.CanvasPosition
             end
         end
 
@@ -830,11 +828,9 @@ function Library:CreateWindow(options)
 
         task.wait(0.45)
 
-        if Window.CurrentTab and Window.CurrentTab.CurrentPage then
-            local currentPage = Window.CurrentTab.CurrentPage
-
-            if currentPage.Scroll then
-                currentPage.Scroll.CanvasPosition = currentPage.LastCanvasPosition
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.CurrentPage and tab.CurrentPage.Scroll then
+                tab.CurrentPage.Scroll.CanvasPosition = tab.CurrentPage.LastCanvasPosition
             end
         end
     end)
@@ -1084,6 +1080,8 @@ function Library:CreateWindow(options)
                 end
 
                 if TabConfig.CurrentPage then
+                    TabConfig.CurrentPage.LastCanvasPosition = TabConfig.CurrentPage.Scroll.CanvasPosition
+
                     Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0.2)
                     Tween(TabConfig.CurrentPage.Highlight, {
                         Size = UDim2.new(0, 0, 0, 2),
@@ -2095,5 +2093,39 @@ function Library:CreateWindow(options)
 
     return Window
 end
+
+-- ==========================================
+-- DEMO / AUTO EXECUTION (LANGSUNG TAMPIL)
+-- ==========================================
+local Window = Library:CreateWindow({
+    Title = "Kenz Hub",
+    Subtitle = "Auto Executed Demo",
+    SphereWords = "KH"
+})
+
+local Tab1 = Window:MakeTab("Main", "activity")
+local Page1 = Tab1:CreatePage("General")
+local Sec1 = Page1:CreateSection("Welcome Section")
+Sec1:AddUserProfile()
+Sec1:AddParagraph("Info", "UI ini sekarang dapat dieksekusi langsung tanpa script terpisah!")
+Sec1:AddButton("Click Me", function()
+    Library:Notify({Title = "Notifikasi", Description = "Berhasil menekan tombol!", Duration = 3})
+end)
+Sec1:AddToggle("Auto Farm", false, function(v)
+    print("Auto Farm:", v)
+end)
+Sec1:AddSlider("WalkSpeed", 16, 200, 16, function(v)
+    print("Speed:", v)
+end)
+
+local Tab2 = Window:MakeTab("Settings", "accessibility")
+local Page2 = Tab2:CreatePage("Preferences")
+local Sec2 = Page2:CreateSection("Configuration")
+Sec2:AddTextBox("Username", "Masukkan nama...", "", function(val)
+    print("Text:", val)
+end)
+Sec2:AddDropdown("Theme Color", {"Default", "Dark", "Crimson"}, "Default", function(selected)
+    print("Selected:", selected)
+end)
 
 return Library

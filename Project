@@ -839,7 +839,8 @@ function Library:CreateWindow(options)
         for _, tab in ipairs(Window.Tabs) do
             if tab.CurrentPage and tab.CurrentPage.Scroll then
                 tab.CurrentPage.IsSwitching = true
-                tab.CurrentPage.Scroll.CanvasPosition = tab.CurrentPage.LastCanvasPosition
+                -- Mengembalikan posisi scroll secara halus (tidak kaku) menggunakan Tween
+                Tween(tab.CurrentPage.Scroll, {CanvasPosition = tab.CurrentPage.LastCanvasPosition}, 0.3)
                 task.defer(function()
                     tab.CurrentPage.IsSwitching = false
                 end)
@@ -1021,7 +1022,7 @@ function Library:CreateWindow(options)
                 TabConfig.CurrentPage.Scroll.Visible = true
             elseif TabConfig.CurrentPage and TabConfig.CurrentPage.Scroll then
                 TabConfig.CurrentPage.IsSwitching = true
-                TabConfig.CurrentPage.Scroll.CanvasPosition = TabConfig.CurrentPage.LastCanvasPosition
+                Tween(TabConfig.CurrentPage.Scroll, {CanvasPosition = TabConfig.CurrentPage.LastCanvasPosition}, 0.3)
                 task.defer(function()
                     TabConfig.CurrentPage.IsSwitching = false
                 end)
@@ -1132,7 +1133,8 @@ function Library:CreateWindow(options)
                 }, 0.3)
 
                 task.defer(function()
-                    PageObj.Scroll.CanvasPosition = PageObj.LastCanvasPosition
+                    -- Mengembalikan posisi scroll halaman secara halus menggunakan Tween saat pindah sub-halaman
+                    Tween(PageObj.Scroll, {CanvasPosition = PageObj.LastCanvasPosition}, 0.3)
                     PageObj.IsSwitching = false
                 end)
             end)

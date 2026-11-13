@@ -785,6 +785,14 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
+        -- Menyimpan posisi scroll halaman yang aktif saat minimize ditekan
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.CurrentPage and tab.CurrentPage.Scroll then
+                tab.CurrentPage.IsSwitching = true
+                tab.CurrentPage.LastCanvasPosition = tab.CurrentPage.Scroll.CanvasPosition
+            end
+        end
+
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
 
@@ -793,6 +801,12 @@ function Library:CreateWindow(options)
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
         Sphere.Visible = true
+
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.CurrentPage then
+                tab.CurrentPage.IsSwitching = false
+            end
+        end
 
         Tween(Sphere, {Size = UDim2.new(0, 42, 0, 42)}, 0.4)
 
@@ -820,6 +834,19 @@ function Library:CreateWindow(options)
 
         Tween(MainScale, {Scale = 1}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
+
+        task.wait(0.45)
+
+        -- Mengembalikan posisi scroll halaman aktif ke posisi semula saat UI dibuka kembali dari tombol sphere
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.CurrentPage and tab.CurrentPage.Scroll then
+                tab.CurrentPage.IsSwitching = true
+                Tween(tab.CurrentPage.Scroll, {CanvasPosition = tab.CurrentPage.LastCanvasPosition}, 0.3)
+                task.defer(function()
+                    tab.CurrentPage.IsSwitching = false
+                end)
+            end
+        end
     end)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -983,7 +1010,7 @@ function Library:CreateWindow(options)
             Tween(Txt, {TextColor3 = TextColor}, 0.2)
 
             if #TabConfig.Pages > 0 and not TabConfig.CurrentPage then
-                TabConfig.CurrentPage = TabConfig.Pages[1]
+                TabConfig.CurrentPage = TabConfigPages[1]
                 TabConfig.CurrentPage.Scroll.Visible = true
             end
         end)
@@ -1049,8 +1076,16 @@ function Library:CreateWindow(options)
                 Scroll = PageScroll,
                 Btn = PageBtn,
                 Highlight = PageHighlight,
-                MainColumn = MainColumn
+                MainColumn = MainColumn,
+                LastCanvasPosition = Vector2.zero,
+                IsSwitching = false
             }
+
+            PageScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+                if PageScroll.Visible and MainFrame.Visible and not PageObj.IsSwitching then
+                    PageObj.LastCanvasPosition = PageScroll.CanvasPosition
+                end
+            end)
 
             table.insert(TabConfig.Pages, PageObj)
 

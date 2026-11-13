@@ -282,6 +282,7 @@ function Library:CreateWindow(options)
 
     GlobalNotifContainer = NotifContainer
 
+    -- Animasi buka GUI dihapus (Langsung muncul penuh tanpa Tween)
     local MainFrame = Create("Frame", {
         Parent = ScreenGui,
         BackgroundColor3 = BackgroundColor,
@@ -289,13 +290,13 @@ function Library:CreateWindow(options)
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         ClipsDescendants = true,
-        BackgroundTransparency = 1,
+        BackgroundTransparency = 0,
         Active = true
     })
 
     local MainScale = Create("UIScale", {
         Parent = MainFrame,
-        Scale = 0.85
+        Scale = 1
     })
 
     Create("UICorner", {
@@ -308,9 +309,6 @@ function Library:CreateWindow(options)
         Color = AccentColor,
         Thickness = 1.4
     })
-
-    Tween(MainScale, {Scale = 1}, 0.5)
-    Tween(MainFrame, {BackgroundTransparency = 0}, 0.5)
 
     local BottomDragHitbox = Create("Frame", {
         Parent = ScreenGui,
@@ -785,7 +783,6 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
-        -- Menyimpan posisi scroll halaman yang aktif saat minimize ditekan
         for _, tab in ipairs(Window.Tabs) do
             if tab.CurrentPage and tab.CurrentPage.Scroll then
                 tab.CurrentPage.IsSwitching = true
@@ -793,11 +790,8 @@ function Library:CreateWindow(options)
             end
         end
 
-        Tween(MainScale, {Scale = 0}, 0.4)
-        Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
-
-        task.wait(0.4)
-
+        MainScale.Scale = 0
+        MainFrame.BackgroundTransparency = 1
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
         Sphere.Visible = true
@@ -808,36 +802,31 @@ function Library:CreateWindow(options)
             end
         end
 
-        Tween(Sphere, {Size = UDim2.new(0, 42, 0, 42)}, 0.4)
+        Sphere.Size = UDim2.new(0, 42, 0, 42)
 
         if not sphTextToggle then
-            Tween(SphereImageLabel, {ImageTransparency = 0}, 0.4)
+            SphereImageLabel.ImageTransparency = 0
         else
-            Tween(SphereTextLabel, {TextTransparency = 0}, 0.4)
+            SphereTextLabel.TextTransparency = 0
         end
     end)
 
     Sphere.MouseButton1Click:Connect(function()
-        Tween(Sphere, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        Sphere.Size = UDim2.new(0, 0, 0, 0)
 
         if not sphTextToggle then
-            Tween(SphereImageLabel, {ImageTransparency = 1}, 0.3)
+            SphereImageLabel.ImageTransparency = 1
         else
-            Tween(SphereTextLabel, {TextTransparency = 1}, 0.3)
+            SphereTextLabel.TextTransparency = 1
         end
-
-        task.wait(0.2)
 
         Sphere.Visible = false
         MainFrame.Visible = true
         BottomDragHitbox.Visible = true
 
-        Tween(MainScale, {Scale = 1}, 0.4)
-        Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
+        MainScale.Scale = 1
+        MainFrame.BackgroundTransparency = 0
 
-        task.wait(0.45)
-
-        -- Mengembalikan posisi scroll halaman aktif secara instan ke posisi semula tanpa auto-scroll ke bawah
         for _, tab in ipairs(Window.Tabs) do
             if tab.CurrentPage and tab.CurrentPage.Scroll then
                 tab.CurrentPage.IsSwitching = true
@@ -1212,7 +1201,6 @@ function Library:CreateWindow(options)
                         Thickness = 1.2
                     })
 
-                    -- Background Player Profile Thumbnail
                     local BgThumbnail = Create("ImageLabel", {
                         Parent = ProfileFrame,
                         BackgroundTransparency = 1,
@@ -1224,7 +1212,6 @@ function Library:CreateWindow(options)
                         ZIndex = 7
                     })
 
-                    -- Dark overlay for better text readability
                     local Overlay = Create("Frame", {
                         Parent = ProfileFrame,
                         BackgroundColor3 = Color3.fromRGB(0, 0, 0),
@@ -1394,11 +1381,7 @@ function Library:CreateWindow(options)
                         CornerRadius = UDim.new(0, 4)
                     })
 
-                    Create("UIStroke", {
-                        Parent = Btn,
-                        Color = isCopy and Color3.fromRGB(200, 200, 200) or AccentColor,
-                        Thickness = 1.2
-                    })
+                    -- UIStroke (garis putih) pada tombol telah dihapus sesuai permintaan
 
                     AddBounce(Btn)
 

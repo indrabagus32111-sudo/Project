@@ -785,13 +785,6 @@ function Library:CreateWindow(options)
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
-        for _, tab in ipairs(Window.Tabs) do
-            if tab.CurrentPage and tab.CurrentPage.Scroll then
-                tab.CurrentPage.IsSwitching = true
-                tab.CurrentPage.LastCanvasPosition = tab.CurrentPage.Scroll.CanvasPosition
-            end
-        end
-
         Tween(MainScale, {Scale = 0}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 1}, 0.4)
 
@@ -800,12 +793,6 @@ function Library:CreateWindow(options)
         MainFrame.Visible = false
         BottomDragHitbox.Visible = false
         Sphere.Visible = true
-
-        for _, tab in ipairs(Window.Tabs) do
-            if tab.CurrentPage then
-                tab.CurrentPage.IsSwitching = false
-            end
-        end
 
         Tween(Sphere, {Size = UDim2.new(0, 42, 0, 42)}, 0.4)
 
@@ -833,19 +820,6 @@ function Library:CreateWindow(options)
 
         Tween(MainScale, {Scale = 1}, 0.4)
         Tween(MainFrame, {BackgroundTransparency = 0}, 0.4)
-
-        task.wait(0.45)
-
-        for _, tab in ipairs(Window.Tabs) do
-            if tab.CurrentPage and tab.CurrentPage.Scroll then
-                tab.CurrentPage.IsSwitching = true
-                -- Mengembalikan posisi scroll secara halus (tidak kaku) menggunakan Tween
-                Tween(tab.CurrentPage.Scroll, {CanvasPosition = tab.CurrentPage.LastCanvasPosition}, 0.3)
-                task.defer(function()
-                    tab.CurrentPage.IsSwitching = false
-                end)
-            end
-        end
     end)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -995,19 +969,10 @@ function Library:CreateWindow(options)
             end
 
             if Window.CurrentTab then
-                if Window.CurrentTab.CurrentPage and Window.CurrentTab.CurrentPage.Scroll then
-                    Window.CurrentTab.CurrentPage.IsSwitching = true
-                    Window.CurrentTab.CurrentPage.LastCanvasPosition = Window.CurrentTab.CurrentPage.Scroll.CanvasPosition
-                end
-
                 Tween(Window.CurrentTab.Button, {BackgroundTransparency = 1}, 0.2)
                 Tween(Window.CurrentTab.Indicator, {Size = UDim2.new(0, 3, 0, 0)}, 0.2)
                 Tween(Window.CurrentTab.Txt, {TextColor3 = SubTextColor}, 0.2)
                 Window.CurrentTab.Content.Visible = false
-
-                if Window.CurrentTab.CurrentPage then
-                    Window.CurrentTab.CurrentPage.IsSwitching = false
-                end
             end
 
             Window.CurrentTab = TabConfig
@@ -1020,12 +985,6 @@ function Library:CreateWindow(options)
             if #TabConfig.Pages > 0 and not TabConfig.CurrentPage then
                 TabConfig.CurrentPage = TabConfig.Pages[1]
                 TabConfig.CurrentPage.Scroll.Visible = true
-            elseif TabConfig.CurrentPage and TabConfig.CurrentPage.Scroll then
-                TabConfig.CurrentPage.IsSwitching = true
-                Tween(TabConfig.CurrentPage.Scroll, {CanvasPosition = TabConfig.CurrentPage.LastCanvasPosition}, 0.3)
-                task.defer(function()
-                    TabConfig.CurrentPage.IsSwitching = false
-                end)
             end
         end)
 
@@ -1090,16 +1049,8 @@ function Library:CreateWindow(options)
                 Scroll = PageScroll,
                 Btn = PageBtn,
                 Highlight = PageHighlight,
-                MainColumn = MainColumn,
-                LastCanvasPosition = Vector2.zero,
-                IsSwitching = false
+                MainColumn = MainColumn
             }
-
-            PageScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-                if PageScroll.Visible and MainFrame.Visible and not PageObj.IsSwitching then
-                    PageObj.LastCanvasPosition = PageScroll.CanvasPosition
-                end
-            end)
 
             table.insert(TabConfig.Pages, PageObj)
 
@@ -1109,9 +1060,6 @@ function Library:CreateWindow(options)
                 end
 
                 if TabConfig.CurrentPage then
-                    TabConfig.CurrentPage.IsSwitching = true
-                    TabConfig.CurrentPage.LastCanvasPosition = TabConfig.CurrentPage.Scroll.CanvasPosition
-
                     Tween(TabConfig.CurrentPage.Btn, {TextColor3 = SubTextColor}, 0.2)
                     Tween(TabConfig.CurrentPage.Highlight, {
                         Size = UDim2.new(0, 0, 0, 2),
@@ -1119,11 +1067,9 @@ function Library:CreateWindow(options)
                     }, 0.2)
 
                     TabConfig.CurrentPage.Scroll.Visible = false
-                    TabConfig.CurrentPage.IsSwitching = false
                 end
 
                 TabConfig.CurrentPage = PageObj
-                PageObj.IsSwitching = true
                 PageObj.Scroll.Visible = true
 
                 Tween(PageBtn, {TextColor3 = TextColor}, 0.2)
@@ -1131,12 +1077,6 @@ function Library:CreateWindow(options)
                     Size = UDim2.new(1, 0, 0, 2),
                     BackgroundTransparency = 0
                 }, 0.3)
-
-                task.defer(function()
-                    -- Mengembalikan posisi scroll halaman secara halus menggunakan Tween saat pindah sub-halaman
-                    Tween(PageObj.Scroll, {CanvasPosition = PageObj.LastCanvasPosition}, 0.3)
-                    PageObj.IsSwitching = false
-                end)
             end)
 
             if #TabConfig.Pages == 1 then
@@ -1236,6 +1176,44 @@ function Library:CreateWindow(options)
                         Color = AccentColor,
                         Thickness = 1.2
                     })
+
+                    -- Background Player Profile Thumbnail
+                    local BgThumbnail = Create("ImageLabel", {
+                        Parent = ProfileFrame,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        Position = UDim2.new(0, 0, 0, 0),
+                        Image = "rbxassetid://0",
+                        ScaleType = Enum.ScaleType.Crop,
+                        ImageTransparency = 0.45,
+                        ZIndex = 7
+                    })
+
+                    -- Dark overlay for better text readability
+                    local Overlay = Create("Frame", {
+                        Parent = ProfileFrame,
+                        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                        BackgroundTransparency = 0.4,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        ZIndex = 7
+                    })
+
+                    Create("UICorner", {
+                        Parent = Overlay,
+                        CornerRadius = UDim.new(0, 5)
+                    })
+
+                    pcall(function()
+                        local content, isReady = Players:GetUserThumbnailAsync(
+                            localPlayer.UserId,
+                            Enum.ThumbnailType.AvatarBust,
+                            Enum.ThumbnailSize.Size420x420
+                        )
+
+                        if isReady then
+                            BgThumbnail.Image = content
+                        end
+                    end)
 
                     local AvatarImg = Create("ImageLabel", {
                         Parent = ProfileFrame,

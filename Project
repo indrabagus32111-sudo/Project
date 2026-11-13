@@ -282,7 +282,6 @@ function Library:CreateWindow(options)
 
     GlobalNotifContainer = NotifContainer
 
-    -- Animasi buka GUI dihapus (Langsung muncul penuh tanpa Tween)
     local MainFrame = Create("Frame", {
         Parent = ScreenGui,
         BackgroundColor3 = BackgroundColor,
@@ -578,6 +577,7 @@ function Library:CreateWindow(options)
         Active = true
     })
 
+    -- Tombol Sphere (Selalu aktif dan terlihat di layar)
     local Sphere = Create("ImageButton", {
         Parent = ScreenGui,
         BackgroundColor3 = BackgroundColor,
@@ -585,9 +585,9 @@ function Library:CreateWindow(options)
         Size = UDim2.new(0, 42, 0, 42),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Visible = false,
+        Visible = true,
         AutoButtonColor = false,
-        ImageTransparency = 1,
+        ImageTransparency = 0,
         ClipsDescendants = true
     })
 
@@ -609,7 +609,7 @@ function Library:CreateWindow(options)
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         Image = sphImage,
-        ImageTransparency = 1,
+        ImageTransparency = 0,
         Visible = not sphTextToggle
     })
 
@@ -621,7 +621,7 @@ function Library:CreateWindow(options)
         TextColor3 = AccentColor,
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 1, 0),
-        TextTransparency = 1,
+        TextTransparency = 0,
         Visible = sphTextToggle
     })
 
@@ -782,61 +782,48 @@ function Library:CreateWindow(options)
         Popup.Visible = false
     end)
 
-    MinBtn.MouseButton1Click:Connect(function()
-        for _, tab in ipairs(Window.Tabs) do
-            if tab.CurrentPage and tab.CurrentPage.Scroll then
-                tab.CurrentPage.IsSwitching = true
-                tab.CurrentPage.LastCanvasPosition = tab.CurrentPage.Scroll.CanvasPosition
+    -- Fungsi Toggle UI untuk minimize/maximize
+    local function toggleUI()
+        local isOpen = MainFrame.Visible
+
+        if isOpen then
+            for _, tab in ipairs(Window.Tabs) do
+                if tab.CurrentPage and tab.CurrentPage.Scroll then
+                    tab.CurrentPage.IsSwitching = true
+                    tab.CurrentPage.LastCanvasPosition = tab.CurrentPage.Scroll.CanvasPosition
+                end
             end
-        end
 
-        MainScale.Scale = 0
-        MainFrame.BackgroundTransparency = 1
-        MainFrame.Visible = false
-        BottomDragHitbox.Visible = false
-        Sphere.Visible = true
+            MainScale.Scale = 0
+            MainFrame.BackgroundTransparency = 1
+            MainFrame.Visible = false
+            BottomDragHitbox.Visible = false
 
-        for _, tab in ipairs(Window.Tabs) do
-            if tab.CurrentPage then
-                tab.CurrentPage.IsSwitching = false
-            end
-        end
-
-        Sphere.Size = UDim2.new(0, 42, 0, 42)
-
-        if not sphTextToggle then
-            SphereImageLabel.ImageTransparency = 0
-        else
-            SphereTextLabel.TextTransparency = 0
-        end
-    end)
-
-    Sphere.MouseButton1Click:Connect(function()
-        Sphere.Size = UDim2.new(0, 0, 0, 0)
-
-        if not sphTextToggle then
-            SphereImageLabel.ImageTransparency = 1
-        else
-            SphereTextLabel.TextTransparency = 1
-        end
-
-        Sphere.Visible = false
-        MainFrame.Visible = true
-        BottomDragHitbox.Visible = true
-
-        MainScale.Scale = 1
-        MainFrame.BackgroundTransparency = 0
-
-        for _, tab in ipairs(Window.Tabs) do
-            if tab.CurrentPage and tab.CurrentPage.Scroll then
-                tab.CurrentPage.IsSwitching = true
-                tab.CurrentPage.Scroll.CanvasPosition = tab.CurrentPage.LastCanvasPosition
-                task.defer(function()
+            for _, tab in ipairs(Window.Tabs) do
+                if tab.CurrentPage then
                     tab.CurrentPage.IsSwitching = false
-                end)
+                end
+            end
+        else
+            MainFrame.Visible = true
+            BottomDragHitbox.Visible = true
+            MainScale.Scale = 1
+            MainFrame.BackgroundTransparency = 0
+
+            for _, tab in ipairs(Window.Tabs) do
+                if tab.CurrentPage and tab.CurrentPage.Scroll then
+                    tab.CurrentPage.IsSwitching = true
+                    tab.CurrentPage.Scroll.CanvasPosition = tab.CurrentPage.LastCanvasPosition
+                    task.defer(function()
+                        tab.CurrentPage.IsSwitching = false
+                    end)
+                end
             end
         end
-    end)
+    end
+
+    MinBtn.MouseButton1Click:Connect(toggleUI)
+    Sphere.MouseButton1Click:Connect(toggleUI)
 
     TabSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         local query = TabSearchBox.Text:lower()
@@ -1380,8 +1367,6 @@ function Library:CreateWindow(options)
                         Parent = Btn,
                         CornerRadius = UDim.new(0, 4)
                     })
-
-                    -- UIStroke (garis putih) pada tombol telah dihapus sesuai permintaan
 
                     AddBounce(Btn)
 

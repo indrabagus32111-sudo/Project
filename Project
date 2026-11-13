@@ -837,11 +837,11 @@ function Library:CreateWindow(options)
 
         task.wait(0.45)
 
-        -- Mengembalikan posisi scroll halaman aktif ke posisi semula saat UI dibuka kembali dari tombol sphere
+        -- Mengembalikan posisi scroll halaman aktif secara instan ke posisi semula tanpa auto-scroll ke bawah
         for _, tab in ipairs(Window.Tabs) do
             if tab.CurrentPage and tab.CurrentPage.Scroll then
                 tab.CurrentPage.IsSwitching = true
-                Tween(tab.CurrentPage.Scroll, {CanvasPosition = tab.CurrentPage.LastCanvasPosition}, 0.3)
+                tab.CurrentPage.Scroll.CanvasPosition = tab.CurrentPage.LastCanvasPosition
                 task.defer(function()
                     tab.CurrentPage.IsSwitching = false
                 end)
@@ -1010,7 +1010,7 @@ function Library:CreateWindow(options)
             Tween(Txt, {TextColor3 = TextColor}, 0.2)
 
             if #TabConfig.Pages > 0 and not TabConfig.CurrentPage then
-                TabConfig.CurrentPage = TabConfigPages[1]
+                TabConfig.CurrentPage = TabConfig.Pages[1]
                 TabConfig.CurrentPage.Scroll.Visible = true
             end
         end)

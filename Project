@@ -65,28 +65,31 @@ elseif spoofedPlatform == "PC" or spoofedPlatform == "Console" then
 else
     isMobile = UserInputService.TouchEnabled and not UserInputService.MouseEnabled
 end
+
+-- [1] Ukuran GUI sedikit diperbesar saat di-execute
 local windowSize, minWindowSize, maxWindowSize
 if isMobile then
-    windowSize    = UDim2.new(0, 420, 0, 280)
-    minWindowSize = Vector2.new(380, 250)
-    maxWindowSize = Vector2.new(800, 600)
+    windowSize    = UDim2.new(0, 460, 0, 310)
+    minWindowSize = Vector2.new(400, 270)
+    maxWindowSize = Vector2.new(850, 650)
 else
-    windowSize    = UDim2.new(0, 560, 0, 360)
-    minWindowSize = Vector2.new(440, 300)
-    maxWindowSize = Vector2.new(1100, 760)
+    windowSize    = UDim2.new(0, 620, 0, 400)
+    minWindowSize = Vector2.new(480, 330)
+    maxWindowSize = Vector2.new(1200, 800)
 end
-local sidebarWidth = 128
-local headerHeight = 38
-local topBarHeight = 30
-local sectionHeaderHeight = 32
+
+local sidebarWidth = 132
+local headerHeight = 40
+local topBarHeight = 32
+local sectionHeaderHeight = 34
 local panelTransparency = 0.03
 local sectionTransparency = 0.15
 local fontSize = {
-    title = 14,
-    subtitle = 10,
-    header = 12,
-    normal = 11,
-    small = 10,
+    title = 15,
+    subtitle = 11,
+    header = 13,
+    normal = 12,
+    small = 11,
 }
 
 local function formatRichText(text)
@@ -126,6 +129,7 @@ local function new(class, props)
     end
     return inst
 end
+
 function Library:AddConnection(name, connection)
     if self._connections[name] then
         pcall(function() self._connections[name]:Disconnect() end)
@@ -133,6 +137,7 @@ function Library:AddConnection(name, connection)
     self._connections[name] = connection
     return connection
 end
+
 function Library:Cleanup()
     if isDirty then
         pcall(function() Library.ConfigSystem.Save() end)
@@ -173,6 +178,7 @@ function Library:Cleanup()
     self._currentPage = nil
     self._initialized = false
 end
+
 local function DeepCopy(original, _seen)
     _seen = _seen or {}
     if type(original) ~= "table" then return original end
@@ -184,6 +190,7 @@ local function DeepCopy(original, _seen)
     end
     return copy
 end
+
 local function MergeTables(target, source)
     for k, v in pairs(source) do
         if type(v) == "table" and type(target[k]) == "table" then
@@ -193,15 +200,17 @@ local function MergeTables(target, source)
         end
     end
 end
+
 local function EnsureFolderExists()
     if not isfolder(CONFIG_FOLDER) then makefolder(CONFIG_FOLDER) end
 end
+
 Library.ConfigSystem = {}
 function Library.ConfigSystem.SetDefaults(defaults)
     DefaultConfig = DeepCopy(defaults)
 end
 function Library.ConfigSystem.Save()
-    local ok, err = pcall(function()
+    local ok = pcall(function()
         EnsureFolderExists()
         local encoded = HttpService:JSONEncode(CurrentConfig)
         writefile(CONFIG_FILE, encoded)
@@ -212,7 +221,7 @@ function Library.ConfigSystem.Load()
     EnsureFolderExists()
     CurrentConfig = DeepCopy(DefaultConfig)
     if isfile(CONFIG_FILE) then
-        local ok, err = pcall(function()
+        local ok = pcall(function()
             local raw = readfile(CONFIG_FILE)
             if not raw or raw == "" then return end
             local loaded = HttpService:JSONDecode(raw)
@@ -256,6 +265,7 @@ function Library.ConfigSystem.Delete()
         delfile(CONFIG_FILE)
     end
 end
+
 local function MarkDirty()
     if _G.AutoSaveEnabled == false then return end
     isDirty = true
@@ -268,11 +278,12 @@ local function MarkDirty()
             Library._saveThread = nil
             return
         end
-        local ok = pcall(function() Library.ConfigSystem.Save() end)
+        pcall(function() Library.ConfigSystem.Save() end)
         isDirty = false
         Library._saveThread = nil
     end)
 end
+
 local function RegisterCallback(configPath, callback, componentType, defaultValue, updateVisualFn)
     if not configPath then return end
     CallbackRegistry[configPath] = {
@@ -303,6 +314,7 @@ local function ExecuteConfigCallbacks()
     runCallbacks(false)
     runCallbacks(true)
 end
+
 _G.AutoSaveEnabled = true
 function _G.GetConfigValue(key, default)
     return Library.ConfigSystem.Get(key, default)
@@ -322,6 +334,8 @@ function Library:CreateWindow(config)
     local name = config.Name or "LynxGUI"
     local title = config.Title or "LynX"
     local subtitle = config.Subtitle or ""
+    local defaultLogo = config.Logo or "rbxassetid://6031091004"
+
     table.clear(CallbackRegistry)
     table.clear(self.flags)
     table.clear(self.pages)
@@ -329,11 +343,13 @@ function Library:CreateWindow(config)
     self._searchIndex = self._searchIndex or {}
     table.clear(self._searchIndex)
     self._currentPage = nil
+
     local existingGUI = CoreGui:FindFirstChild(name)
     if existingGUI then
         existingGUI:Destroy()
         task.wait(0.1)
     end
+
     self._gui = new("ScreenGui", {
         Name = name,
         Parent = CoreGui,
@@ -345,6 +361,7 @@ function Library:CreateWindow(config)
     local function bringToFront()
         self._gui.DisplayOrder = 2147483647
     end
+
     self._win = new("Frame", {
         Parent = self._gui,
         Size = windowSize,
@@ -355,10 +372,8 @@ function Library:CreateWindow(config)
         ClipsDescendants = false,
         ZIndex = 3
     })
-    -- Radius sudut yang lebih besar untuk kesan organik dan tidak kaku
     new("UICorner", {Parent = self._win, CornerRadius = UDim.new(0, 12)})
     
-    -- Background Image Container
     local bgImageHolder = new("ImageLabel", {
         Parent = self._win,
         Name = "BackgroundImage",
@@ -380,7 +395,7 @@ function Library:CreateWindow(config)
         ClipsDescendants = true,
         ZIndex = 4
     })
-    local sidebarLine = new("Frame", {
+    new("Frame", {
         Parent = self._sidebar,
         Size = UDim2.new(0, 1, 1, 0),
         Position = UDim2.new(1, 0, 0, 0),
@@ -389,6 +404,7 @@ function Library:CreateWindow(config)
         BorderSizePixel = 0,
         ZIndex = 4
     })
+
     local scriptHeader = new("TextButton", {
         Parent = self._win,
         Size = UDim2.new(1, 0, 0, headerHeight),
@@ -399,7 +415,7 @@ function Library:CreateWindow(config)
         AutoButtonColor = false,
         ZIndex = 5
     })
-    local headerLine = new("Frame", {
+    new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(1, -24, 0, 1),
         Position = UDim2.new(0, 12, 1, -1),
@@ -411,7 +427,7 @@ function Library:CreateWindow(config)
     local headerDragHandle = new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 32, 0, 3),
-        Position = UDim2.new(0.5, -16, 0, 5),
+        Position = UDim2.new(0.5, -16, 0, 4),
         BackgroundColor3 = colors.primary,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
@@ -419,34 +435,39 @@ function Library:CreateWindow(config)
     })
     new("UICorner", {Parent = headerDragHandle, CornerRadius = UDim.new(1, 0)})
     
-    -- LOGO SATURNUS BERADA DI SEBELAH KIRI NAMA HUB
-    new("ImageLabel", {
+    -- [2] Logo hub tepat di tengah-tengah secara vertikal dan pas sejajar dengan nama hub
+    local logoImage = new("ImageLabel", {
         Parent = scriptHeader,
-        Image = "rbxassetid://6031091004",
-        Size = UDim2.new(0, 18, 0, 18),
-        Position = UDim2.new(0, 10, 0.5, -3),
+        Image = defaultLogo,
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0, 10, 0.5, 0),
+        AnchorPoint = Vector2.new(0, 0.5),
         BackgroundTransparency = 1,
         ImageColor3 = colors.primary,
-        ZIndex = 6
+        ZIndex = 6,
+        Name = "HubLogo"
     })
     
-    new("TextLabel", {
+    local titleLabel = new("TextLabel", {
         Parent = scriptHeader,
         Text = title,
         Size = UDim2.new(0, 95, 1, 0),
-        Position = UDim2.new(0, 32, 0, 0),
+        Position = UDim2.new(0, 34, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.title,
         TextColor3 = colors.primary,
         TextXAlignment = Enum.TextXAlignment.Left,
-        ZIndex = 6
+        TextYAlignment = Enum.TextYAlignment.Center,
+        ZIndex = 6,
+        Name = "HubTitle"
     })
     
-    local separator = new("Frame", {
+    new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 1, 0, 14),
-        Position = UDim2.new(0, 130, 0.5, -7),
+        Position = UDim2.new(0, 134, 0.5, 0),
+        AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = colors.border,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
@@ -456,18 +477,21 @@ function Library:CreateWindow(config)
         Parent = scriptHeader,
         Text = subtitle,
         Size = UDim2.new(0, 180, 1, 0),
-        Position = UDim2.new(0, 138, 0, 0),
+        Position = UDim2.new(0, 142, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.textDim,
         TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
         ZIndex = 6
     })
+
     local btnMinHeader = new("TextButton", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 24, 0, 24),
-        Position = UDim2.new(1, -30, 0.5, -12),
+        Position = UDim2.new(1, -30, 0.5, 0),
+        AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = sectionTransparency,
         BorderSizePixel = 0,
@@ -498,12 +522,8 @@ function Library:CreateWindow(config)
         minLine.Size = hovering and UDim2.new(0, 12, 0, 2) or UDim2.new(0, 10, 0, 2)
         minLine.Position = hovering and UDim2.new(0.5, -6, 0.5, -1) or UDim2.new(0.5, -5, 0.5, -1)
     end
-    self:AddConnection("minimizeHoverIn", btnMinHeader.MouseEnter:Connect(function()
-        setMinimizeHover(true)
-    end))
-    self:AddConnection("minimizeHoverOut", btnMinHeader.MouseLeave:Connect(function()
-        setMinimizeHover(false)
-    end))
+    self:AddConnection("minimizeHoverIn", btnMinHeader.MouseEnter:Connect(function() setMinimizeHover(true) end))
+    self:AddConnection("minimizeHoverOut", btnMinHeader.MouseLeave:Connect(function() setMinimizeHover(false) end))
     
     self._navContainer = new("ScrollingFrame", {
         Parent = self._sidebar,
@@ -518,6 +538,7 @@ function Library:CreateWindow(config)
         ZIndex = 5
     })
     new("UIListLayout", {Parent = self._navContainer, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})
+    
     self._contentBg = new("Frame", {
         Parent = self._win,
         Size = UDim2.new(1, -(sidebarWidth + 8), 1, -(headerHeight + 4)),
@@ -567,6 +588,7 @@ function Library:CreateWindow(config)
         BorderSizePixel = 0,
         ZIndex = 5
     })
+
     local resizeHandle = new("TextButton", {
         Parent = self._win,
         Size = UDim2.new(0, 18, 0, 18),
@@ -601,37 +623,23 @@ function Library:CreateWindow(config)
     local savedIconPos = UDim2.new(0, 20, 0, 150)
     local savedWinPos = self._win.Position
     local savedWinSize = self._win.Size
-    local minimizedIconSize = 45
-    local currentFloatingImage = ""
+    local minimizedIconSize = 46
+    local currentFloatingImage = defaultLogo
 
+    -- [3] Floating / Minimized Button memakai gambar saja (tanpa garis kuning dan background hitam)
     local function createMinimizedIcon()
         if icon then return end
         icon = new("ImageButton", {
             Parent = self._gui,
             Size = UDim2.new(0, minimizedIconSize, 0, minimizedIconSize),
             Position = savedIconPos,
-            BackgroundColor3 = colors.bg2,
-            BackgroundTransparency = 0,
+            BackgroundTransparency = 1,
             BorderSizePixel = 0,
             Image = currentFloatingImage,
             ScaleType = Enum.ScaleType.Fit,
             AutoButtonColor = false,
             Active = true,
             ZIndex = 50
-        })
-        new("UICorner", {Parent = icon, CornerRadius = UDim.new(0, 12)})
-        new("UIStroke", {Parent = icon, Color = colors.primary, Thickness = 1.5})
-        
-        local textLabel = new("TextLabel", {
-            Parent = icon,
-            Text = "L",
-            Size = UDim2.new(1, 0, 1, 0),
-            Font = Enum.Font.GothamBold,
-            TextSize = 22,
-            BackgroundTransparency = 1,
-            TextColor3 = colors.primary,
-            Visible = (currentFloatingImage == ""),
-            ZIndex = 51
         })
         
         local iconConns = {}
@@ -787,15 +795,14 @@ function Library:CreateWindow(config)
         end
     end
 
-    function WindowObject:SetFloatingButtonImage(assetId)
+    function WindowObject:SetLogo(assetId)
         currentFloatingImage = assetId or ""
-        if icon then
-            icon.Image = currentFloatingImage
-            local textLbl = icon:FindFirstChildOfClass("TextLabel")
-            if textLbl then
-                textLbl.Visible = (currentFloatingImage == "")
-            end
-        end
+        if logoImage then logoImage.Image = currentFloatingImage end
+        if icon then icon.Image = currentFloatingImage end
+    end
+
+    function WindowObject:SetFloatingButtonImage(assetId)
+        self:SetLogo(assetId)
     end
 
     return WindowObject
@@ -1121,10 +1128,10 @@ function Library:CreatePage(name, title, imageId, order)
     new("UIPadding", {Parent = contentContainer, PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
     self.pages[name] = {frame = page, title = title, content = contentContainer}
     
+    -- [3] Tombol navigasi memakai gambar saja, tanpa garis kuning dan background hitam
     local btn = new("TextButton", {
         Parent = self._navContainer,
         Size = UDim2.new(1, 0, 0, 30),
-        BackgroundColor3 = colors.bg2,
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Text = "",
@@ -1132,22 +1139,12 @@ function Library:CreatePage(name, title, imageId, order)
         LayoutOrder = order or 999,
         ZIndex = 6
     })
-    new("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 8)})
-    local indicator = new("Frame", {
-        Parent = btn,
-        Size = UDim2.new(0, 3, 0, 16),
-        Position = UDim2.new(0, 0, 0.5, -8),
-        BackgroundColor3 = colors.primary,
-        BorderSizePixel = 0,
-        Visible = false,
-        ZIndex = 7
-    })
-    new("UICorner", {Parent = indicator, CornerRadius = UDim.new(1, 0)})
     new("ImageLabel", {
         Parent = btn,
         Image = imageId or "",
-        Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(0, 10, 0.5, -8),
+        Size = UDim2.new(0, 18, 0, 18),
+        Position = UDim2.new(0, 10, 0.5, 0),
+        AnchorPoint = Vector2.new(0, 0.5),
         BackgroundTransparency = 1,
         ImageColor3 = colors.textDim,
         ZIndex = 7,
@@ -1157,37 +1154,42 @@ function Library:CreatePage(name, title, imageId, order)
         Parent = btn,
         Text = name,
         Size = UDim2.new(1, -36, 1, 0),
-        Position = UDim2.new(0, 32, 0, 0),
+        Position = UDim2.new(0, 34, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.normal,
         TextColor3 = colors.textDim,
         TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
         ZIndex = 7,
         Name = "Label"
     })
     
-    -- Efek hover fluid untuk navigasi sidebar
     self:AddConnection("navHoverIn_" .. name, btn.MouseEnter:Connect(function()
         if self._currentPage ~= name then
-            btn.BackgroundColor3 = colors.bg3
-            btn.BackgroundTransparency = 0.5
+            local icon = btn:FindFirstChild("Icon")
+            local label = btn:FindFirstChild("Label")
+            if icon then icon.ImageColor3 = colors.text end
+            if label then label.TextColor3 = colors.text end
         end
     end))
     self:AddConnection("navHoverOut_" .. name, btn.MouseLeave:Connect(function()
         if self._currentPage ~= name then
-            btn.BackgroundTransparency = 1
+            local icon = btn:FindFirstChild("Icon")
+            local label = btn:FindFirstChild("Label")
+            if icon then icon.ImageColor3 = colors.textDim end
+            if label then label.TextColor3 = colors.textDim end
         end
     end))
 
-    self._navButtons[name] = {btn = btn, indicator = indicator, page = page, title = title}
+    self._navButtons[name] = {btn = btn, page = page, title = title}
     self:AddConnection("navBtn_" .. name, btn.MouseButton1Click:Connect(function()
         self:_switchPage(name)
     end))
     return contentContainer
 end
 
-function Library:SetFirstPage(name, title)
+function Library:SetFirstPage(name)
     self:_switchPage(name)
 end
 
@@ -1197,18 +1199,16 @@ function Library:_switchPage(pageName)
         pageData.frame.Visible = false
     end
     for name, data in pairs(self._navButtons) do
-        local isActive = name == pageName
-        data.btn.BackgroundColor3 = colors.bg2
-        data.btn.BackgroundTransparency = isActive and sectionTransparency or 1
+        local isActive = (name == pageName)
+        data.btn.BackgroundTransparency = 1
         local icon = data.btn:FindFirstChild("Icon")
         if icon then
             icon.ImageColor3 = isActive and colors.primary or colors.textDim
         end
         local label = data.btn:FindFirstChild("Label")
         if label then
-            label.TextColor3 = isActive and colors.text or colors.textDim
+            label.TextColor3 = isActive and colors.primary or colors.textDim
         end
-        data.indicator.Visible = isActive
     end
     if self.pages[pageName] then
         self.pages[pageName].frame.Visible = true
@@ -1256,6 +1256,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         TextSize = fontSize.normal,
         TextColor3 = colors.text,
         TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
         ZIndex = 8
     })
     local arrow = new("TextLabel", {
@@ -1267,6 +1268,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.primary,
+        TextYAlignment = Enum.TextYAlignment.Center,
         ZIndex = 8
     })
     local contentWrapper = new("Frame", {
@@ -1408,15 +1410,23 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     if configPath and not disableSave then
         on = Library.ConfigSystem.Get(configPath, on)
     end
-    local function updateVisual()
-        toggleBg.BackgroundColor3 = on and colors.primary or colors.bg3
-        toggleCircle.Position = on and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
-        toggleCircle.BackgroundColor3 = on and colors.bg1 or colors.textDim
+    local function updateVisual(instant)
+        local targetColor = on and colors.primary or colors.bg3
+        local targetPos = on and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+        local targetCircleColor = on and colors.bg1 or colors.textDim
+        if instant then
+            toggleBg.BackgroundColor3 = targetColor
+            toggleCircle.Position = targetPos
+            toggleCircle.BackgroundColor3 = targetCircleColor
+        else
+            TweenService:Create(toggleBg, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = targetColor}):Play()
+            TweenService:Create(toggleCircle, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = targetPos, BackgroundColor3 = targetCircleColor}):Play()
+        end
     end
-    updateVisual()
+    updateVisual(true)
     self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
         on = not on
-        updateVisual()
+        updateVisual(false)
         if configPath and not disableSave then
             Library.ConfigSystem.Set(configPath, on)
             MarkDirty()
@@ -1427,7 +1437,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     if configPath and not disableSave then
         RegisterCallback(configPath, callback, "toggle", defaultValue or false, function(val)
             on = val
-            updateVisual()
+            updateVisual(true)
             self.flags[configPath or label] = on
         end)
     end
@@ -1436,7 +1446,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         frame = frame,
         set = function(val)
             on = val
-            updateVisual()
+            updateVisual(false)
             if configPath and not disableSave then
                 Library.ConfigSystem.Set(configPath, on)
                 MarkDirty()
@@ -1648,7 +1658,7 @@ function Library:MakeNotify(config)
 end
 
 function Library:_createConfigTab(WindowObject)
-    local configTab = WindowObject:AddTab({ Name = "Config", Icon = "loop" })
+    local configTab = WindowObject:AddTab({ Name = "Config", Icon = "rbxassetid://122032243989747" })
     local autoSaveSection = configTab:AddSection("Auto Save")
     autoSaveSection:AddToggle({
         Title    = "Auto Save Config",
@@ -1717,10 +1727,7 @@ function Library:_createConfigTab(WindowObject)
             end
         end
     })
-    mgmtSection:AddParagraph({
-        Title   = "⚠️ Perhatian",
-        Content = "Setelah melakukan Reset to Default, beberapa settingan seperti Toggle akan langsung ter-update di UI.",
-    })
+
     local deleteConfirm = false
     local deleteThread  = nil
     local deleteBtnFrame
@@ -1762,7 +1769,8 @@ function Library:Window(config)
     local winObj = self:CreateWindow({
         Name     = "LynxGui",
         Title    = config.Title or "LynX",
-        Subtitle = config.Footer or ""
+        Subtitle = config.Footer or "",
+        Logo     = config.Logo or "rbxassetid://6031091004"
     })
     Library.ConfigSystem.Load()
     local WindowObject = winObj
@@ -1793,7 +1801,11 @@ function Library:Window(config)
         }
         local iconId = ""
         if tabIcon and tabIcon ~= "" then
-            iconId = iconMap[tabIcon:lower()] or ""
+            if tabIcon:find("rbxassetid://") then
+                iconId = tabIcon
+            else
+                iconId = iconMap[tabIcon:lower()] or ""
+            end
         end
         self._tabOrder = (self._tabOrder or 0) + 1
         local page = self._library:CreatePage(tabName, tabName, iconId, self._tabOrder)

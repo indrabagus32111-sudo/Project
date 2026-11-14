@@ -394,14 +394,16 @@ function Library:CreateWindow(config)
         ClipsDescendants = true,
         ZIndex = 4
     })
+    
+    -- Garis pemisah vertikal antara tab dan isi tab
     new("Frame", {
-        Parent = self._sidebar,
-        Size = UDim2.new(0, 1, 1, 0),
-        Position = UDim2.new(1, 0, 0, 0),
+        Parent = self._win,
+        Size = UDim2.new(0, 1, 1, -headerHeight),
+        Position = UDim2.new(0, sidebarWidth, 0, headerHeight),
         BackgroundColor3 = colors.border,
-        BackgroundTransparency = 0.5,
+        BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        ZIndex = 4
+        ZIndex = 5
     })
 
     local scriptHeader = new("TextButton", {
@@ -539,8 +541,8 @@ function Library:CreateWindow(config)
     
     self._contentBg = new("Frame", {
         Parent = self._win,
-        Size = UDim2.new(1, -(sidebarWidth + 8), 1, -(headerHeight + 4)),
-        Position = UDim2.new(0, sidebarWidth + 4, 0, headerHeight + 2),
+        Size = UDim2.new(1, -(sidebarWidth + 9), 1, -(headerHeight + 4)),
+        Position = UDim2.new(0, sidebarWidth + 5, 0, headerHeight + 2),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ClipsDescendants = true,
@@ -1536,13 +1538,13 @@ function Library:MakeNotify(config)
         end)
     end
     
-    -- Notifikasi diperbesar ukurannya dan dibuat ukurannya tetap (fixed/minimum size)
+    -- Notifikasi diperbesar namun menggunakan AutomaticSize agar menyesuaikan isi teks pendek/panjang secara dinamis
     local notif = new("Frame", {
         Parent = self._gui,
-        Size = UDim2.new(0, 310, 0, 85),
+        Size = UDim2.new(0, 310, 0, 0),
         Position = UDim2.new(1, -25, 1, -25),
         AnchorPoint = Vector2.new(1, 1),
-        AutomaticSize = Enum.AutomaticSize.Y,
+        AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundColor3 = Color3.fromRGB(12, 12, 12),
         BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
@@ -1563,9 +1565,9 @@ function Library:MakeNotify(config)
 
     local textContainer = new("Frame", {
         Parent = notif,
-        Size = UDim2.new(1, -20, 1, 0),
+        Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0, 16, 0, 0),
-        AutomaticSize = Enum.AutomaticSize.Y,
+        AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundTransparency = 1,
         ZIndex = 201
     })
@@ -1574,7 +1576,7 @@ function Library:MakeNotify(config)
         Parent = textContainer,
         PaddingTop = UDim.new(0, 14),
         PaddingBottom = UDim.new(0, 14),
-        PaddingRight = UDim.new(0, 16)
+        PaddingRight = UDim.new(0, 18)
     })
 
     new("UIListLayout", {
@@ -1588,8 +1590,8 @@ function Library:MakeNotify(config)
         local tLbl = new("TextLabel", {
             Parent = textContainer,
             Text = title,
-            Size = UDim2.new(1, 0, 0, 18),
-            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(0, 0, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamBold,
             TextSize = 15,
@@ -1599,15 +1601,15 @@ function Library:MakeNotify(config)
             LayoutOrder = 1,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(300, 9999) })
+        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(280, 9999) })
     end
     
     if desc and desc ~= "" then
         local dLbl = new("TextLabel", {
             Parent = textContainer,
             Text = desc,
-            Size = UDim2.new(1, 0, 0, 16),
-            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(0, 0, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamMedium,
             TextSize = 13,
@@ -1617,15 +1619,15 @@ function Library:MakeNotify(config)
             LayoutOrder = 2,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(300, 9999) })
+        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(280, 9999) })
     end
 
     if content and content ~= "" then
         local cLbl = new("TextLabel", {
             Parent = textContainer,
             Text = content,
-            Size = UDim2.new(1, 0, 0, 14),
-            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.new(0, 0, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.Gotham,
             TextSize = 12,
@@ -1635,7 +1637,7 @@ function Library:MakeNotify(config)
             LayoutOrder = 3,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(300, 9999) })
+        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(280, 9999) })
     end
 
     task.delay(delay, function()
@@ -1748,7 +1750,7 @@ function Library:_createConfigTab(WindowObject)
                 if deleteThread then task.cancel(deleteThread) end
                 deleteConfirm = false
                 local btn = deleteBtnFrame:FindFirstChildWhichIsA("TextButton")
-                if btn then btn.Text = "Delete Config File" end
+                if btn then b.Text = "Delete Config File" end
                 setBtnColor(deleteBtnFrame, colors.primary)
                 Library.ConfigSystem.Delete()
                 self:MakeNotify({
@@ -1836,7 +1838,16 @@ function Library:Window(config)
                 end
                 local toggleResult = self._library:CreateToggle(self._container, title, configPath, wrappedCallback, noSave, default)
                 local frame = toggleResult and toggleResult.frame or toggleResult
-                if frame then frame.LayoutOrder = getNextLayoutOrder() end
+                if frame then 
+                    frame.LayoutOrder = getNextLayoutOrder() 
+                    table.insert(self._library._searchIndex, {
+                        name = title,
+                        lname = title:lower(),
+                        pageName = tabName,
+                        sectionTitle = sectionTitle,
+                        frame = frame
+                    })
+                end
                 return toggleObj
             end
             function SectionObject:AddButton(buttonConfig)
@@ -1844,7 +1855,16 @@ function Library:Window(config)
                 local title    = buttonConfig.Title or "Button"
                 local callback = buttonConfig.Callback or function() end
                 local frame = self._library:CreateButton(self._container, title, callback)
-                if frame then frame.LayoutOrder = getNextLayoutOrder() end
+                if frame then 
+                    frame.LayoutOrder = getNextLayoutOrder() 
+                    table.insert(self._library._searchIndex, {
+                        name = title,
+                        lname = title:lower(),
+                        pageName = tabName,
+                        sectionTitle = sectionTitle,
+                        frame = frame
+                    })
+                end
                 return frame
             end
             table.insert(self._sections, SectionObject)

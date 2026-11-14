@@ -65,31 +65,28 @@ elseif spoofedPlatform == "PC" or spoofedPlatform == "Console" then
 else
     isMobile = UserInputService.TouchEnabled and not UserInputService.MouseEnabled
 end
-
--- Ukuran UI diperbesar sedikit saat di-execute
 local windowSize, minWindowSize, maxWindowSize
 if isMobile then
-    windowSize    = UDim2.new(0, 460, 0, 310)
-    minWindowSize = Vector2.new(400, 270)
-    maxWindowSize = Vector2.new(850, 650)
+    windowSize    = UDim2.new(0, 420, 0, 280)
+    minWindowSize = Vector2.new(380, 250)
+    maxWindowSize = Vector2.new(800, 600)
 else
-    windowSize    = UDim2.new(0, 620, 0, 400)
-    minWindowSize = Vector2.new(480, 330)
-    maxWindowSize = Vector2.new(1200, 800)
+    windowSize    = UDim2.new(0, 560, 0, 360)
+    minWindowSize = Vector2.new(440, 300)
+    maxWindowSize = Vector2.new(1100, 760)
 end
-
-local sidebarWidth = 135
-local headerHeight = 40
-local topBarHeight = 32
-local sectionHeaderHeight = 34
+local sidebarWidth = 128
+local headerHeight = 38
+local topBarHeight = 30
+local sectionHeaderHeight = 32
 local panelTransparency = 0.03
 local sectionTransparency = 0.15
 local fontSize = {
-    title = 15,
-    subtitle = 11,
-    header = 13,
-    normal = 12,
-    small = 11,
+    title = 14,
+    subtitle = 10,
+    header = 12,
+    normal = 11,
+    small = 10,
 }
 
 local function formatRichText(text)
@@ -325,8 +322,6 @@ function Library:CreateWindow(config)
     local name = config.Name or "LynxGUI"
     local title = config.Title or "LynX"
     local subtitle = config.Subtitle or ""
-    local defaultLogo = config.Logo or "rbxassetid://6031091004"
-    
     table.clear(CallbackRegistry)
     table.clear(self.flags)
     table.clear(self.pages)
@@ -360,8 +355,10 @@ function Library:CreateWindow(config)
         ClipsDescendants = false,
         ZIndex = 3
     })
+    -- Radius sudut yang lebih besar untuk kesan organik dan tidak kaku
     new("UICorner", {Parent = self._win, CornerRadius = UDim.new(0, 12)})
     
+    -- Background Image Container
     local bgImageHolder = new("ImageLabel", {
         Parent = self._win,
         Name = "BackgroundImage",
@@ -422,53 +419,50 @@ function Library:CreateWindow(config)
     })
     new("UICorner", {Parent = headerDragHandle, CornerRadius = UDim.new(1, 0)})
     
-    -- Logo dapat diedit (menggunakan properti defaultLogo)
-    local logoImage = new("ImageLabel", {
+    -- LOGO SATURNUS BERADA DI SEBELAH KIRI NAMA HUB
+    new("ImageLabel", {
         Parent = scriptHeader,
-        Image = defaultLogo,
-        Size = UDim2.new(0, 20, 0, 20),
+        Image = "rbxassetid://6031091004",
+        Size = UDim2.new(0, 18, 0, 18),
         Position = UDim2.new(0, 10, 0.5, -3),
         BackgroundTransparency = 1,
         ImageColor3 = colors.primary,
-        ZIndex = 6,
-        Name = "HubLogo"
+        ZIndex = 6
     })
     
-    local titleLabel = new("TextLabel", {
+    new("TextLabel", {
         Parent = scriptHeader,
         Text = title,
-        Size = UDim2.new(0, 105, 1, 0),
-        Position = UDim2.new(0, 35, 0, 0),
+        Size = UDim2.new(0, 95, 1, 0),
+        Position = UDim2.new(0, 32, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.title,
         TextColor3 = colors.primary,
         TextXAlignment = Enum.TextXAlignment.Left,
-        ZIndex = 6,
-        Name = "HubTitle"
+        ZIndex = 6
     })
     
     local separator = new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 1, 0, 14),
-        Position = UDim2.new(0, 142, 0.5, -7),
+        Position = UDim2.new(0, 130, 0.5, -7),
         BackgroundColor3 = colors.border,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ZIndex = 6
     })
-    local subtitleLabel = new("TextLabel", {
+    new("TextLabel", {
         Parent = scriptHeader,
         Text = subtitle,
         Size = UDim2.new(0, 180, 1, 0),
-        Position = UDim2.new(0, 150, 0, 0),
+        Position = UDim2.new(0, 138, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.textDim,
         TextXAlignment = Enum.TextXAlignment.Left,
-        ZIndex = 6,
-        Name = "HubSubtitle"
+        ZIndex = 6
     })
     local btnMinHeader = new("TextButton", {
         Parent = scriptHeader,
@@ -608,7 +602,7 @@ function Library:CreateWindow(config)
     local savedWinPos = self._win.Position
     local savedWinSize = self._win.Size
     local minimizedIconSize = 45
-    local currentFloatingImage = defaultLogo
+    local currentFloatingImage = ""
 
     local function createMinimizedIcon()
         if icon then return end
@@ -793,11 +787,8 @@ function Library:CreateWindow(config)
         end
     end
 
-    function WindowObject:SetLogo(assetId)
+    function WindowObject:SetFloatingButtonImage(assetId)
         currentFloatingImage = assetId or ""
-        if logoImage then
-            logoImage.Image = currentFloatingImage
-        end
         if icon then
             icon.Image = currentFloatingImage
             local textLbl = icon:FindFirstChildOfClass("TextLabel")
@@ -805,10 +796,6 @@ function Library:CreateWindow(config)
                 textLbl.Visible = (currentFloatingImage == "")
             end
         end
-    end
-
-    function WindowObject:SetFloatingButtonImage(assetId)
-        self:SetLogo(assetId)
     end
 
     return WindowObject
@@ -1180,6 +1167,7 @@ function Library:CreatePage(name, title, imageId, order)
         Name = "Label"
     })
     
+    -- Efek hover fluid untuk navigasi sidebar
     self:AddConnection("navHoverIn_" .. name, btn.MouseEnter:Connect(function()
         if self._currentPage ~= name then
             btn.BackgroundColor3 = colors.bg3
@@ -1384,7 +1372,6 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
     return returnedContainer, expand
 end
 
--- Tombol On/Off (Toggle) ditingkatkan agar tidak kaku menggunakan Tween yang mulus
 function Library:CreateToggle(parent, label, configPath, callback, disableSave, defaultValue)
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
@@ -1400,8 +1387,8 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     })
     local toggleBg = new("Frame", {
         Parent = frame,
-        Size = UDim2.new(0, 40, 0, 22),
-        Position = UDim2.new(1, -40, 0.5, -11),
+        Size = UDim2.new(0, 36, 0, 20),
+        Position = UDim2.new(1, -36, 0.5, -10),
         BackgroundColor3 = colors.bg3,
         BorderSizePixel = 0,
         ZIndex = 8
@@ -1409,8 +1396,8 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     new("UICorner", {Parent = toggleBg, CornerRadius = UDim.new(1, 0)})
     local toggleCircle = new("Frame", {
         Parent = toggleBg,
-        Size = UDim2.new(0, 18, 0, 18),
-        Position = UDim2.new(0, 2, 0.5, -9),
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0, 2, 0.5, -8),
         BackgroundColor3 = colors.textDim,
         BorderSizePixel = 0,
         ZIndex = 9
@@ -1421,27 +1408,15 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     if configPath and not disableSave then
         on = Library.ConfigSystem.Get(configPath, on)
     end
-    
-    local function updateVisual(instant)
-        local targetColor = on and colors.primary or colors.bg3
-        local targetPos = on and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
-        local targetCircleColor = on and colors.bg1 or colors.textDim
-        
-        if instant then
-            toggleBg.BackgroundColor3 = targetColor
-            toggleCircle.Position = targetPos
-            toggleCircle.BackgroundColor3 = targetCircleColor
-        else
-            TweenService:Create(toggleBg, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = targetColor}):Play()
-            TweenService:Create(toggleCircle, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = targetPos, BackgroundColor3 = targetCircleColor}):Play()
-        end
+    local function updateVisual()
+        toggleBg.BackgroundColor3 = on and colors.primary or colors.bg3
+        toggleCircle.Position = on and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+        toggleCircle.BackgroundColor3 = on and colors.bg1 or colors.textDim
     end
-    
-    updateVisual(true)
-    
+    updateVisual()
     self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
         on = not on
-        updateVisual(false)
+        updateVisual()
         if configPath and not disableSave then
             Library.ConfigSystem.Set(configPath, on)
             MarkDirty()
@@ -1449,11 +1424,10 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         self.flags[configPath or label] = on
         if callback then callback(on) end
     end))
-    
     if configPath and not disableSave then
         RegisterCallback(configPath, callback, "toggle", defaultValue or false, function(val)
             on = val
-            updateVisual(true)
+            updateVisual()
             self.flags[configPath or label] = on
         end)
     end
@@ -1462,7 +1436,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         frame = frame,
         set = function(val)
             on = val
-            updateVisual(false)
+            updateVisual()
             if configPath and not disableSave then
                 Library.ConfigSystem.Set(configPath, on)
                 MarkDirty()
@@ -1539,14 +1513,13 @@ function Library:Initialize()
     end))
 end
 
--- Sistem Notifikasi (Diperbesar ukuran dan paddingnya)
 function Library:MakeNotify(config)
     config = config or {}
     local title   = config.Title or "Notification"
     local desc    = config.Description or ""
     local content = config.Content or ""
     local color   = config.Color or colors.primary
-    local delay   = config.Delay or 3.5
+    local delay   = config.Delay or 3
     if not self._gui then return end
     self._activeNotifs = self._activeNotifs or {}
     for i = #self._activeNotifs, 1, -1 do
@@ -1560,7 +1533,7 @@ function Library:MakeNotify(config)
     local notif = new("Frame", {
         Parent = self._gui,
         Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(1, -24, 1, -24),
+        Position = UDim2.new(1, -20, 1, -20),
         AnchorPoint = Vector2.new(1, 1),
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundColor3 = Color3.fromRGB(12, 12, 12),
@@ -1569,13 +1542,13 @@ function Library:MakeNotify(config)
         ZIndex = 200
     })
     new("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 10)})
-    new("UIStroke", {Parent = notif, Color = colors.border, Thickness = 1.2, Transparency = 0.4})
+    new("UIStroke", {Parent = notif, Color = colors.border, Thickness = 1, Transparency = 0.4})
     
     table.insert(self._activeNotifs, notif)
 
     new("Frame", {
         Parent = notif,
-        Size = UDim2.new(0, 4, 1, 0),
+        Size = UDim2.new(0, 3, 1, 0),
         BackgroundColor3 = color,
         BorderSizePixel = 0,
         ZIndex = 201
@@ -1584,7 +1557,7 @@ function Library:MakeNotify(config)
     local textContainer = new("Frame", {
         Parent = notif,
         Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0, 18, 0, 0),
+        Position = UDim2.new(0, 15, 0, 0),
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundTransparency = 1,
         ZIndex = 201
@@ -1592,16 +1565,16 @@ function Library:MakeNotify(config)
     
     new("UIPadding", {
         Parent = textContainer,
-        PaddingTop = UDim.new(0, 15),
-        PaddingBottom = UDim.new(0, 15),
-        PaddingRight = UDim.new(0, 20)
+        PaddingTop = UDim.new(0, 12),
+        PaddingBottom = UDim.new(0, 12),
+        PaddingRight = UDim.new(0, 16)
     })
 
     new("UIListLayout", {
         Parent = textContainer,
         FillDirection = Enum.FillDirection.Vertical,
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 6)
+        Padding = UDim.new(0, 4)
     })
 
     if title and title ~= "" then
@@ -1612,14 +1585,14 @@ function Library:MakeNotify(config)
             AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamBold,
-            TextSize = 15, -- Diperbesar
+            TextSize = 13,
             TextColor3 = color,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextWrapped = true,
             LayoutOrder = 1,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(300, 9999) }) -- Batas lebar diperbesar
+        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(240, 9999) })
     end
     
     if desc and desc ~= "" then
@@ -1630,14 +1603,14 @@ function Library:MakeNotify(config)
             AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamMedium,
-            TextSize = 13, -- Diperbesar
+            TextSize = 12,
             TextColor3 = colors.text,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextWrapped = true,
             LayoutOrder = 2,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(300, 9999) })
+        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(240, 9999) })
     end
 
     if content and content ~= "" then
@@ -1648,16 +1621,15 @@ function Library:MakeNotify(config)
             AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.Gotham,
-            TextSize = 12, -- Diperbesar
+            TextSize = 11,
             TextColor3 = colors.textDim,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextWrapped = true,
             LayoutOrder = 3,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(300, 9999) })
+        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(240, 9999) })
     end
-    
     task.delay(delay, function()
         pcall(function()
             if notif and notif.Parent then
@@ -1771,7 +1743,7 @@ function Library:_createConfigTab(WindowObject)
                 if deleteThread then task.cancel(deleteThread) end
                 deleteConfirm = false
                 local btn = deleteBtnFrame:FindFirstChildWhichIsA("TextButton")
-                if btn then b.Text = "Delete Config File" end
+                if btn then btn.Text = "Delete Config File" end
                 setBtnColor(deleteBtnFrame, colors.primary)
                 Library.ConfigSystem.Delete()
                 self:MakeNotify({
@@ -1790,8 +1762,7 @@ function Library:Window(config)
     local winObj = self:CreateWindow({
         Name     = "LynxGui",
         Title    = config.Title or "LynX",
-        Subtitle = config.Footer or "",
-        Logo     = config.Logo or "rbxassetid://6031091004"
+        Subtitle = config.Footer or ""
     })
     Library.ConfigSystem.Load()
     local WindowObject = winObj

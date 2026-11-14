@@ -26,20 +26,23 @@ local UserInputService = game:GetService("UserInputService")
 local RunService      = game:GetService("RunService")
 local HttpService     = game:GetService("HttpService")
 local localPlayer     = Players.LocalPlayer
+
+-- Mengubah skema warna dari Orange ke Kuning
 local colors = {
-    primary = Color3.fromRGB(255, 136, 0), -- Orange
-    secondary = Color3.fromRGB(255, 180, 50),
-    accent = Color3.fromRGB(255, 200, 100),
+    primary = Color3.fromRGB(255, 220, 50),   -- Kuning Utama
+    secondary = Color3.fromRGB(255, 235, 100),
+    accent = Color3.fromRGB(255, 245, 150),
     success = Color3.fromRGB(34, 197, 94),
-    bg1 = Color3.fromRGB(15, 10, 5),     -- Dark brown/orange tint
-    bg2 = Color3.fromRGB(25, 16, 8),
-    bg3 = Color3.fromRGB(40, 25, 12),
-    bg4 = Color3.fromRGB(55, 35, 18),
-    text = Color3.fromRGB(255, 250, 245),
-    textDim = Color3.fromRGB(220, 205, 190),
-    textDimmer = Color3.fromRGB(175, 150, 135),
-    border = Color3.fromRGB(80, 50, 25),
+    bg1 = Color3.fromRGB(15, 15, 15),     -- Hitam Gelap Halus
+    bg2 = Color3.fromRGB(24, 24, 24),
+    bg3 = Color3.fromRGB(35, 35, 35),
+    bg4 = Color3.fromRGB(50, 50, 50),
+    text = Color3.fromRGB(255, 255, 255),
+    textDim = Color3.fromRGB(200, 200, 200),
+    textDimmer = Color3.fromRGB(140, 140, 140),
+    border = Color3.fromRGB(60, 60, 60),
 }
+
 local function platformFromConfig()
     local ok, choice = pcall(function()
         if not (isfile and readfile and isfile(CONFIG_FILE)) then return nil end
@@ -76,8 +79,8 @@ local sidebarWidth = 120
 local headerHeight = 34
 local topBarHeight = 28
 local sectionHeaderHeight = 30
-local panelTransparency = 0.1
-local sectionTransparency = 0.30
+local panelTransparency = 0.05
+local sectionTransparency = 0.20
 local fontSize = {
     title = 15,
     subtitle = 11,
@@ -352,7 +355,8 @@ function Library:CreateWindow(config)
         ClipsDescendants = false,
         ZIndex = 3
     })
-    new("UICorner", {Parent = self._win, CornerRadius = UDim.new(0, 7)})
+    -- Membuat sudut UI lebih lembut/tidak kaku (radius dinaikkan ke 10)
+    new("UICorner", {Parent = self._win, CornerRadius = UDim.new(0, 10)})
     
     -- Background Image Container
     local bgImageHolder = new("ImageLabel", {
@@ -365,7 +369,7 @@ function Library:CreateWindow(config)
         ScaleType = Enum.ScaleType.Crop,
         ZIndex = 2
     })
-    new("UICorner", {Parent = bgImageHolder, CornerRadius = UDim.new(0, 7)})
+    new("UICorner", {Parent = bgImageHolder, CornerRadius = UDim.new(0, 10)})
 
     self._sidebar = new("Frame", {
         Parent = self._win,
@@ -426,11 +430,12 @@ function Library:CreateWindow(config)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 6
     })
+    -- Mengganti logo hub dengan Gambar Saturnus (rbxassetid://6031091004) dan menghapus teks hub
     new("ImageLabel", {
         Parent = scriptHeader,
-        Image = "rbxassetid://104332967321169",
-        Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(0, 58, 0.5, -8),
+        Image = "rbxassetid://6031091004",
+        Size = UDim2.new(0, 18, 0, 18),
+        Position = UDim2.new(0, 56, 0.5, -9),
         BackgroundTransparency = 1,
         ImageColor3 = colors.primary,
         ZIndex = 6
@@ -467,7 +472,7 @@ function Library:CreateWindow(config)
         AutoButtonColor = false,
         ZIndex = 7
     })
-    new("UICorner", {Parent = btnMinHeader, CornerRadius = UDim.new(0, 5)})
+    new("UICorner", {Parent = btnMinHeader, CornerRadius = UDim.new(0, 6)})
     local btnMinStroke = new("UIStroke", {
         Parent = btnMinHeader,
         Color = colors.border,
@@ -588,10 +593,9 @@ function Library:CreateWindow(config)
     addResizeGripLine(-7, -3, 6)
     addResizeGripLine(-3, -7, 6)
     
-    -- Tombol Mengapung (Floating / Minimize Button) yang berada di kiri layar secara default
     local minimized = false
     local icon = nil
-    local savedIconPos = UDim2.new(0, 20, 0, 150) -- Di sebelah kiri layar
+    local savedIconPos = UDim2.new(0, 20, 0, 150)
     local savedWinPos = self._win.Position
     local savedWinSize = self._win.Size
     local minimizedIconSize = 45
@@ -612,7 +616,7 @@ function Library:CreateWindow(config)
             Active = true,
             ZIndex = 50
         })
-        new("UICorner", {Parent = icon, CornerRadius = UDim.new(0, 8)})
+        new("UICorner", {Parent = icon, CornerRadius = UDim.new(0, 10)})
         new("UIStroke", {Parent = icon, Color = colors.primary, Thickness = 1.5})
         
         local textLabel = new("TextLabel", {
@@ -773,7 +777,6 @@ function Library:CreateWindow(config)
     WindowObject._tabs    = {}
     WindowObject._tabOrder = 0
 
-    -- Fungsi tambahan untuk mengubah background GUI dengan gambar beserta transparansinya
     function WindowObject:SetBackgroundImage(assetId, transparency)
         if bgImageHolder then
             bgImageHolder.Image = assetId or ""
@@ -781,7 +784,6 @@ function Library:CreateWindow(config)
         end
     end
 
-    -- Fungsi untuk mengatur ikon pada tombol mengapung (floating button / minimize)
     function WindowObject:SetFloatingButtonImage(assetId)
         currentFloatingImage = assetId or ""
         if icon then
@@ -809,26 +811,18 @@ function Library:_createSearchBar()
         ZIndex = 7,
         Name = "SearchBar"
     })
-    new("UICorner", {Parent = searchContainer, CornerRadius = UDim.new(0, 5)})
+    new("UICorner", {Parent = searchContainer, CornerRadius = UDim.new(0, 6)})
     local searchStroke = new("UIStroke", {
         Parent = searchContainer,
         Color = colors.border,
         Thickness = 1,
         Transparency = 0.4
     })
-    new("ImageLabel", {
-        Parent = searchContainer,
-        Image = "rbxassetid://109869955247116",
-        Size = UDim2.new(0, 14, 0, 14),
-        Position = UDim2.new(0, 6, 0.5, -7),
-        BackgroundTransparency = 1,
-        ImageColor3 = colors.textDimmer,
-        ZIndex = 8
-    })
+    -- Menghapus Logo QR / Icon di Search Feature, TextBox digeser sepenuhnya ke kiri
     local searchBox = new("TextBox", {
         Parent = searchContainer,
-        Size = UDim2.new(1, -46, 1, 0),
-        Position = UDim2.new(0, 26, 0, 0),
+        Size = UDim2.new(1, -20, 1, 0),
+        Position = UDim2.new(0, 8, 0, 0),
         BackgroundTransparency = 1,
         Text = "",
         PlaceholderText = "Search feature...",
@@ -843,7 +837,7 @@ function Library:_createSearchBar()
     local clearBtn = new("TextButton", {
         Parent = searchContainer,
         Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(1, -20, 0.5, -8),
+        Position = UDim2.new(1, -18, 0.5, -8),
         BackgroundTransparency = 1,
         Text = "",
         AutoButtonColor = false,
@@ -883,7 +877,7 @@ function Library:_createSearchBar()
         ZIndex = 60,
         Name = "SearchResults"
     })
-    new("UICorner", {Parent = resultsPanel, CornerRadius = UDim.new(0, 5)})
+    new("UICorner", {Parent = resultsPanel, CornerRadius = UDim.new(0, 6)})
     new("UIStroke", {Parent = resultsPanel, Color = colors.border, Thickness = 1, Transparency = 0.35})
     local resultsList = new("ScrollingFrame", {
         Parent = resultsPanel,
@@ -971,7 +965,7 @@ function Library:_createSearchBar()
             Visible = false,
             ZIndex = 62
         })
-        new("UICorner", {Parent = row, CornerRadius = UDim.new(0, 4)})
+        new("UICorner", {Parent = row, CornerRadius = UDim.new(0, 5)})
         local accent = new("Frame", {
             Parent = row,
             Size = UDim2.new(0, 3, 1, -8),
@@ -1135,7 +1129,7 @@ function Library:CreatePage(name, title, imageId, order)
         LayoutOrder = order or 999,
         ZIndex = 6
     })
-    new("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 5)})
+    new("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 6)})
     local indicator = new("Frame", {
         Parent = btn,
         Size = UDim2.new(0, 3, 0, 16),
@@ -1220,7 +1214,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         ClipsDescendants = false,
         ZIndex = 6
     })
-    new("UICorner", {Parent = categoryFrame, CornerRadius = UDim.new(0, 4)})
+    new("UICorner", {Parent = categoryFrame, CornerRadius = UDim.new(0, 6)})
     local categoryLayout = new("UIListLayout", {
         Parent = categoryFrame,
         Padding = UDim.new(0, 0),
@@ -1400,7 +1394,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     local function updateVisual()
         toggleBg.BackgroundColor3 = on and colors.primary or colors.bg3
         toggleCircle.Position = on and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
-        toggleCircle.BackgroundColor3 = on and colors.text or colors.textDim
+        toggleCircle.BackgroundColor3 = on and colors.bg1 or colors.textDim
     end
     updateVisual()
     self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
@@ -1445,7 +1439,7 @@ function Library:CreateButton(parent, label, callback)
         BorderSizePixel = 0,
         ZIndex = 8
     })
-    new("UICorner", {Parent = btnFrame, CornerRadius = UDim.new(0, 5)})
+    new("UICorner", {Parent = btnFrame, CornerRadius = UDim.new(0, 6)})
     local button = new("TextButton", {
         Parent = btnFrame,
         Size = UDim2.new(1, 0, 1, 0),
@@ -1458,7 +1452,7 @@ function Library:CreateButton(parent, label, callback)
         AutoButtonColor = true,
         ZIndex = 9
     })
-    new("UICorner", {Parent = button, CornerRadius = UDim.new(0, 5)})
+    new("UICorner", {Parent = button, CornerRadius = UDim.new(0, 6)})
 
     local isClicking = false
 
@@ -1518,26 +1512,23 @@ function Library:MakeNotify(config)
             if old and old.Parent then old:Destroy() end
         end)
     end
+    
+    -- Background notifikasi diubah menjadi hitam solid dengan sudut lembut
     local notif = new("Frame", {
         Parent = self._gui,
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(1, -20, 1, -20),
         AnchorPoint = Vector2.new(1, 1),
         AutomaticSize = Enum.AutomaticSize.XY,
-        BackgroundColor3 = colors.bg1,
+        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+        BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
         ZIndex = 200
     })
-    table.insert(self._activeNotifs, notif)
+    new("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 8)})
+    new("UIStroke", {Parent = notif, Color = colors.border, Thickness = 1, Transparency = 0.5})
     
-    new("UIGradient", {
-        Parent = notif,
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 1),
-            NumberSequenceKeypoint.new(0.3, 0.5), 
-            NumberSequenceKeypoint.new(1, 0.2)
-        })
-    })
+    table.insert(self._activeNotifs, notif)
 
     new("Frame", {
         Parent = notif,
@@ -1685,7 +1676,7 @@ function Library:_createConfigTab(WindowObject)
                 resetConfirm = true
                 local btn = resetBtnFrame:FindFirstChildWhichIsA("TextButton")
                 if btn then btn.Text = "Klik lagi untuk konfirmasi!" end
-                setBtnColor(resetBtnFrame, Color3.fromRGB(255, 100, 0))
+                setBtnColor(resetBtnFrame, Color3.fromRGB(255, 160, 50))
                 if resetThread then task.cancel(resetThread) end
                 resetThread = task.delay(3, function()
                     resetConfirm = false
@@ -1697,7 +1688,7 @@ function Library:_createConfigTab(WindowObject)
                 if resetThread then task.cancel(resetThread) end
                 resetConfirm = false
                 local btn = resetBtnFrame:FindFirstChildWhichIsA("TextButton")
-                if btn then b.Text = "Reset to Default" end
+                if btn then btn.Text = "Reset to Default" end
                 setBtnColor(resetBtnFrame, colors.primary)
                 Library.ConfigSystem.Reset()
                 ExecuteConfigCallbacks()
@@ -1736,7 +1727,7 @@ function Library:_createConfigTab(WindowObject)
                 if deleteThread then task.cancel(deleteThread) end
                 deleteConfirm = false
                 local btn = deleteBtnFrame:FindFirstChildWhichIsA("TextButton")
-                if btn then b.Text = "Delete Config File" end
+                if btn then btn.Text = "Delete Config File" end
                 setBtnColor(deleteBtnFrame, colors.primary)
                 Library.ConfigSystem.Delete()
                 self:MakeNotify({

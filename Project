@@ -1538,10 +1538,10 @@ function Library:MakeNotify(config)
         end)
     end
     
-    -- Notifikasi dipendekkan (padding lebih tipis) namun tetap menggunakan AutomaticSize
+    -- Notifikasi diperbesar namun menggunakan AutomaticSize agar menyesuaikan isi teks pendek/panjang secara dinamis
     local notif = new("Frame", {
         Parent = self._gui,
-        Size = UDim2.new(0, 280, 0, 0),
+        Size = UDim2.new(0, 310, 0, 0),
         Position = UDim2.new(1, -25, 1, -25),
         AnchorPoint = Vector2.new(1, 1),
         AutomaticSize = Enum.AutomaticSize.XY,
@@ -1550,14 +1550,14 @@ function Library:MakeNotify(config)
         BorderSizePixel = 0,
         ZIndex = 200
     })
-    new("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 10)})
+    new("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 12)})
     new("UIStroke", {Parent = notif, Color = colors.border, Thickness = 1.2, Transparency = 0.3})
     
     table.insert(self._activeNotifs, notif)
 
     new("Frame", {
         Parent = notif,
-        Size = UDim2.new(0, 3.5, 1, 0),
+        Size = UDim2.new(0, 4, 1, 0),
         BackgroundColor3 = color,
         BorderSizePixel = 0,
         ZIndex = 201
@@ -1566,7 +1566,7 @@ function Library:MakeNotify(config)
     local textContainer = new("Frame", {
         Parent = notif,
         Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0, 12, 0, 0),
+        Position = UDim2.new(0, 16, 0, 0),
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundTransparency = 1,
         ZIndex = 201
@@ -1574,16 +1574,16 @@ function Library:MakeNotify(config)
     
     new("UIPadding", {
         Parent = textContainer,
-        PaddingTop = UDim.new(0, 8),
-        PaddingBottom = UDim.new(0, 8),
-        PaddingRight = UDim.new(0, 14)
+        PaddingTop = UDim.new(0, 14),
+        PaddingBottom = UDim.new(0, 14),
+        PaddingRight = UDim.new(0, 18)
     })
 
     new("UIListLayout", {
         Parent = textContainer,
         FillDirection = Enum.FillDirection.Vertical,
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 3)
+        Padding = UDim.new(0, 5)
     })
 
     if title and title ~= "" then
@@ -1594,14 +1594,14 @@ function Library:MakeNotify(config)
             AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamBold,
-            TextSize = 14,
+            TextSize = 15,
             TextColor3 = color,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextWrapped = true,
             LayoutOrder = 1,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(250, 9999) })
+        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(280, 9999) })
     end
     
     if desc and desc ~= "" then
@@ -1612,14 +1612,14 @@ function Library:MakeNotify(config)
             AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamMedium,
-            TextSize = 12,
+            TextSize = 13,
             TextColor3 = colors.text,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextWrapped = true,
             LayoutOrder = 2,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(250, 9999) })
+        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(280, 9999) })
     end
 
     if content and content ~= "" then
@@ -1630,14 +1630,14 @@ function Library:MakeNotify(config)
             AutomaticSize = Enum.AutomaticSize.XY,
             BackgroundTransparency = 1,
             Font = Enum.Font.Gotham,
-            TextSize = 11,
+            TextSize = 12,
             TextColor3 = colors.textDim,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextWrapped = true,
             LayoutOrder = 3,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(250, 9999) })
+        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(280, 9999) })
     end
 
     task.delay(delay, function()

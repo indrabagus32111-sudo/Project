@@ -27,20 +27,20 @@ local RunService      = game:GetService("RunService")
 local HttpService     = game:GetService("HttpService")
 local localPlayer     = Players.LocalPlayer
 
--- Mengubah skema warna dari Orange ke Kuning
+-- Skema Warna Kuning Modern & Elegan
 local colors = {
-    primary = Color3.fromRGB(255, 220, 50),   -- Kuning Utama
+    primary = Color3.fromRGB(255, 220, 50),
     secondary = Color3.fromRGB(255, 235, 100),
     accent = Color3.fromRGB(255, 245, 150),
     success = Color3.fromRGB(34, 197, 94),
-    bg1 = Color3.fromRGB(15, 15, 15),     -- Hitam Gelap Halus
-    bg2 = Color3.fromRGB(24, 24, 24),
-    bg3 = Color3.fromRGB(35, 35, 35),
-    bg4 = Color3.fromRGB(50, 50, 50),
+    bg1 = Color3.fromRGB(12, 12, 12),     
+    bg2 = Color3.fromRGB(20, 20, 20),
+    bg3 = Color3.fromRGB(30, 30, 30),
+    bg4 = Color3.fromRGB(45, 45, 45),
     text = Color3.fromRGB(255, 255, 255),
-    textDim = Color3.fromRGB(200, 200, 200),
-    textDimmer = Color3.fromRGB(140, 140, 140),
-    border = Color3.fromRGB(60, 60, 60),
+    textDim = Color3.fromRGB(190, 190, 190),
+    textDimmer = Color3.fromRGB(120, 120, 120),
+    border = Color3.fromRGB(50, 50, 50),
 }
 
 local function platformFromConfig()
@@ -75,15 +75,15 @@ else
     minWindowSize = Vector2.new(440, 300)
     maxWindowSize = Vector2.new(1100, 760)
 end
-local sidebarWidth = 120
-local headerHeight = 34
-local topBarHeight = 28
-local sectionHeaderHeight = 30
-local panelTransparency = 0.05
-local sectionTransparency = 0.20
+local sidebarWidth = 128
+local headerHeight = 38
+local topBarHeight = 30
+local sectionHeaderHeight = 32
+local panelTransparency = 0.03
+local sectionTransparency = 0.15
 local fontSize = {
-    title = 15,
-    subtitle = 11,
+    title = 14,
+    subtitle = 10,
     header = 12,
     normal = 11,
     small = 10,
@@ -355,8 +355,8 @@ function Library:CreateWindow(config)
         ClipsDescendants = false,
         ZIndex = 3
     })
-    -- Membuat sudut UI lebih lembut/tidak kaku (radius dinaikkan ke 10)
-    new("UICorner", {Parent = self._win, CornerRadius = UDim.new(0, 10)})
+    -- Radius sudut yang lebih besar untuk kesan organik dan tidak kaku
+    new("UICorner", {Parent = self._win, CornerRadius = UDim.new(0, 12)})
     
     -- Background Image Container
     local bgImageHolder = new("ImageLabel", {
@@ -369,7 +369,7 @@ function Library:CreateWindow(config)
         ScaleType = Enum.ScaleType.Crop,
         ZIndex = 2
     })
-    new("UICorner", {Parent = bgImageHolder, CornerRadius = UDim.new(0, 10)})
+    new("UICorner", {Parent = bgImageHolder, CornerRadius = UDim.new(0, 12)})
 
     self._sidebar = new("Frame", {
         Parent = self._win,
@@ -385,7 +385,7 @@ function Library:CreateWindow(config)
         Size = UDim2.new(0, 1, 1, 0),
         Position = UDim2.new(1, 0, 0, 0),
         BackgroundColor3 = colors.border,
-        BackgroundTransparency = 0.42,
+        BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
         ZIndex = 4
     })
@@ -401,28 +401,40 @@ function Library:CreateWindow(config)
     })
     local headerLine = new("Frame", {
         Parent = scriptHeader,
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.new(0, 10, 1, -1),
+        Size = UDim2.new(1, -24, 0, 1),
+        Position = UDim2.new(0, 12, 1, -1),
         BackgroundColor3 = colors.border,
-        BackgroundTransparency = 0.62,
+        BackgroundTransparency = 0.6,
         BorderSizePixel = 0,
         ZIndex = 5
     })
     local headerDragHandle = new("Frame", {
         Parent = scriptHeader,
-        Size = UDim2.new(0, 28, 0, 2),
-        Position = UDim2.new(0.5, -14, 0, 4),
+        Size = UDim2.new(0, 32, 0, 3),
+        Position = UDim2.new(0.5, -16, 0, 5),
         BackgroundColor3 = colors.primary,
-        BackgroundTransparency = 0.35,
+        BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ZIndex = 6
     })
-    new("UICorner", {Parent = headerDragHandle, CornerRadius = UDim.new(0, 2)})
+    new("UICorner", {Parent = headerDragHandle, CornerRadius = UDim.new(1, 0)})
+    
+    -- LOGO SATURNUS BERADA DI SEBELAH KIRI NAMA HUB
+    new("ImageLabel", {
+        Parent = scriptHeader,
+        Image = "rbxassetid://6031091004",
+        Size = UDim2.new(0, 18, 0, 18),
+        Position = UDim2.new(0, 10, 0.5, -3),
+        BackgroundTransparency = 1,
+        ImageColor3 = colors.primary,
+        ZIndex = 6
+    })
+    
     new("TextLabel", {
         Parent = scriptHeader,
         Text = title,
-        Size = UDim2.new(0, 80, 1, 0),
-        Position = UDim2.new(0, 12, 0, 0),
+        Size = UDim2.new(0, 95, 1, 0),
+        Position = UDim2.new(0, 32, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.title,
@@ -430,30 +442,21 @@ function Library:CreateWindow(config)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 6
     })
-    -- Mengganti logo hub dengan Gambar Saturnus (rbxassetid://6031091004) dan menghapus teks hub
-    new("ImageLabel", {
-        Parent = scriptHeader,
-        Image = "rbxassetid://6031091004",
-        Size = UDim2.new(0, 18, 0, 18),
-        Position = UDim2.new(0, 56, 0.5, -9),
-        BackgroundTransparency = 1,
-        ImageColor3 = colors.primary,
-        ZIndex = 6
-    })
+    
     local separator = new("Frame", {
         Parent = scriptHeader,
-        Size = UDim2.new(0, 1, 0, 16),
-        Position = UDim2.new(0, 82, 0.5, -8),
+        Size = UDim2.new(0, 1, 0, 14),
+        Position = UDim2.new(0, 130, 0.5, -7),
         BackgroundColor3 = colors.border,
-        BackgroundTransparency = 0.2,
+        BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ZIndex = 6
     })
     new("TextLabel", {
         Parent = scriptHeader,
         Text = subtitle,
-        Size = UDim2.new(0, 200, 1, 0),
-        Position = UDim2.new(0, 96, 0, 0),
+        Size = UDim2.new(0, 180, 1, 0),
+        Position = UDim2.new(0, 138, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
@@ -463,8 +466,8 @@ function Library:CreateWindow(config)
     })
     local btnMinHeader = new("TextButton", {
         Parent = scriptHeader,
-        Size = UDim2.new(0, 22, 0, 22),
-        Position = UDim2.new(1, -28, 0.5, -11),
+        Size = UDim2.new(0, 24, 0, 24),
+        Position = UDim2.new(1, -30, 0.5, -12),
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = sectionTransparency,
         BorderSizePixel = 0,
@@ -504,8 +507,8 @@ function Library:CreateWindow(config)
     
     self._navContainer = new("ScrollingFrame", {
         Parent = self._sidebar,
-        Size = UDim2.new(1, -10, 1, -39),
-        Position = UDim2.new(0, 5, 0, 34),
+        Size = UDim2.new(1, -12, 1, -42),
+        Position = UDim2.new(0, 6, 0, 36),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 0,
@@ -514,11 +517,11 @@ function Library:CreateWindow(config)
         ScrollingDirection = Enum.ScrollingDirection.Y,
         ZIndex = 5
     })
-    new("UIListLayout", {Parent = self._navContainer, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder})
+    new("UIListLayout", {Parent = self._navContainer, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})
     self._contentBg = new("Frame", {
         Parent = self._win,
-        Size = UDim2.new(1, -(sidebarWidth + 6), 1, -(headerHeight + 3)),
-        Position = UDim2.new(0, sidebarWidth + 3, 0, headerHeight + 1),
+        Size = UDim2.new(1, -(sidebarWidth + 8), 1, -(headerHeight + 4)),
+        Position = UDim2.new(0, sidebarWidth + 4, 0, headerHeight + 2),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ClipsDescendants = true,
@@ -526,8 +529,8 @@ function Library:CreateWindow(config)
     })
     local topBar = new("Frame", {
         Parent = self._contentBg,
-        Size = UDim2.new(1, -4, 0, topBarHeight),
-        Position = UDim2.new(0, 2, 0, 2),
+        Size = UDim2.new(1, -6, 0, topBarHeight),
+        Position = UDim2.new(0, 3, 0, 2),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ZIndex = 5
@@ -616,7 +619,7 @@ function Library:CreateWindow(config)
             Active = true,
             ZIndex = 50
         })
-        new("UICorner", {Parent = icon, CornerRadius = UDim.new(0, 10)})
+        new("UICorner", {Parent = icon, CornerRadius = UDim.new(0, 12)})
         new("UIStroke", {Parent = icon, Color = colors.primary, Thickness = 1.5})
         
         local textLabel = new("TextLabel", {
@@ -799,30 +802,29 @@ function Library:CreateWindow(config)
 end
 
 function Library:_createSearchBar()
-    local searchW = sidebarWidth - 12
-    local searchH = 22
+    local searchW = sidebarWidth - 14
+    local searchH = 26
     local searchContainer = new("Frame", {
         Parent = self._sidebar,
         Size = UDim2.new(0, searchW, 0, searchH),
-        Position = UDim2.new(0, 6, 0, 6),
+        Position = UDim2.new(0, 7, 0, 8),
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = sectionTransparency,
         BorderSizePixel = 0,
         ZIndex = 7,
         Name = "SearchBar"
     })
-    new("UICorner", {Parent = searchContainer, CornerRadius = UDim.new(0, 6)})
+    new("UICorner", {Parent = searchContainer, CornerRadius = UDim.new(0, 8)})
     local searchStroke = new("UIStroke", {
         Parent = searchContainer,
         Color = colors.border,
         Thickness = 1,
         Transparency = 0.4
     })
-    -- Menghapus Logo QR / Icon di Search Feature, TextBox digeser sepenuhnya ke kiri
     local searchBox = new("TextBox", {
         Parent = searchContainer,
-        Size = UDim2.new(1, -20, 1, 0),
-        Position = UDim2.new(0, 8, 0, 0),
+        Size = UDim2.new(1, -22, 1, 0),
+        Position = UDim2.new(0, 10, 0, 0),
         BackgroundTransparency = 1,
         Text = "",
         PlaceholderText = "Search feature...",
@@ -865,11 +867,11 @@ function Library:_createSearchBar()
             line.BackgroundColor3 = c
         end
     end
-    local ROW_H, ROW_GAP, LIST_PAD, MAX_PANEL_H = 32, 3, 4, 168
+    local ROW_H, ROW_GAP, LIST_PAD, MAX_PANEL_H = 32, 4, 4, 168
     local resultsPanel = new("Frame", {
         Parent = self._win,
         Size = UDim2.new(0, searchW, 0, ROW_H + LIST_PAD * 2),
-        Position = UDim2.new(0, 6, 0, headerHeight + searchH + 9),
+        Position = UDim2.new(0, 7, 0, headerHeight + searchH + 11),
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = panelTransparency,
         BorderSizePixel = 0,
@@ -877,7 +879,7 @@ function Library:_createSearchBar()
         ZIndex = 60,
         Name = "SearchResults"
     })
-    new("UICorner", {Parent = resultsPanel, CornerRadius = UDim.new(0, 6)})
+    new("UICorner", {Parent = resultsPanel, CornerRadius = UDim.new(0, 8)})
     new("UIStroke", {Parent = resultsPanel, Color = colors.border, Thickness = 1, Transparency = 0.35})
     local resultsList = new("ScrollingFrame", {
         Parent = resultsPanel,
@@ -965,7 +967,7 @@ function Library:_createSearchBar()
             Visible = false,
             ZIndex = 62
         })
-        new("UICorner", {Parent = row, CornerRadius = UDim.new(0, 5)})
+        new("UICorner", {Parent = row, CornerRadius = UDim.new(0, 6)})
         local accent = new("Frame", {
             Parent = row,
             Size = UDim2.new(0, 3, 1, -8),
@@ -1115,12 +1117,13 @@ function Library:CreatePage(name, title, imageId, order)
         ScrollingDirection = Enum.ScrollingDirection.Y,
         ZIndex = 5
     })
-    new("UIListLayout", {Parent = contentContainer, Padding = UDim.new(0, 3), SortOrder = Enum.SortOrder.LayoutOrder})
-    new("UIPadding", {Parent = contentContainer, PaddingTop = UDim.new(0, 2), PaddingBottom = UDim.new(0, 2), PaddingRight = UDim.new(0, 4)})
+    new("UIListLayout", {Parent = contentContainer, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})
+    new("UIPadding", {Parent = contentContainer, PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
     self.pages[name] = {frame = page, title = title, content = contentContainer}
+    
     local btn = new("TextButton", {
         Parent = self._navContainer,
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
@@ -1129,7 +1132,7 @@ function Library:CreatePage(name, title, imageId, order)
         LayoutOrder = order or 999,
         ZIndex = 6
     })
-    new("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 6)})
+    new("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 8)})
     local indicator = new("Frame", {
         Parent = btn,
         Size = UDim2.new(0, 3, 0, 16),
@@ -1143,8 +1146,8 @@ function Library:CreatePage(name, title, imageId, order)
     new("ImageLabel", {
         Parent = btn,
         Image = imageId or "",
-        Size = UDim2.new(0, 15, 0, 15),
-        Position = UDim2.new(0, 8, 0.5, -7),
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0, 10, 0.5, -8),
         BackgroundTransparency = 1,
         ImageColor3 = colors.textDim,
         ZIndex = 7,
@@ -1153,8 +1156,8 @@ function Library:CreatePage(name, title, imageId, order)
     new("TextLabel", {
         Parent = btn,
         Text = name,
-        Size = UDim2.new(1, -35, 1, 0),
-        Position = UDim2.new(0, 28, 0, 0),
+        Size = UDim2.new(1, -36, 1, 0),
+        Position = UDim2.new(0, 32, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.normal,
@@ -1163,6 +1166,20 @@ function Library:CreatePage(name, title, imageId, order)
         ZIndex = 7,
         Name = "Label"
     })
+    
+    -- Efek hover fluid untuk navigasi sidebar
+    self:AddConnection("navHoverIn_" .. name, btn.MouseEnter:Connect(function()
+        if self._currentPage ~= name then
+            btn.BackgroundColor3 = colors.bg3
+            btn.BackgroundTransparency = 0.5
+        end
+    end))
+    self:AddConnection("navHoverOut_" .. name, btn.MouseLeave:Connect(function()
+        if self._currentPage ~= name then
+            btn.BackgroundTransparency = 1
+        end
+    end))
+
     self._navButtons[name] = {btn = btn, indicator = indicator, page = page, title = title}
     self:AddConnection("navBtn_" .. name, btn.MouseButton1Click:Connect(function()
         self:_switchPage(name)
@@ -1181,7 +1198,7 @@ function Library:_switchPage(pageName)
     end
     for name, data in pairs(self._navButtons) do
         local isActive = name == pageName
-        data.btn.BackgroundColor3 = isActive and colors.bg2 or colors.bg2
+        data.btn.BackgroundColor3 = colors.bg2
         data.btn.BackgroundTransparency = isActive and sectionTransparency or 1
         local icon = data.btn:FindFirstChild("Icon")
         if icon then
@@ -1214,7 +1231,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         ClipsDescendants = false,
         ZIndex = 6
     })
-    new("UICorner", {Parent = categoryFrame, CornerRadius = UDim.new(0, 6)})
+    new("UICorner", {Parent = categoryFrame, CornerRadius = UDim.new(0, 8)})
     local categoryLayout = new("UIListLayout", {
         Parent = categoryFrame,
         Padding = UDim.new(0, 0),
@@ -1233,7 +1250,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         Parent = header,
         Text = title,
         Size = UDim2.new(1, -32, 1, 0),
-        Position = UDim2.new(0, 10, 0, 0),
+        Position = UDim2.new(0, 12, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.normal,
@@ -1245,7 +1262,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         Parent = header,
         Text = "▼",
         Size = UDim2.new(0, 18, 1, 0),
-        Position = UDim2.new(1, -24, 0, 0),
+        Position = UDim2.new(1, -26, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
@@ -1282,9 +1299,9 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         Parent = contentContainer,
         PaddingLeft = UDim.new(0, 10),
         PaddingRight = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 6)
+        PaddingBottom = UDim.new(0, 8)
     })
-    local contentListLayout = new("UIListLayout", {Parent = contentContainer, Padding = UDim.new(0, 3), SortOrder = Enum.SortOrder.LayoutOrder})
+    local contentListLayout = new("UIListLayout", {Parent = contentContainer, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})
     local isOpen = startOpen
     arrow.Rotation = startOpen and 180 or 0
     local function updateCategoryHeight()
@@ -1292,7 +1309,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         local h = sectionHeaderHeight
         local contentH = 0
         if isOpen and contentWrapper.Visible then
-            contentH = contentListLayout.AbsoluteContentSize.Y + 6
+            contentH = contentListLayout.AbsoluteContentSize.Y + 8
             if isLocked and contentH < 80 then
                 contentH = 80
             end
@@ -1356,7 +1373,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
 end
 
 function Library:CreateToggle(parent, label, configPath, callback, disableSave, defaultValue)
-    local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ZIndex = 7})
+    local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
         Text = label,
@@ -1370,8 +1387,8 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     })
     local toggleBg = new("Frame", {
         Parent = frame,
-        Size = UDim2.new(0, 34, 0, 18),
-        Position = UDim2.new(1, -34, 0.5, -9),
+        Size = UDim2.new(0, 36, 0, 20),
+        Position = UDim2.new(1, -36, 0.5, -10),
         BackgroundColor3 = colors.bg3,
         BorderSizePixel = 0,
         ZIndex = 8
@@ -1379,8 +1396,8 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     new("UICorner", {Parent = toggleBg, CornerRadius = UDim.new(1, 0)})
     local toggleCircle = new("Frame", {
         Parent = toggleBg,
-        Size = UDim2.new(0, 14, 0, 14),
-        Position = UDim2.new(0, 2, 0.5, -7),
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0, 2, 0.5, -8),
         BackgroundColor3 = colors.textDim,
         BorderSizePixel = 0,
         ZIndex = 9
@@ -1393,7 +1410,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     end
     local function updateVisual()
         toggleBg.BackgroundColor3 = on and colors.primary or colors.bg3
-        toggleCircle.Position = on and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+        toggleCircle.Position = on and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         toggleCircle.BackgroundColor3 = on and colors.bg1 or colors.textDim
     end
     updateVisual()
@@ -1434,12 +1451,12 @@ end
 function Library:CreateButton(parent, label, callback)
     local btnFrame = new("Frame", {
         Parent = parent,
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ZIndex = 8
     })
-    new("UICorner", {Parent = btnFrame, CornerRadius = UDim.new(0, 6)})
+    new("UICorner", {Parent = btnFrame, CornerRadius = UDim.new(0, 8)})
     local button = new("TextButton", {
         Parent = btnFrame,
         Size = UDim2.new(1, 0, 1, 0),
@@ -1452,7 +1469,7 @@ function Library:CreateButton(parent, label, callback)
         AutoButtonColor = true,
         ZIndex = 9
     })
-    new("UICorner", {Parent = button, CornerRadius = UDim.new(0, 6)})
+    new("UICorner", {Parent = button, CornerRadius = UDim.new(0, 8)})
 
     local isClicking = false
 
@@ -1513,20 +1530,19 @@ function Library:MakeNotify(config)
         end)
     end
     
-    -- Background notifikasi diubah menjadi hitam solid dengan sudut lembut
     local notif = new("Frame", {
         Parent = self._gui,
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(1, -20, 1, -20),
         AnchorPoint = Vector2.new(1, 1),
         AutomaticSize = Enum.AutomaticSize.XY,
-        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+        BackgroundColor3 = Color3.fromRGB(12, 12, 12),
         BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
         ZIndex = 200
     })
-    new("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 8)})
-    new("UIStroke", {Parent = notif, Color = colors.border, Thickness = 1, Transparency = 0.5})
+    new("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 10)})
+    new("UIStroke", {Parent = notif, Color = colors.border, Thickness = 1, Transparency = 0.4})
     
     table.insert(self._activeNotifs, notif)
 
@@ -1549,9 +1565,9 @@ function Library:MakeNotify(config)
     
     new("UIPadding", {
         Parent = textContainer,
-        PaddingTop = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 10),
-        PaddingRight = UDim.new(0, 15)
+        PaddingTop = UDim.new(0, 12),
+        PaddingBottom = UDim.new(0, 12),
+        PaddingRight = UDim.new(0, 16)
     })
 
     new("UIListLayout", {

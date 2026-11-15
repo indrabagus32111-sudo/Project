@@ -476,7 +476,7 @@ function Library:CreateWindow(config)
     new("TextLabel", {
         Parent = scriptHeader,
         Text = subtitle,
-        Size = UDim2.new(0, 180, 1, 0),
+        Size = UDim2.new(0, 145, 1, 0),
         Position = UDim2.new(0, 142, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
@@ -487,10 +487,65 @@ function Library:CreateWindow(config)
         ZIndex = 6
     })
 
-    local btnMinHeader = new("TextButton", {
+    local btnCloseHeader = new("TextButton", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 24, 0, 24),
         Position = UDim2.new(1, -30, 0.5, 0),
+        AnchorPoint = Vector2.new(0, 0.5),
+        BackgroundColor3 = colors.bg2,
+        BackgroundTransparency = sectionTransparency,
+        BorderSizePixel = 0,
+        Text = "",
+        AutoButtonColor = false,
+        ZIndex = 7
+    })
+    new("UICorner", {Parent = btnCloseHeader, CornerRadius = UDim.new(0, 6)})
+    local btnCloseStroke = new("UIStroke", {
+        Parent = btnCloseHeader,
+        Color = colors.border,
+        Thickness = 1,
+        Transparency = 0.4
+    })
+    
+    local closeLine1 = new("Frame", {
+        Parent = btnCloseHeader,
+        Size = UDim2.new(0, 10, 0, 2),
+        Position = UDim2.new(0.5, -5, 0.5, -1),
+        Rotation = 45,
+        BackgroundColor3 = colors.text,
+        BorderSizePixel = 0,
+        ZIndex = 8
+    })
+    new("UICorner", {Parent = closeLine1, CornerRadius = UDim.new(1, 0)})
+    local closeLine2 = new("Frame", {
+        Parent = btnCloseHeader,
+        Size = UDim2.new(0, 10, 0, 2),
+        Position = UDim2.new(0.5, -5, 0.5, -1),
+        Rotation = -45,
+        BackgroundColor3 = colors.text,
+        BorderSizePixel = 0,
+        ZIndex = 8
+    })
+    new("UICorner", {Parent = closeLine2, CornerRadius = UDim.new(1, 0)})
+
+    local function setCloseHover(hovering)
+        btnCloseHeader.BackgroundColor3 = hovering and Color3.fromRGB(220, 40, 40) or colors.bg2
+        btnCloseStroke.Color = hovering and Color3.fromRGB(255, 80, 80) or colors.border
+        btnCloseStroke.Transparency = hovering and 0.1 or 0.4
+    end
+    self:AddConnection("closeHoverIn", btnCloseHeader.MouseEnter:Connect(function() setCloseHover(true) end))
+    self:AddConnection("closeHoverOut", btnCloseHeader.MouseLeave:Connect(function() setCloseHover(false) end))
+    
+    self:AddConnection("closeBtn", btnCloseHeader.MouseButton1Click:Connect(function()
+        if self._gui then
+            pcall(function() self._gui:Destroy() end)
+        end
+    end))
+
+    local btnMinHeader = new("TextButton", {
+        Parent = scriptHeader,
+        Size = UDim2.new(0, 24, 0, 24),
+        Position = UDim2.new(1, -58, 0.5, 0),
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = sectionTransparency,
@@ -1418,7 +1473,8 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
             toggleCircle.BackgroundColor3 = targetCircleColor
         else
             TweenService:Create(toggleBg, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = targetColor}):Play()
-            TweenService:Create(toggleCircle, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = targetPos, BackgroundColor3 = targetCircleColor}):Play()
+            TweenService:Create(toggleCircle, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = targetPos}):Play()
+            TweenService:Create(toggleCircle, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = targetCircleColor}):Play()
         end
     end
     updateVisual(true)
@@ -1714,7 +1770,7 @@ function Library:_createConfigTab(WindowObject)
                 if resetThread then task.cancel(resetThread) end
                 resetConfirm = false
                 local btn = resetBtnFrame:FindFirstChildWhichIsA("TextButton")
-                if btn then btn.Text = "Reset to Default" end
+                if btn then b.Text = "Reset to Default" end
                 setBtnColor(resetBtnFrame, colors.primary)
                 Library.ConfigSystem.Reset()
                 ExecuteConfigCallbacks()
@@ -1853,6 +1909,7 @@ function Library:Window(config)
             function SectionObject:AddButton(buttonConfig)
                 buttonConfig = buttonConfig or {}
                 local title    = buttonConfig.Title or "Button"
+                string.gsub(title, "", "")
                 local callback = buttonConfig.Callback or function() end
                 local frame = self._library:CreateButton(self._container, title, callback)
                 if frame then 

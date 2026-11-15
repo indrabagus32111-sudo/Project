@@ -536,10 +536,99 @@ function Library:CreateWindow(config)
     self:AddConnection("closeHoverIn", btnCloseHeader.MouseEnter:Connect(function() setCloseHover(true) end))
     self:AddConnection("closeHoverOut", btnCloseHeader.MouseLeave:Connect(function() setCloseHover(false) end))
     
+    -- Tombol X dengan pilihan Iya atau Tidak (Konfirmasi)
     self:AddConnection("closeBtn", btnCloseHeader.MouseButton1Click:Connect(function()
-        if self._gui then
+        if not self._gui then return end
+        if self._gui:FindFirstChild("CloseConfirmationOverlay") then return end
+
+        local overlay = new("Frame", {
+            Name = "CloseConfirmationOverlay",
+            Parent = self._gui,
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+            BackgroundTransparency = 0.5,
+            BorderSizePixel = 0,
+            ZIndex = 300
+        })
+
+        local dialog = new("Frame", {
+            Parent = overlay,
+            Size = UDim2.new(0, 260, 0, 130),
+            Position = UDim2.new(0.5, -130, 0.5, -65),
+            BackgroundColor3 = colors.bg1,
+            BackgroundTransparency = 0.05,
+            BorderSizePixel = 0,
+            ZIndex = 301
+        })
+        new("UICorner", {Parent = dialog, CornerRadius = UDim.new(0, 10)})
+        new("UIStroke", {Parent = dialog, Color = colors.border, Thickness = 1.2, Transparency = 0.3})
+
+        new("TextLabel", {
+            Parent = dialog,
+            Text = "Konfirmasi Keluar",
+            Size = UDim2.new(1, -20, 0, 24),
+            Position = UDim2.new(0, 10, 0, 12),
+            BackgroundTransparency = 1,
+            Font = Enum.Font.GothamBold,
+            TextSize = 14,
+            TextColor3 = colors.primary,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            ZIndex = 302
+        })
+
+        new("TextLabel", {
+            Parent = dialog,
+            Text = "Apakah kamu yakin ingin menutup UI ini?",
+            Size = UDim2.new(1, -30, 0, 36),
+            Position = UDim2.new(0, 15, 0, 42),
+            BackgroundTransparency = 1,
+            Font = Enum.Font.GothamMedium,
+            TextSize = 12,
+            TextColor3 = colors.text,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            TextWrapped = true,
+            ZIndex = 302
+        })
+
+        local btnYes = new("TextButton", {
+            Parent = dialog,
+            Size = UDim2.new(0.5, -14, 0, 28),
+            Position = UDim2.new(0, 10, 1, -38),
+            BackgroundColor3 = Color3.fromRGB(220, 40, 40),
+            BackgroundTransparency = 0.1,
+            BorderSizePixel = 0,
+            Text = "Iya",
+            Font = Enum.Font.GothamBold,
+            TextSize = 12,
+            TextColor3 = colors.text,
+            AutoButtonColor = true,
+            ZIndex = 302
+        })
+        new("UICorner", {Parent = btnYes, CornerRadius = UDim.new(0, 6)})
+
+        local btnNo = new("TextButton", {
+            Parent = dialog,
+            Size = UDim2.new(0.5, -14, 0, 28),
+            Position = UDim2.new(0.5, 4, 1, -38),
+            BackgroundColor3 = colors.bg3,
+            BackgroundTransparency = 0.1,
+            BorderSizePixel = 0,
+            Text = "Tidak",
+            Font = Enum.Font.GothamBold,
+            TextSize = 12,
+            TextColor3 = colors.text,
+            AutoButtonColor = true,
+            ZIndex = 302
+        })
+        new("UICorner", {Parent = btnNo, CornerRadius = UDim.new(0, 6)})
+
+        btnYes.MouseButton1Click:Connect(function()
             pcall(function() self._gui:Destroy() end)
-        end
+        end)
+
+        btnNo.MouseButton1Click:Connect(function()
+            pcall(function() overlay:Destroy() end)
+        end)
     end))
 
     local btnMinHeader = new("TextButton", {

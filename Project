@@ -1281,6 +1281,20 @@ function Library:CreatePage(name, title, imageId, order)
         LayoutOrder = order or 999,
         ZIndex = 6
     })
+    
+    -- Garis Indikator di samping kiri tab
+    local activeIndicator = new("Frame", {
+        Name = "ActiveIndicator",
+        Parent = btn,
+        Size = UDim2.new(0, 3, 0, 16),
+        Position = UDim2.new(0, 0, 0.5, -8),
+        BackgroundColor3 = colors.primary,
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ZIndex = 8
+    })
+    new("UICorner", {Parent = activeIndicator, CornerRadius = UDim.new(1, 0)})
+
     new("ImageLabel", {
         Parent = btn,
         Image = imageId or "",
@@ -1350,6 +1364,10 @@ function Library:_switchPage(pageName)
         local label = data.btn:FindFirstChild("Label")
         if label then
             label.TextColor3 = isActive and colors.primary or colors.textDim
+        end
+        local indicator = data.btn:FindFirstChild("ActiveIndicator")
+        if indicator then
+            indicator.BackgroundTransparency = isActive and 0 or 1
         end
     end
     if self.pages[pageName] then
@@ -1683,10 +1701,10 @@ function Library:MakeNotify(config)
         end)
     end
     
-    -- Notifikasi dipendekkan (padding lebih tipis) namun tetap menggunakan AutomaticSize
+    -- Lebar notifikasi diperkecil dari 280 menjadi 240
     local notif = new("Frame", {
         Parent = self._gui,
-        Size = UDim2.new(0, 280, 0, 0),
+        Size = UDim2.new(0, 240, 0, 0),
         Position = UDim2.new(1, -25, 1, -25),
         AnchorPoint = Vector2.new(1, 1),
         AutomaticSize = Enum.AutomaticSize.XY,
@@ -1746,7 +1764,7 @@ function Library:MakeNotify(config)
             LayoutOrder = 1,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(250, 9999) })
+        new("UISizeConstraint", { Parent = tLbl, MaxSize = Vector2.new(210, 9999) })
     end
     
     if desc and desc ~= "" then
@@ -1764,7 +1782,7 @@ function Library:MakeNotify(config)
             LayoutOrder = 2,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(250, 9999) })
+        new("UISizeConstraint", { Parent = dLbl, MaxSize = Vector2.new(210, 9999) })
     end
 
     if content and content ~= "" then
@@ -1782,7 +1800,7 @@ function Library:MakeNotify(config)
             LayoutOrder = 3,
             ZIndex = 201
         })
-        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(250, 9999) })
+        new("UISizeConstraint", { Parent = cLbl, MaxSize = Vector2.new(210, 9999) })
     end
 
     task.delay(delay, function()

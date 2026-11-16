@@ -13,8 +13,8 @@ Library._connections = {}
 Library._searchIndex = {}
 Library._saveThread = nil
 Library._initialized = false
-local CONFIG_FOLDER    = "LynxGUI_Configs"
-local CONFIG_FILE      = CONFIG_FOLDER .. "/lynx_config.json"
+local CONFIG_FOLDER    = "SukiGUI_Configs"
+local CONFIG_FILE      = CONFIG_FOLDER .. "/suki_config.json"
 local CurrentConfig    = {}
 local DefaultConfig    = {}
 local isDirty          = false
@@ -44,17 +44,7 @@ local colors = {
 }
 
 local function platformFromConfig()
-    local ok, choice = pcall(function()
-        if not (isfile and readfile and isfile(CONFIG_FILE)) then return nil end
-        local cfg = HttpService:JSONDecode(readfile(CONFIG_FILE))
-        local toggles = type(cfg) == "table" and cfg.Toggles
-        local drops = type(cfg) == "table" and cfg.Dropdowns
-        if type(toggles) == "table" and toggles.Enable_Switch_Platform == true and type(drops) == "table" then
-            return drops.Platform
-        end
-        return nil
-    end)
-    return ok and choice or nil
+    return nil
 end
 local spoofedPlatform = platformFromConfig()
 local isMobile
@@ -138,10 +128,6 @@ function Library:AddConnection(name, connection)
 end
 
 function Library:Cleanup()
-    if isDirty then
-        pcall(function() Library.ConfigSystem.Save() end)
-        isDirty = false
-    end
     if self._connections then
         for _, conn in pairs(self._connections) do
             pcall(function() conn:Disconnect() end)
@@ -209,30 +195,16 @@ function Library.ConfigSystem.SetDefaults(defaults)
     DefaultConfig = DeepCopy(defaults)
 end
 function Library.ConfigSystem.Save()
-    local ok = pcall(function()
-        EnsureFolderExists()
-        local encoded = HttpService:JSONEncode(CurrentConfig)
-        writefile(CONFIG_FILE, encoded)
-    end)
-    return ok
+    -- Disabled auto-save / persistence across executions
+    return true
 end
 function Library.ConfigSystem.Load()
     EnsureFolderExists()
-    CurrentConfig = DeepCopy(DefaultConfig)
+    -- Reset config from beginning on every execution, delete old config file if exists
     if isfile(CONFIG_FILE) then
-        local ok = pcall(function()
-            local raw = readfile(CONFIG_FILE)
-            if not raw or raw == "" then return end
-            local loaded = HttpService:JSONDecode(raw)
-            if type(loaded) == "table" then
-                MergeTables(CurrentConfig, loaded)
-            end
-        end)
-        if not ok then
-            pcall(function() delfile(CONFIG_FILE) end)
-            CurrentConfig = DeepCopy(DefaultConfig)
-        end
+        pcall(function() delfile(CONFIG_FILE) end)
     end
+    CurrentConfig = DeepCopy(DefaultConfig)
     return CurrentConfig
 end
 function Library.ConfigSystem.Get(path, default)
@@ -257,7 +229,6 @@ function Library.ConfigSystem.Set(path, value)
 end
 function Library.ConfigSystem.Reset()
     CurrentConfig = DeepCopy(DefaultConfig)
-    Library.ConfigSystem.Save()
 end
 function Library.ConfigSystem.Delete()
     if isfile(CONFIG_FILE) then
@@ -266,21 +237,7 @@ function Library.ConfigSystem.Delete()
 end
 
 local function MarkDirty()
-    if _G.AutoSaveEnabled == false then return end
-    isDirty = true
-    if Library._saveThread then
-        pcall(function() task.cancel(Library._saveThread) end)
-        Library._saveThread = nil
-    end
-    Library._saveThread = task.delay(2, function()
-        if not isDirty then
-            Library._saveThread = nil
-            return
-        end
-        pcall(function() Library.ConfigSystem.Save() end)
-        isDirty = false
-        Library._saveThread = nil
-    end)
+    -- No auto-save on execute
 end
 
 local function RegisterCallback(configPath, callback, componentType, defaultValue, updateVisualFn)
@@ -314,15 +271,12 @@ local function ExecuteConfigCallbacks()
     runCallbacks(true)
 end
 
-_G.AutoSaveEnabled = true
+_G.AutoSaveEnabled = false
 function _G.GetConfigValue(key, default)
     return Library.ConfigSystem.Get(key, default)
 end
 function _G.SaveConfigValue(key, value)
     Library.ConfigSystem.Set(key, value)
-    if _G.AutoSaveEnabled then
-        MarkDirty()
-    end
 end
 function _G.GetFullConfig()
     return CurrentConfig
@@ -330,8 +284,8 @@ end
 
 function Library:CreateWindow(config)
     config = config or {}
-    local name = config.Name or "LynxGUI"
-    local title = config.Title or "LynX"
+    local name = config.Name or "SukiGUI"
+    local title = config.Title or "Suki"
     local subtitle = config.Subtitle or ""
     local defaultLogo = config.Logo or "rbxassetid://6031091004"
 
@@ -1616,6 +1570,173 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     return toggleController
 end
 
+-- Slider System with Manual Editing & Yellow Theme
+function Library:CreateSlider(parent, label, min, max, default, increment, configPath, callback, disableSave)
+    min = min or 0
+    max = max or 100
+    increment = increment or 1
+    local initialValue = default or min
+    if configPath and not disableSave then
+        initialValue = Library.ConfigSystem.Get(configPath, initialValue)
+    end
+    initialValue = math.clamp(initialValue, min, max)
+
+    local frame = new("Frame", {
+        Parent = parent,
+        Size = UDim2.new(1, 0, 0, 46),
+        BackgroundTransparency = 1,
+        ZIndex = 7
+    })
+
+    new("TextLabel", {
+        Parent = frame,
+        Text = label,
+        Size = UDim2.new(1, -65, 0, 20),
+        Position = UDim2.new(0, 0, 0, 2),
+        BackgroundTransparency = 1,
+        TextColor3 = colors.text,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Font = Enum.Font.GothamBold,
+        TextSize = fontSize.small,
+        ZIndex = 8
+    })
+
+    local valueBoxBg = new("Frame", {
+        Parent = frame,
+        Size = UDim2.new(0, 55, 0, 20),
+        Position = UDim2.new(1, -55, 0, 2),
+        BackgroundColor3 = colors.bg3,
+        BackgroundTransparency = panelTransparency,
+        BorderSizePixel = 0,
+        ZIndex = 8
+    })
+    new("UICorner", {Parent = valueBoxBg, CornerRadius = UDim.new(0, 4)})
+    new("UIStroke", {Parent = valueBoxBg, Color = colors.border, Thickness = 1, Transparency = 0.5})
+
+    local valueBox = new("TextBox", {
+        Parent = valueBoxBg,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = tostring(initialValue),
+        Font = Enum.Font.GothamBold,
+        TextSize = fontSize.small,
+        TextColor3 = colors.primary,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        ClearTextOnFocus = false,
+        ZIndex = 9
+    })
+
+    local track = new("Frame", {
+        Parent = frame,
+        Size = UDim2.new(1, 0, 0, 6),
+        Position = UDim2.new(0, 0, 0, 30),
+        BackgroundColor3 = colors.bg3,
+        BorderSizePixel = 0,
+        ZIndex = 8
+    })
+    new("UICorner", {Parent = track, CornerRadius = UDim.new(1, 0)})
+
+    local fill = new("Frame", {
+        Parent = track,
+        Size = UDim2.new((initialValue - min) / (max - min), 0, 1, 0),
+        BackgroundColor3 = colors.primary,
+        BorderSizePixel = 0,
+        ZIndex = 9
+    })
+    new("UICorner", {Parent = fill, CornerRadius = UDim.new(1, 0)})
+
+    local thumb = new("Frame", {
+        Parent = track,
+        Size = UDim2.new(0, 12, 0, 12),
+        Position = UDim2.new((initialValue - min) / (max - min), -6, 0.5, -6),
+        BackgroundColor3 = colors.text,
+        BorderSizePixel = 0,
+        ZIndex = 10
+    })
+    new("UICorner", {Parent = thumb, CornerRadius = UDim.new(1, 0)})
+
+    local currentValue = initialValue
+
+    local function updateValue(val, fireCallback)
+        val = math.clamp(val, min, max)
+        val = math.round((val - min) / increment) * increment + min
+        val = tonumber(string.format("%.4g", val))
+
+        currentValue = val
+        valueBox.Text = tostring(val)
+
+        local percent = math.clamp((val - min) / (max - min), 0, 1)
+        fill.Size = UDim2.new(percent, 0, 1, 0)
+        thumb.Position = UDim2.new(percent, -6, 0.5, -6)
+
+        if configPath and not disableSave then
+            Library.ConfigSystem.Set(configPath, val)
+        end
+        if fireCallback and callback then
+            pcall(callback, val)
+        end
+    end
+
+    local dragging = false
+    local function updateInput(input)
+        local pos = input.Position.X
+        local trackPos = track.AbsolutePosition.X
+        local trackSize = track.AbsoluteSize.X
+        if trackSize <= 0 then return end
+        local percent = math.clamp((pos - trackPos) / trackSize, 0, 1)
+        local val = min + (max - min) * percent
+        updateValue(val, true)
+    end
+
+    self:AddConnection("sliderInputBegan_" .. label, track.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            updateInput(input)
+        end
+    end))
+
+    self:AddConnection("sliderInputChanged_" .. label, UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            updateInput(input)
+        end
+    end))
+
+    self:AddConnection("sliderInputEnded_" .. label, UserInputService.InputEnded:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            dragging = false
+        end
+    end))
+
+    self:AddConnection("sliderFocusLost_" .. label, valueBox.FocusLost:Connect(function()
+        local num = tonumber(valueBox.Text)
+        if num then
+            updateValue(num, true)
+        else
+            valueBox.Text = tostring(currentValue)
+        end
+    end))
+
+    if configPath and not disableSave then
+        RegisterCallback(configPath, callback, "slider", default or min, function(val)
+            updateValue(val, false)
+        end)
+    end
+
+    if callback then
+        callback(currentValue)
+    end
+
+    return {
+        frame = frame,
+        SetValue = function(val)
+            updateValue(val, true)
+        end,
+        GetValue = function()
+            return currentValue
+        end
+    }
+end
+
 -- Dropdown System
 Library._dropdownOverlay = nil
 Library._dropdownPanel = nil
@@ -2103,7 +2224,6 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
         rebuildSelectedSet()
         if configPath then
             Library.ConfigSystem.Set(configPath, Value)
-            MarkDirty()
         end
         updateClosedLabel()
         if isOpen then refreshVisible() end
@@ -2156,7 +2276,6 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
         if isOpen then refreshVisible() end
         if configPath then
             Library.ConfigSystem.Set(configPath, DropdownFunc.Value)
-            MarkDirty()
         end
     end
 
@@ -2282,7 +2401,6 @@ function Library:CreateInput(parent, label, configPath, defaultValue, callback)
         local value = resolveValue(rawValue)
         if configPath then
             Library.ConfigSystem.Set(configPath, value)
-            MarkDirty()
         end
         if callback then callback(value) end
     end))
@@ -2361,7 +2479,6 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
                 
                 if configPath then
                     Library.ConfigSystem.Set(configPath, kName)
-                    MarkDirty()
                 end
                 if callback then callback(kName) end
             end
@@ -2426,16 +2543,6 @@ function Library:Initialize()
     if self._initialized then return end
     self._initialized = true
     ExecuteConfigCallbacks()
-    self:AddConnection("playerRemoving", Players.PlayerRemoving:Connect(function(plr)
-        if plr == localPlayer then
-            if Library._saveThread then
-                pcall(function() task.cancel(Library._saveThread) end)
-                Library._saveThread = nil
-            end
-            isDirty = false
-            pcall(function() Library.ConfigSystem.Save() end)
-        end
-    end))
 end
 
 function Library:MakeNotify(config)
@@ -2576,8 +2683,8 @@ end
 function Library:Window(config)
     config = config or {}
     local winObj = self:CreateWindow({
-        Name     = "LynxGui",
-        Title    = config.Title or "LynX",
+        Name     = "SukiGui",
+        Title    = config.Title or "Suki",
         Subtitle = config.Footer or "",
         Logo     = config.Logo or "rbxassetid://6031091004"
     })
@@ -2703,6 +2810,25 @@ function Library:Window(config)
                 end
                 return toggleObj
             end
+            
+            function SectionObject:AddSlider(sliderConfig)
+                sliderConfig = sliderConfig or {}
+                local title      = sliderConfig.Title or "Slider"
+                local min        = sliderConfig.Min or 0
+                local max        = sliderConfig.Max or 100
+                local default    = sliderConfig.Default or min
+                local increment  = sliderConfig.Increment or 1
+                local callback   = sliderConfig.Callback
+                local noSave     = sliderConfig.NoSave or false
+                local configPath = noSave and nil or ("Sliders." .. title:gsub("%s+", "_"))
+
+                local sliderObj = self._library:CreateSlider(self._container, title, min, max, default, increment, configPath, callback, noSave)
+                local frame = sliderObj and sliderObj.frame or sliderObj
+                if frame then frame.LayoutOrder = getNextLayoutOrder() end
+                registerFeature(title, frame, "Slider")
+                return sliderObj
+            end
+
             function SectionObject:AddDropdown(dropdownConfig)
                 dropdownConfig = dropdownConfig or {}
                 local title      = dropdownConfig.Title or "Dropdown"

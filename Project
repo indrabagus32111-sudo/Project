@@ -176,16 +176,6 @@ local function DeepCopy(original, _seen)
     return copy
 end
 
-local function MergeTables(target, source)
-    for k, v in pairs(source) do
-        if type(v) == "table" and type(target[k]) == "table" then
-            MergeTables(target[k], v)
-        else
-            target[k] = v
-        end
-    end
-end
-
 local function EnsureFolderExists()
     if not isfolder(CONFIG_FOLDER) then makefolder(CONFIG_FOLDER) end
 end
@@ -195,12 +185,11 @@ function Library.ConfigSystem.SetDefaults(defaults)
     DefaultConfig = DeepCopy(defaults)
 end
 function Library.ConfigSystem.Save()
-    -- Disabled auto-save / persistence across executions
     return true
 end
 function Library.ConfigSystem.Load()
     EnsureFolderExists()
-    -- Reset config from beginning on every execution, delete old config file if exists
+    -- Hapus config lama setiap kali script dieksekute ulang agar data tereset bersih
     if isfile(CONFIG_FILE) then
         pcall(function() delfile(CONFIG_FILE) end)
     end
@@ -236,10 +225,6 @@ function Library.ConfigSystem.Delete()
     end
 end
 
-local function MarkDirty()
-    -- No auto-save on execute
-end
-
 local function RegisterCallback(configPath, callback, componentType, defaultValue, updateVisualFn)
     if not configPath then return end
     CallbackRegistry[configPath] = {
@@ -254,16 +239,18 @@ end
 local function ExecuteConfigCallbacks()
     for _, entry in pairs(CallbackRegistry) do
         if entry.updateVisual then
-            local value = Library.ConfigSystem.Get(entry.path, entry.default)
-            pcall(entry.updateVisual, value)
+            -- Paksa nilai ke default (false/off) saat inisialisasi ulang
+            local defVal = entry.type == "toggle" and false or entry.default
+            Library.ConfigSystem.Set(entry.path, defVal)
+            pcall(entry.updateVisual, defVal)
         end
     end
     local function runCallbacks(wantToggle)
         for _, entry in pairs(CallbackRegistry) do
             local isToggle = entry.type == "toggle"
             if entry.callback and isToggle == wantToggle then
-                local value = Library.ConfigSystem.Get(entry.path, entry.default)
-                pcall(entry.callback, value)
+                local defVal = entry.type == "toggle" and false or entry.default
+                pcall(entry.callback, defVal)
             end
         end
     end
@@ -1517,9 +1504,11 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     })
     new("UICorner", {Parent = toggleCircle, CornerRadius = UDim.new(1, 0)})
     local btn = new("TextButton", {Parent = toggleBg, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "", ZIndex = 10})
-    local on = defaultValue or false
+    -- Paksa default selalu false saat dieksekusi ulang
+    local on = false
     if configPath and not disableSave then
-        on = Library.ConfigSystem.Get(configPath, on)
+        Library.ConfigSystem.Set(configPath, false)
+        on = false
     end
     local function updateVisual(instant)
         local targetColor = on and colors.primary or colors.bg3
@@ -1541,13 +1530,12 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         updateVisual(false)
         if configPath and not disableSave then
             Library.ConfigSystem.Set(configPath, on)
-            MarkDirty()
         end
         self.flags[configPath or label] = on
         if callback then callback(on) end
     end))
     if configPath and not disableSave then
-        RegisterCallback(configPath, callback, "toggle", defaultValue or false, function(val)
+        RegisterCallback(configPath, callback, "toggle", false, function(val)
             on = val
             updateVisual(true)
             self.flags[configPath or label] = on
@@ -1561,7 +1549,6 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
             updateVisual(false)
             if configPath and not disableSave then
                 Library.ConfigSystem.Set(configPath, on)
-                MarkDirty()
             end
             Library.flags[configPath or label] = on
         end,
@@ -1570,7 +1557,6 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     return toggleController
 end
 
--- Slider System with Manual Editing & Yellow Theme
 function Library:CreateSlider(parent, label, min, max, default, increment, configPath, callback, disableSave)
     min = min or 0
     max = max or 100
@@ -1737,7 +1723,6 @@ function Library:CreateSlider(parent, label, min, max, default, increment, confi
     }
 end
 
--- Dropdown System
 Library._dropdownOverlay = nil
 Library._dropdownPanel = nil
 Library._dropdownFolder = nil
@@ -2789,7 +2774,7 @@ function Library:Window(config)
                 local callback   = toggleConfig.Callback
                 local noSave     = toggleConfig.NoSave or false
                 local configPath = noSave and nil or ("Toggles." .. title:gsub("%s+", "_"))
-                local toggleObj = { _value = default }
+                local toggleObj = { _value = false }
                 local wrappedCallback = function(val)
                     toggleObj._value = val
                     if callback then callback(val) end
@@ -3119,7 +3104,6 @@ function Library:Window(config)
     return WindowObject
 end
 
--- Feature HUD Manager
 Library.FeatureHUDManager = {}
 Library.FeatureHUDManager.Buttons = {}
 Library.FeatureHUDManager.Rows = {}

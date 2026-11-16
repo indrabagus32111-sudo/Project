@@ -25,7 +25,9 @@ local Translations = {
         none = "None",
         languageTitle = "Language / Bahasa",
         indonesian = "Indonesian",
-        english = "English"
+        english = "English",
+        langChangedTitle = "Bahasa Diubah",
+        langChangedDesc = "Bahasa diubah ke Indonesia."
     },
     en = {
         searchPlaceholder = "Search feature...",
@@ -41,7 +43,9 @@ local Translations = {
         none = "None",
         languageTitle = "Language / Bahasa",
         indonesian = "Indonesian",
-        english = "English"
+        english = "English",
+        langChangedTitle = "Language Changed",
+        langChangedDesc = "Language switched to English."
     }
 }
 
@@ -1219,8 +1223,8 @@ function Library:_createSearchBar()
 end
 
 function Library:CreatePage(name, title, imageId, order)
-    local resolvedTitle = getText(title)
-    local resolvedName = getText(name)
+    local resolvedTitle = tostring(title or "")
+    local resolvedName = tostring(name or "")
     local page = new("Frame", {
         Parent = self._contentBg,
         Size = UDim2.new(1, -12, 1, -(topBarHeight + 10)),
@@ -1320,11 +1324,11 @@ function Library:CreatePage(name, title, imageId, order)
 end
 
 function Library:SetFirstPage(name)
-    self:_switchPage(getText(name))
+    self:_switchPage(tostring(name or ""))
 end
 
 function Library:_switchPage(pageName)
-    local resolvedPageName = getText(pageName)
+    local resolvedPageName = tostring(pageName or "")
     if self._currentPage == resolvedPageName then return end
     for _, pageData in pairs(self.pages) do
         pageData.frame.Visible = false
@@ -1356,7 +1360,7 @@ end
 
 function Library:CreateCategory(parent, title, startOpen, isLocked)
     startOpen = startOpen == true
-    local resolvedTitle = getText(title)
+    local resolvedTitle = tostring(title or "")
     local categoryFrame = new("Frame", {
         Parent = parent,
         Size = UDim2.new(1, 0, 0, sectionHeaderHeight),
@@ -1513,7 +1517,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
 end
 
 function Library:CreateToggle(parent, label, configPath, callback, disableSave, defaultValue)
-    local resolvedLabel = getText(label)
+    local resolvedLabel = tostring(label or "")
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
@@ -1546,7 +1550,6 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     new("UICorner", {Parent = toggleCircle, CornerRadius = UDim.new(1, 0)})
     local btn = new("TextButton", {Parent = toggleBg, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "", ZIndex = 10})
     
-    -- Paksa default selalu false saat dieksekusi ulang
     local on = false
     if configPath and not disableSave then
         Library.ConfigSystem.Set(configPath, false)
@@ -1601,7 +1604,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
 end
 
 function Library:CreateSlider(parent, label, min, max, default, increment, configPath, callback, disableSave)
-    local resolvedLabel = getText(label)
+    local resolvedLabel = tostring(label or "")
     min = min or 0
     max = max or 100
     increment = increment or 1
@@ -1862,7 +1865,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     local dropdownLayoutOrder = self._dropdownCount
     self._dropdownCount = self._dropdownCount + 1
     
-    local resolvedTitle = getText(title)
+    local resolvedTitle = tostring(title or "")
     local dropdownFrame = new("Frame", {
         Parent = parent,
         Size = UDim2.new(1, 0, 0, 30),
@@ -1906,7 +1909,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     new("UICorner", {Parent = selectFrame, CornerRadius = UDim.new(0, 6)})
     new("UIStroke", {Parent = selectFrame, Color = colors.border, Thickness = 1, Transparency = 0.5})
     
-    local defaultText = isMulti and L("selectOptions") or L("selectOption")
+    local defaultText = isMulti and "Select Options" or "Select Option"
     local optionLabel = new("TextLabel", {
         Parent = selectFrame,
         Font = Enum.Font.GothamBold,
@@ -1942,7 +1945,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     
     local searchBox = new("TextBox", {
         Parent = dropdownContainer,
-        PlaceholderText = L("searchPlaceholder"),
+        PlaceholderText = "Search feature...",
         Font = Enum.Font.GothamBold,
         Text = "",
         TextSize = fontSize.small,
@@ -2005,7 +2008,6 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
         for _, opt in ipairs(srcList) do
             local label, value
             if typeof(opt) == "table" and opt.Label and opt.Value ~= nil then
-                -- Dropdown pilihan/fitur dipaksa menggunakan bahasa Inggris (mengabaikan terjemahan id jika tabel)
                 if type(opt.Label) == "table" then
                     label, value = tostring(opt.Label.en or opt.Label.id or ""), opt.Value
                 else
@@ -2389,7 +2391,7 @@ function Library:CreateMultiDropdown(parent, title, imageId, items, configPath, 
 end
 
 function Library:CreateInput(parent, label, configPath, defaultValue, callback)
-    local resolvedLabel = getText(label)
+    local resolvedLabel = tostring(label or "")
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
@@ -2455,7 +2457,7 @@ function Library:CreateInput(parent, label, configPath, defaultValue, callback)
 end
 
 function Library:CreateBind(parent, label, configPath, defaultValue, callback)
-    local resolvedLabel = getText(label)
+    local resolvedLabel = tostring(label or "")
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
@@ -2538,7 +2540,7 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
 end
 
 function Library:CreateButton(parent, label, callback)
-    local resolvedLabel = getText(label)
+    local resolvedLabel = tostring(label or "")
     local btnFrame = new("Frame", {
         Parent = parent,
         Size = UDim2.new(1, 0, 0, 30),
@@ -2794,7 +2796,7 @@ function Library:Window(config)
             end
         end
         self._tabOrder = (self._tabOrder or 0) + 1
-        local resolvedTabName = getText(tabName)
+        local resolvedTabName = tostring(tabName or "")
         local page = self._library:CreatePage(resolvedTabName, resolvedTabName, iconId, self._tabOrder)
         local TabObject = {}
         TabObject._page      = page
@@ -2802,7 +2804,7 @@ function Library:Window(config)
         TabObject._sections  = {}
 
         function TabObject:AddSection(sectionTitle, isOpen, isLocked)
-            local resolvedSecTitle = getText(sectionTitle or "Section")
+            local resolvedSecTitle = tostring(sectionTitle or "Section")
             local category, sectionExpand = self._library:CreateCategory(self._page, resolvedSecTitle, isOpen, isLocked)
             local SectionObject = {}
             SectionObject._container  = category
@@ -2813,8 +2815,8 @@ function Library:Window(config)
                 local lib = self._library
                 lib._searchIndex = lib._searchIndex or {}
                 table.insert(lib._searchIndex, {
-                    name = getText(featureName),
-                    lname = getText(featureName):lower(),
+                    name = tostring(featureName),
+                    lname = tostring(featureName):lower(),
                     frame = featureFrame,
                     pageName = resolvedTabName,
                     sectionTitle = resolvedSecTitle,
@@ -2832,7 +2834,7 @@ function Library:Window(config)
                 local default    = false
                 local callback   = toggleConfig.Callback
                 local noSave     = toggleConfig.NoSave or false
-                local configPath = noSave and nil or ("Toggles." .. getText(title):gsub("%s+", "_"))
+                local configPath = noSave and nil or ("Toggles." .. tostring(title):gsub("%s+", "_"))
                 local toggleObj = { _value = false }
                 local wrappedCallback = function(val)
                     toggleObj._value = val
@@ -2864,7 +2866,7 @@ function Library:Window(config)
                 local increment  = sliderConfig.Increment or 1
                 local callback   = sliderConfig.Callback
                 local noSave     = sliderConfig.NoSave or false
-                local configPath = noSave and nil or ("Sliders." .. getText(title):gsub("%s+", "_"))
+                local configPath = noSave and nil or ("Sliders." .. tostring(title):gsub("%s+", "_"))
 
                 local sliderObj = self._library:CreateSlider(self._container, title, min, max, default, increment, configPath, callback, noSave)
                 local frame = sliderObj and sliderObj.frame or sliderObj
@@ -2881,8 +2883,8 @@ function Library:Window(config)
                 local callback   = dropdownConfig.Callback
                 local noSave     = dropdownConfig.NoSave or false
                 local isMulti    = dropdownConfig.Multi or false
-                local configPath = noSave and nil or ((isMulti and "MultiDropdowns." or "Dropdowns.") .. getText(title):gsub("%s+", "_"))
-                local uniqueId   = getText(title):gsub("%s+", "_")
+                local configPath = noSave and nil or ((isMulti and "MultiDropdowns." or "Dropdowns.") .. tostring(title):gsub("%s+", "_"))
+                local uniqueId   = tostring(title):gsub("%s+", "_")
                 if isMulti then
                     local frame = self._library:CreateMultiDropdown(self._container, title, nil, options, configPath, callback, uniqueId)
                     if frame then frame.LayoutOrder = getNextLayoutOrder() end
@@ -2927,13 +2929,13 @@ function Library:Window(config)
 
             function SectionObject:AddLanguageDropdown(dropdownConfig)
                 dropdownConfig = dropdownConfig or {}
-                local title = dropdownConfig.Title or { id = "Bahasa / Language", en = "Language / Bahasa" }
+                local title = dropdownConfig.Title or "Language / Bahasa"
                 local default = dropdownConfig.Default or Library.CurrentLanguage
                 local callback = dropdownConfig.Callback
 
                 local options = {
-                    { Label = { id = "Bahasa Indonesia", en = "Indonesian" }, Value = "id" },
-                    { Label = { id = "English (Inggris)", en = "English" }, Value = "en" }
+                    { Label = "Bahasa Indonesia", Value = "id" },
+                    { Label = "English", Value = "en" }
                 }
 
                 return self:AddDropdown({
@@ -2945,8 +2947,8 @@ function Library:Window(config)
                         if val == "id" or val == "en" then
                             Library:SetLanguage(val)
                             Library:MakeNotify({
-                                Title = val == "id" and "Bahasa Diubah" or "Language Changed",
-                                Description = val == "id" and "Bahasa diubah ke Indonesia." or "Language switched to English.",
+                                Title = L("langChangedTitle"),
+                                Description = L("langChangedDesc"),
                                 Delay = 2
                             })
                         end
@@ -2962,7 +2964,7 @@ function Library:Window(config)
                 local placeholder = inputConfig.Placeholder or ""
                 local callback    = inputConfig.Callback
                 local noSave      = inputConfig.NoSave or false
-                local configPath  = noSave and nil or ("Inputs." .. getText(title):gsub("%s+", "_"))
+                local configPath  = noSave and nil or ("Inputs." .. tostring(title):gsub("%s+", "_"))
                 
                 local frame = self._library:CreateInput(self._container, title, configPath, default, callback)
                 if frame then frame.LayoutOrder = getNextLayoutOrder() end
@@ -2978,7 +2980,7 @@ function Library:Window(config)
                 local default     = bindConfig.Default or "None"
                 local callback    = bindConfig.Callback
                 local noSave      = bindConfig.NoSave or false
-                local configPath  = noSave and nil or ("Binds." .. getText(title):gsub("%s+", "_"))
+                local configPath  = noSave and nil or ("Binds." .. tostring(title):gsub("%s+", "_"))
                 
                 local frame = self._library:CreateBind(self._container, title, configPath, default, callback)
                 if frame then frame.LayoutOrder = getNextLayoutOrder() end
@@ -3036,8 +3038,8 @@ function Library:Window(config)
 
             function SectionObject:AddParagraph(paragraphConfig)
                 paragraphConfig = paragraphConfig or {}
-                local title   = formatRichText(getText(paragraphConfig.Title or ""))
-                local content = formatRichText(getText(paragraphConfig.Content or ""))
+                local title   = formatRichText(tostring(paragraphConfig.Title or ""))
+                local content = formatRichText(tostring(paragraphConfig.Content or ""))
                 local useRich = paragraphConfig.RichText ~= false
 
                 local PADDING_V = 20
@@ -3140,13 +3142,13 @@ function Library:Window(config)
                     _contentLabel = contentLabel,
                     SetTitle = function(self, newTitle)
                         if self._titleLabel then
-                            self._titleLabel.Text = formatRichText(getText(newTitle or ""))
-                            self._titleLabel.Visible = (getText(newTitle or "")) ~= ""
+                            self._titleLabel.Text = formatRichText(tostring(newTitle or ""))
+                            self._titleLabel.Visible = (tostring(newTitle or "")) ~= ""
                         end
                     end,
                     SetContent = function(self, newContent)
                         if self._contentLabel then
-                            self._contentLabel.Text = formatRichText(getText(newContent or ""))
+                            self._contentLabel.Text = formatRichText(tostring(newContent or ""))
                         end
                     end,
                     GetTitle = function(self)
@@ -3271,7 +3273,7 @@ function Library.FeatureHUDManager:GetRow()
 end
 
 function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
-    local resolvedText = getText(text)
+    local resolvedText = tostring(text or "")
     if not isMobile then
         return self:AddPCIndicator(resolvedText, hotkeyString)
     end
@@ -3354,7 +3356,7 @@ function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
         container = container,
         UpdateHotkey = function(self, newHotkey) end,
         UpdateText = function(self, newText)
-            if label then label.Text = "<b>" .. getText(newText) .. "</b>" end
+            if label then label.Text = "<b>" .. tostring(newText or "") .. "</b>" end
         end
     }
     table.insert(self.Buttons, ref)
@@ -3362,7 +3364,7 @@ function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
 end
 
 function Library.FeatureHUDManager:AddPCIndicator(text, hotkeyString)
-    local resolvedText = getText(text)
+    local resolvedText = tostring(text or "")
     local container = new("Frame", {
         Parent = PCContainer,
         Name = "PCIndicator_" .. resolvedText,
@@ -3442,7 +3444,7 @@ function Library.FeatureHUDManager:AddPCIndicator(text, hotkeyString)
     end
     
     function ref:UpdateText(newText)
-        self.text = getText(newText)
+        self.text = tostring(newText or "")
         self:UpdateHotkey(self.hotkey)
     end
     

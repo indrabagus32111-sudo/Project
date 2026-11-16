@@ -2,75 +2,17 @@ local Library = {}
 Library.flags = {}
 Library.pages = {}
 Library._navButtons = {}
+Library._currentPage = nil
+Library._gui = nil
+Library._win = nil
+Library._sidebar = nil
+Library._contentBg = nil
+Library._pageTitle = nil
+Library._navContainer = nil
 Library._connections = {}
 Library._searchIndex = {}
 Library._saveThread = nil
 Library._initialized = false
-
--- Sistem Bahasa (Default: "id" / Indonesia)
-Library.CurrentLanguage = "id"
-
-local Translations = {
-    id = {
-        searchPlaceholder = "Cari fitur...",
-        noFeatures = "Fitur tidak ditemukan",
-        confirmExit = "Konfirmasi Keluar",
-        exitDesc = "Apakah kamu yakin ingin menutup UI ini?",
-        yes = "Iya",
-        no = "Tidak",
-        premiumLock = "Beli Premium untuk membuka fitur ini",
-        selectOption = "Select Option",
-        selectOptions = "Select Options",
-        enterValue = "Enter Value",
-        none = "None",
-        languageTitle = "Language / Bahasa",
-        indonesian = "Indonesian",
-        english = "English",
-        langChangedTitle = "Bahasa Diubah",
-        langChangedDesc = "Bahasa diubah ke Indonesia."
-    },
-    en = {
-        searchPlaceholder = "Search feature...",
-        noFeatures = "No features found",
-        confirmExit = "Exit Confirmation",
-        exitDesc = "Are you sure you want to close this UI?",
-        yes = "Yes",
-        no = "No",
-        premiumLock = "Buy Premium to unlock this feature",
-        selectOption = "Select Option",
-        selectOptions = "Select Options",
-        enterValue = "Enter Value",
-        none = "None",
-        languageTitle = "Language / Bahasa",
-        indonesian = "Indonesian",
-        english = "English",
-        langChangedTitle = "Language Changed",
-        langChangedDesc = "Language switched to English."
-    }
-}
-
-local function L(key)
-    local lang = Library.CurrentLanguage or "id"
-    if Translations[lang] and Translations[lang][key] then
-        return Translations[lang][key]
-    end
-    return Translations["id"][key] or key
-end
-
-local function getText(val)
-    if type(val) == "table" then
-        local lang = Library.CurrentLanguage or "id"
-        return val[lang] or val["en"] or val["id"] or ""
-    end
-    return tostring(val or "")
-end
-
-function Library:SetLanguage(lang)
-    if lang == "id" or lang == "en" then
-        Library.CurrentLanguage = lang
-    end
-end
-
 local CONFIG_FOLDER    = "SukiGUI_Configs"
 local CONFIG_FILE      = CONFIG_FOLDER .. "/suki_config.json"
 local CurrentConfig    = {}
@@ -85,6 +27,7 @@ local RunService      = game:GetService("RunService")
 local HttpService     = game:GetService("HttpService")
 local localPlayer     = Players.LocalPlayer
 
+-- Skema Warna Kuning Modern & Elegan
 local colors = {
     primary = Color3.fromRGB(255, 220, 50),
     secondary = Color3.fromRGB(255, 235, 100),
@@ -246,6 +189,7 @@ function Library.ConfigSystem.Save()
 end
 function Library.ConfigSystem.Load()
     EnsureFolderExists()
+    -- Hapus config lama setiap kali script dieksekute ulang agar data tereset bersih
     if isfile(CONFIG_FILE) then
         pcall(function() delfile(CONFIG_FILE) end)
     end
@@ -272,6 +216,14 @@ function Library.ConfigSystem.Set(path, value)
     end
     target[keys[#keys]] = value
 end
+function Library.ConfigSystem.Reset()
+    CurrentConfig = DeepCopy(DefaultConfig)
+end
+function Library.ConfigSystem.Delete()
+    if isfile(CONFIG_FILE) then
+        delfile(CONFIG_FILE)
+    end
+end
 
 local function RegisterCallback(configPath, callback, componentType, defaultValue, updateVisualFn)
     if not configPath then return end
@@ -287,6 +239,7 @@ end
 local function ExecuteConfigCallbacks()
     for _, entry in pairs(CallbackRegistry) do
         if entry.updateVisual then
+            -- Paksa nilai ke default (false/off) saat inisialisasi ulang
             local defVal = entry.type == "toggle" and false or entry.default
             Library.ConfigSystem.Set(entry.path, defVal)
             pcall(entry.updateVisual, defVal)
@@ -305,11 +258,22 @@ local function ExecuteConfigCallbacks()
     runCallbacks(true)
 end
 
+_G.AutoSaveEnabled = false
+function _G.GetConfigValue(key, default)
+    return Library.ConfigSystem.Get(key, default)
+end
+function _G.SaveConfigValue(key, value)
+    Library.ConfigSystem.Set(key, value)
+end
+function _G.GetFullConfig()
+    return CurrentConfig
+end
+
 function Library:CreateWindow(config)
     config = config or {}
     local name = config.Name or "SukiGUI"
-    local title = getText(config.Title or "Suki")
-    local subtitle = getText(config.Subtitle or "")
+    local title = config.Title or "Suki"
+    local subtitle = config.Subtitle or ""
     local defaultLogo = config.Logo or "rbxassetid://6031091004"
 
     table.clear(CallbackRegistry)
@@ -540,7 +504,7 @@ function Library:CreateWindow(config)
 
         new("TextLabel", {
             Parent = dialog,
-            Text = L("confirmExit"),
+            Text = "Konfirmasi Keluar",
             Size = UDim2.new(1, -20, 0, 24),
             Position = UDim2.new(0, 10, 0, 12),
             BackgroundTransparency = 1,
@@ -553,7 +517,7 @@ function Library:CreateWindow(config)
 
         new("TextLabel", {
             Parent = dialog,
-            Text = L("exitDesc"),
+            Text = "Apakah kamu yakin ingin menutup UI ini?",
             Size = UDim2.new(1, -30, 0, 36),
             Position = UDim2.new(0, 15, 0, 42),
             BackgroundTransparency = 1,
@@ -572,7 +536,7 @@ function Library:CreateWindow(config)
             BackgroundColor3 = Color3.fromRGB(220, 40, 40),
             BackgroundTransparency = 0.1,
             BorderSizePixel = 0,
-            Text = L("yes"),
+            Text = "Iya",
             Font = Enum.Font.GothamBold,
             TextSize = 12,
             TextColor3 = colors.text,
@@ -588,7 +552,7 @@ function Library:CreateWindow(config)
             BackgroundColor3 = colors.bg3,
             BackgroundTransparency = 0.1,
             BorderSizePixel = 0,
-            Text = L("no"),
+            Text = "Tidak",
             Font = Enum.Font.GothamBold,
             TextSize = 12,
             TextColor3 = colors.text,
@@ -952,7 +916,7 @@ function Library:_createSearchBar()
         Position = UDim2.new(0, 10, 0, 0),
         BackgroundTransparency = 1,
         Text = "",
-        PlaceholderText = L("searchPlaceholder"),
+        PlaceholderText = "Search feature...",
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.text,
@@ -1022,7 +986,7 @@ function Library:_createSearchBar()
     new("UIPadding", {Parent = resultsList, PaddingRight = UDim.new(0, 1)})
     local emptyLabel = new("TextLabel", {
         Parent = resultsPanel,
-        Text = L("noFeatures"),
+        Text = "No features found",
         Size = UDim2.new(1, -16, 1, 0),
         Position = UDim2.new(0, 8, 0, 0),
         BackgroundTransparency = 1,
@@ -1151,8 +1115,7 @@ function Library:_createSearchBar()
         local index = self._searchIndex or {}
         local order = 0
         for _, entry in ipairs(index) do
-            local currentEntryName = getText(entry.name)
-            if entry.frame and entry.frame.Parent and currentEntryName:lower():find(query, 1, true) then
+            if entry.frame and entry.frame.Parent and entry.lname and entry.lname:find(query, 1, true) then
                 order = order + 1
                 local r = rowPool[order]
                 if not r then
@@ -1160,11 +1123,10 @@ function Library:_createSearchBar()
                     rowPool[order] = r
                 end
                 r.entry = entry
-                r.nameLabel.Text = currentEntryName
-                local metaText = getText(entry.pageName) or ""
-                local secTitle = getText(entry.sectionTitle)
-                if secTitle ~= "" then
-                    metaText = (metaText ~= "" and (metaText .. " • ") or "") .. secTitle
+                r.nameLabel.Text = entry.name
+                local metaText = entry.pageName or ""
+                if entry.sectionTitle and entry.sectionTitle ~= "" then
+                    metaText = (metaText ~= "" and (metaText .. " • ") or "") .. entry.sectionTitle
                 end
                 r.metaLabel.Text = metaText
                 r.button.LayoutOrder = order
@@ -1223,8 +1185,6 @@ function Library:_createSearchBar()
 end
 
 function Library:CreatePage(name, title, imageId, order)
-    local resolvedTitle = tostring(title or "")
-    local resolvedName = tostring(name or "")
     local page = new("Frame", {
         Parent = self._contentBg,
         Size = UDim2.new(1, -12, 1, -(topBarHeight + 10)),
@@ -1248,7 +1208,7 @@ function Library:CreatePage(name, title, imageId, order)
     })
     new("UIListLayout", {Parent = contentContainer, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})
     new("UIPadding", {Parent = contentContainer, PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
-    self.pages[resolvedName] = {frame = page, title = resolvedTitle, content = contentContainer}
+    self.pages[name] = {frame = page, title = title, content = contentContainer}
     
     local btn = new("TextButton", {
         Parent = self._navContainer,
@@ -1286,7 +1246,7 @@ function Library:CreatePage(name, title, imageId, order)
     })
     new("TextLabel", {
         Parent = btn,
-        Text = resolvedName,
+        Text = name,
         Size = UDim2.new(1, -36, 1, 0),
         Position = UDim2.new(0, 34, 0, 0),
         BackgroundTransparency = 1,
@@ -1299,16 +1259,16 @@ function Library:CreatePage(name, title, imageId, order)
         Name = "Label"
     })
     
-    self:AddConnection("navHoverIn_" .. resolvedName, btn.MouseEnter:Connect(function()
-        if self._currentPage ~= resolvedName then
+    self:AddConnection("navHoverIn_" .. name, btn.MouseEnter:Connect(function()
+        if self._currentPage ~= name then
             local icon = btn:FindFirstChild("Icon")
             local label = btn:FindFirstChild("Label")
             if icon then icon.ImageColor3 = colors.text end
             if label then label.TextColor3 = colors.text end
         end
     end))
-    self:AddConnection("navHoverOut_" .. resolvedName, btn.MouseLeave:Connect(function()
-        if self._currentPage ~= resolvedName then
+    self:AddConnection("navHoverOut_" .. name, btn.MouseLeave:Connect(function()
+        if self._currentPage ~= name then
             local icon = btn:FindFirstChild("Icon")
             local label = btn:FindFirstChild("Label")
             if icon then icon.ImageColor3 = colors.textDim end
@@ -1316,25 +1276,24 @@ function Library:CreatePage(name, title, imageId, order)
         end
     end))
 
-    self._navButtons[resolvedName] = {btn = btn, page = page, title = resolvedTitle}
-    self:AddConnection("navBtn_" .. resolvedName, btn.MouseButton1Click:Connect(function()
-        self:_switchPage(resolvedName)
+    self._navButtons[name] = {btn = btn, page = page, title = title}
+    self:AddConnection("navBtn_" .. name, btn.MouseButton1Click:Connect(function()
+        self:_switchPage(name)
     end))
     return contentContainer
 end
 
 function Library:SetFirstPage(name)
-    self:_switchPage(tostring(name or ""))
+    self:_switchPage(name)
 end
 
 function Library:_switchPage(pageName)
-    local resolvedPageName = tostring(pageName or "")
-    if self._currentPage == resolvedPageName then return end
+    if self._currentPage == pageName then return end
     for _, pageData in pairs(self.pages) do
         pageData.frame.Visible = false
     end
     for name, data in pairs(self._navButtons) do
-        local isActive = (name == resolvedPageName)
+        local isActive = (name == pageName)
         data.btn.BackgroundTransparency = 1
         local icon = data.btn:FindFirstChild("Icon")
         if icon then
@@ -1349,18 +1308,17 @@ function Library:_switchPage(pageName)
             indicator.BackgroundTransparency = isActive and 0 or 1
         end
     end
-    if self.pages[resolvedPageName] then
-        self.pages[resolvedPageName].frame.Visible = true
+    if self.pages[pageName] then
+        self.pages[pageName].frame.Visible = true
         if self._pageTitle then
-            self._pageTitle.Text = self.pages[resolvedPageName].title or resolvedPageName
+            self._pageTitle.Text = self.pages[pageName].title or pageName
         end
     end
-    self._currentPage = resolvedPageName
+    self._currentPage = pageName
 end
 
 function Library:CreateCategory(parent, title, startOpen, isLocked)
     startOpen = startOpen == true
-    local resolvedTitle = tostring(title or "")
     local categoryFrame = new("Frame", {
         Parent = parent,
         Size = UDim2.new(1, 0, 0, sectionHeaderHeight),
@@ -1388,7 +1346,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
     })
     new("TextLabel", {
         Parent = header,
-        Text = resolvedTitle,
+        Text = title,
         Size = UDim2.new(1, -32, 1, 0),
         Position = UDim2.new(0, 12, 0, 0),
         BackgroundTransparency = 1,
@@ -1460,21 +1418,19 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         categoryFrame.Size = UDim2.new(1, 0, 0, h)
         contentWrapper.Size = UDim2.new(1, 0, 0, contentH)
     end
-    contentListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCategoryHeight)
-    task.defer(updateCategoryHeight)
-    header.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
+    local function setOpen(state)
+        isOpen = state
         contentWrapper.Visible = isOpen
         arrow.Rotation = isOpen and 180 or 0
         updateCategoryHeight()
+    end
+    contentListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCategoryHeight)
+    task.defer(updateCategoryHeight)
+    header.MouseButton1Click:Connect(function()
+        setOpen(not isOpen)
     end)
     local function expand()
-        if not isOpen then
-            isOpen = true
-            contentWrapper.Visible = true
-            arrow.Rotation = 180
-            updateCategoryHeight()
-        end
+        if not isOpen then setOpen(true) end
     end
     local returnedContainer = contentContainer
     
@@ -1501,7 +1457,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
         })
         new("TextLabel", {
             Parent = blocker,
-            Text = L("premiumLock"),
+            Text = "Buy Premium to unlock this feature",
             Size = UDim2.new(1, 0, 0, 20),
             Position = UDim2.new(0, 0, 0.5, 12),
             BackgroundTransparency = 1,
@@ -1517,11 +1473,10 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
 end
 
 function Library:CreateToggle(parent, label, configPath, callback, disableSave, defaultValue)
-    local resolvedLabel = tostring(label or "")
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
-        Text = resolvedLabel,
+        Text = label,
         Size = UDim2.new(1, -45, 1, 0),
         BackgroundTransparency = 1,
         TextColor3 = colors.text,
@@ -1549,13 +1504,12 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     })
     new("UICorner", {Parent = toggleCircle, CornerRadius = UDim.new(1, 0)})
     local btn = new("TextButton", {Parent = toggleBg, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "", ZIndex = 10})
-    
+    -- Paksa default selalu false saat dieksekusi ulang
     local on = false
     if configPath and not disableSave then
         Library.ConfigSystem.Set(configPath, false)
         on = false
     end
-
     local function updateVisual(instant)
         local targetColor = on and colors.primary or colors.bg3
         local targetPos = on and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
@@ -1571,23 +1525,23 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         end
     end
     updateVisual(true)
-    self:AddConnection("toggle_" .. resolvedLabel .. tostring(btn), btn.MouseButton1Click:Connect(function()
+    self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
         on = not on
         updateVisual(false)
         if configPath and not disableSave then
             Library.ConfigSystem.Set(configPath, on)
         end
-        self.flags[configPath or resolvedLabel] = on
+        self.flags[configPath or label] = on
         if callback then callback(on) end
     end))
     if configPath and not disableSave then
         RegisterCallback(configPath, callback, "toggle", false, function(val)
             on = val
             updateVisual(true)
-            self.flags[configPath or resolvedLabel] = on
+            self.flags[configPath or label] = on
         end)
     end
-    self.flags[configPath or resolvedLabel] = on
+    self.flags[configPath or label] = on
     local toggleController = {
         frame = frame,
         set = function(val)
@@ -1596,7 +1550,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
             if configPath and not disableSave then
                 Library.ConfigSystem.Set(configPath, on)
             end
-            Library.flags[configPath or resolvedLabel] = on
+            Library.flags[configPath or label] = on
         end,
         get = function() return on end
     }
@@ -1604,7 +1558,6 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
 end
 
 function Library:CreateSlider(parent, label, min, max, default, increment, configPath, callback, disableSave)
-    local resolvedLabel = tostring(label or "")
     min = min or 0
     max = max or 100
     increment = increment or 1
@@ -1623,7 +1576,7 @@ function Library:CreateSlider(parent, label, min, max, default, increment, confi
 
     new("TextLabel", {
         Parent = frame,
-        Text = resolvedLabel,
+        Text = label,
         Size = UDim2.new(1, -65, 0, 20),
         Position = UDim2.new(0, 0, 0, 2),
         BackgroundTransparency = 1,
@@ -1721,26 +1674,26 @@ function Library:CreateSlider(parent, label, min, max, default, increment, confi
         updateValue(val, true)
     end
 
-    self:AddConnection("sliderInputBegan_" .. resolvedLabel, track.InputBegan:Connect(function(input)
+    self:AddConnection("sliderInputBegan_" .. label, track.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             updateInput(input)
         end
     end))
 
-    self:AddConnection("sliderInputChanged_" .. resolvedLabel, UserInputService.InputChanged:Connect(function(input)
+    self:AddConnection("sliderInputChanged_" .. label, UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             updateInput(input)
         end
     end))
 
-    self:AddConnection("sliderInputEnded_" .. resolvedLabel, UserInputService.InputEnded:Connect(function(input)
+    self:AddConnection("sliderInputEnded_" .. label, UserInputService.InputEnded:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
             dragging = false
         end
     end))
 
-    self:AddConnection("sliderFocusLost_" .. resolvedLabel, valueBox.FocusLost:Connect(function()
+    self:AddConnection("sliderFocusLost_" .. label, valueBox.FocusLost:Connect(function()
         local num = tonumber(valueBox.Text)
         if num then
             updateValue(num, true)
@@ -1865,7 +1818,6 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     local dropdownLayoutOrder = self._dropdownCount
     self._dropdownCount = self._dropdownCount + 1
     
-    local resolvedTitle = tostring(title or "")
     local dropdownFrame = new("Frame", {
         Parent = parent,
         Size = UDim2.new(1, 0, 0, 30),
@@ -1886,7 +1838,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     local dropdownTitle = new("TextLabel", {
         Parent = dropdownFrame,
         Font = Enum.Font.GothamBold,
-        Text = resolvedTitle,
+        Text = title or (isMulti and "Multi Select" or "Dropdown"),
         TextColor3 = colors.text,
         TextSize = fontSize.small,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1945,7 +1897,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     
     local searchBox = new("TextBox", {
         Parent = dropdownContainer,
-        PlaceholderText = "Search feature...",
+        PlaceholderText = "Search...",
         Font = Enum.Font.GothamBold,
         Text = "",
         TextSize = fontSize.small,
@@ -2008,11 +1960,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
         for _, opt in ipairs(srcList) do
             local label, value
             if typeof(opt) == "table" and opt.Label and opt.Value ~= nil then
-                if type(opt.Label) == "table" then
-                    label, value = tostring(opt.Label.en or opt.Label.id or ""), opt.Value
-                else
-                    label, value = tostring(opt.Label), opt.Value
-                end
+                label, value = tostring(opt.Label), opt.Value
             else
                 label, value = tostring(opt), opt
             end
@@ -2241,11 +2189,7 @@ function Library:_createBaseDropdown(parent, title, imageId, items, configPath, 
     function DropdownFunc:AddOption(option)
         local label, value
         if typeof(option) == "table" and option.Label and option.Value ~= nil then
-            if type(option.Label) == "table" then
-                label, value = tostring(option.Label.en or option.Label.id or ""), option.Value
-            else
-                label, value = tostring(option.Label), option.Value
-            end
+            label, value = tostring(option.Label), option.Value
         else
             label, value = tostring(option), option
         end
@@ -2391,11 +2335,10 @@ function Library:CreateMultiDropdown(parent, title, imageId, items, configPath, 
 end
 
 function Library:CreateInput(parent, label, configPath, defaultValue, callback)
-    local resolvedLabel = tostring(label or "")
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
-        Text = resolvedLabel,
+        Text = label,
         Size = UDim2.new(0.52, 0, 1, 0),
         BackgroundTransparency = 1,
         TextColor3 = colors.text,
@@ -2421,7 +2364,7 @@ function Library:CreateInput(parent, label, configPath, defaultValue, callback)
         Position = UDim2.new(0, 8, 0, 0),
         BackgroundTransparency = 1,
         Text = initialValue ~= nil and tostring(initialValue) or "",
-        PlaceholderText = L("enterValue"),
+        PlaceholderText = "Enter Value",
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.text,
@@ -2438,7 +2381,7 @@ function Library:CreateInput(parent, label, configPath, defaultValue, callback)
         local num = tonumber(text)
         return num or text
     end
-    self:AddConnection("input_" .. resolvedLabel .. tostring(inputBox), inputBox.FocusLost:Connect(function()
+    self:AddConnection("input_" .. label .. tostring(inputBox), inputBox.FocusLost:Connect(function()
         local rawValue = inputBox.Text
         local value = resolveValue(rawValue)
         if configPath then
@@ -2457,11 +2400,10 @@ function Library:CreateInput(parent, label, configPath, defaultValue, callback)
 end
 
 function Library:CreateBind(parent, label, configPath, defaultValue, callback)
-    local resolvedLabel = tostring(label or "")
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
-        Text = resolvedLabel,
+        Text = label,
         Size = UDim2.new(0.52, 0, 1, 0),
         BackgroundTransparency = 1,
         TextColor3 = colors.text,
@@ -2488,7 +2430,7 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
         Size = UDim2.new(1, -16, 1, 0),
         Position = UDim2.new(0, 8, 0, 0),
         BackgroundTransparency = 1,
-        Text = initialValue ~= nil and tostring(initialValue) or L("none"),
+        Text = initialValue ~= nil and tostring(initialValue) or "None",
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.text,
@@ -2500,7 +2442,7 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
     local isBinding = false
     local bindConn = nil
 
-    self:AddConnection("bind_" .. resolvedLabel .. tostring(bindBtn), bindBtn.MouseButton1Click:Connect(function()
+    self:AddConnection("bind_" .. label .. tostring(bindBtn), bindBtn.MouseButton1Click:Connect(function()
         if isBinding then return end
         isBinding = true
         bindBtn.Text = "..."
@@ -2515,7 +2457,7 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
                 
                 local kName = k.Name
                 if k == Enum.KeyCode.Escape then
-                    kName = L("none")
+                    kName = "None"
                 end
                 
                 bindBtn.Text = kName
@@ -2529,7 +2471,7 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
     end))
     
     RegisterCallback(configPath, callback, "bind", defaultValue, function(val)
-        bindBtn.Text = tostring(val ~= nil and val or defaultValue or L("none"))
+        bindBtn.Text = tostring(val ~= nil and val or defaultValue or "None")
     end)
     
     if callback and initialValue ~= nil then
@@ -2540,7 +2482,6 @@ function Library:CreateBind(parent, label, configPath, defaultValue, callback)
 end
 
 function Library:CreateButton(parent, label, callback)
-    local resolvedLabel = tostring(label or "")
     local btnFrame = new("Frame", {
         Parent = parent,
         Size = UDim2.new(1, 0, 0, 30),
@@ -2554,7 +2495,7 @@ function Library:CreateButton(parent, label, callback)
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundColor3 = colors.bg3,
         BackgroundTransparency = panelTransparency,
-        Text = resolvedLabel,
+        Text = label,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.normal,
         TextColor3 = colors.text,
@@ -2565,7 +2506,7 @@ function Library:CreateButton(parent, label, callback)
 
     local isClicking = false
 
-    self:AddConnection("btn_click_" .. resolvedLabel .. tostring(button), button.MouseButton1Click:Connect(function()
+    self:AddConnection("btn_click_" .. label .. tostring(button), button.MouseButton1Click:Connect(function()
         if isClicking then return end
         isClicking = true
 
@@ -2591,9 +2532,9 @@ end
 
 function Library:MakeNotify(config)
     config = config or {}
-    local title   = getText(config.Title or "Notification")
-    local desc    = getText(config.Description or "")
-    local content = getText(config.Content or "")
+    local title   = config.Title or "Notification"
+    local desc    = config.Description or ""
+    local content = config.Content or ""
     local color   = config.Color or colors.primary
     local delay   = config.Delay or 3
     if not self._gui then return end
@@ -2728,8 +2669,8 @@ function Library:Window(config)
     config = config or {}
     local winObj = self:CreateWindow({
         Name     = "SukiGui",
-        Title    = getText(config.Title or "Suki"),
-        Subtitle = getText(config.Footer or ""),
+        Title    = config.Title or "Suki",
+        Subtitle = config.Footer or "",
         Logo     = config.Logo or "rbxassetid://6031091004"
     })
     Library.ConfigSystem.Load()
@@ -2796,16 +2737,14 @@ function Library:Window(config)
             end
         end
         self._tabOrder = (self._tabOrder or 0) + 1
-        local resolvedTabName = tostring(tabName or "")
-        local page = self._library:CreatePage(resolvedTabName, resolvedTabName, iconId, self._tabOrder)
+        local page = self._library:CreatePage(tabName, tabName, iconId, self._tabOrder)
         local TabObject = {}
         TabObject._page      = page
         TabObject._library   = self._library
         TabObject._sections  = {}
-
         function TabObject:AddSection(sectionTitle, isOpen, isLocked)
-            local resolvedSecTitle = tostring(sectionTitle or "Section")
-            local category, sectionExpand = self._library:CreateCategory(self._page, resolvedSecTitle, isOpen, isLocked)
+            sectionTitle = sectionTitle or "Section"
+            local category, sectionExpand = self._library:CreateCategory(self._page, sectionTitle, isOpen, isLocked)
             local SectionObject = {}
             SectionObject._container  = category
             SectionObject._library    = self._library
@@ -2818,8 +2757,8 @@ function Library:Window(config)
                     name = tostring(featureName),
                     lname = tostring(featureName):lower(),
                     frame = featureFrame,
-                    pageName = resolvedTabName,
-                    sectionTitle = resolvedSecTitle,
+                    pageName = tabName,
+                    sectionTitle = sectionTitle,
                     kind = featureKind,
                     expand = sectionExpand,
                 })
@@ -2831,10 +2770,10 @@ function Library:Window(config)
             function SectionObject:AddToggle(toggleConfig)
                 toggleConfig = toggleConfig or {}
                 local title      = toggleConfig.Title or "Toggle"
-                local default    = false
+                local default    = toggleConfig.Default or false
                 local callback   = toggleConfig.Callback
                 local noSave     = toggleConfig.NoSave or false
-                local configPath = noSave and nil or ("Toggles." .. tostring(title):gsub("%s+", "_"))
+                local configPath = noSave and nil or ("Toggles." .. title:gsub("%s+", "_"))
                 local toggleObj = { _value = false }
                 local wrappedCallback = function(val)
                     toggleObj._value = val
@@ -2866,7 +2805,7 @@ function Library:Window(config)
                 local increment  = sliderConfig.Increment or 1
                 local callback   = sliderConfig.Callback
                 local noSave     = sliderConfig.NoSave or false
-                local configPath = noSave and nil or ("Sliders." .. tostring(title):gsub("%s+", "_"))
+                local configPath = noSave and nil or ("Sliders." .. title:gsub("%s+", "_"))
 
                 local sliderObj = self._library:CreateSlider(self._container, title, min, max, default, increment, configPath, callback, noSave)
                 local frame = sliderObj and sliderObj.frame or sliderObj
@@ -2883,8 +2822,8 @@ function Library:Window(config)
                 local callback   = dropdownConfig.Callback
                 local noSave     = dropdownConfig.NoSave or false
                 local isMulti    = dropdownConfig.Multi or false
-                local configPath = noSave and nil or ((isMulti and "MultiDropdowns." or "Dropdowns.") .. tostring(title):gsub("%s+", "_"))
-                local uniqueId   = tostring(title):gsub("%s+", "_")
+                local configPath = noSave and nil or ((isMulti and "MultiDropdowns." or "Dropdowns.") .. title:gsub("%s+", "_"))
+                local uniqueId   = title:gsub("%s+", "_")
                 if isMulti then
                     local frame = self._library:CreateMultiDropdown(self._container, title, nil, options, configPath, callback, uniqueId)
                     if frame then frame.LayoutOrder = getNextLayoutOrder() end
@@ -2926,37 +2865,6 @@ function Library:Window(config)
                 }
                 return dropdownObj
             end
-
-            function SectionObject:AddLanguageDropdown(dropdownConfig)
-                dropdownConfig = dropdownConfig or {}
-                local title = dropdownConfig.Title or "Language / Bahasa"
-                local default = dropdownConfig.Default or Library.CurrentLanguage
-                local callback = dropdownConfig.Callback
-
-                local options = {
-                    { Label = "Bahasa Indonesia", Value = "id" },
-                    { Label = "English", Value = "en" }
-                }
-
-                return self:AddDropdown({
-                    Title = title,
-                    Options = options,
-                    Default = default,
-                    NoSave = true,
-                    Callback = function(val)
-                        if val == "id" or val == "en" then
-                            Library:SetLanguage(val)
-                            Library:MakeNotify({
-                                Title = L("langChangedTitle"),
-                                Description = L("langChangedDesc"),
-                                Delay = 2
-                            })
-                        end
-                        if callback then callback(val) end
-                    end
-                })
-            end
-
             function SectionObject:AddInput(inputConfig)
                 inputConfig = inputConfig or {}
                 local title       = inputConfig.Title or "Input"
@@ -2964,7 +2872,7 @@ function Library:Window(config)
                 local placeholder = inputConfig.Placeholder or ""
                 local callback    = inputConfig.Callback
                 local noSave      = inputConfig.NoSave or false
-                local configPath  = noSave and nil or ("Inputs." .. tostring(title):gsub("%s+", "_"))
+                local configPath  = noSave and nil or ("Inputs." .. title:gsub("%s+", "_"))
                 
                 local frame = self._library:CreateInput(self._container, title, configPath, default, callback)
                 if frame then frame.LayoutOrder = getNextLayoutOrder() end
@@ -2980,7 +2888,7 @@ function Library:Window(config)
                 local default     = bindConfig.Default or "None"
                 local callback    = bindConfig.Callback
                 local noSave      = bindConfig.NoSave or false
-                local configPath  = noSave and nil or ("Binds." .. tostring(title):gsub("%s+", "_"))
+                local configPath  = noSave and nil or ("Binds." .. title:gsub("%s+", "_"))
                 
                 local frame = self._library:CreateBind(self._container, title, configPath, default, callback)
                 if frame then frame.LayoutOrder = getNextLayoutOrder() end
@@ -2998,22 +2906,46 @@ function Library:Window(config)
                 
                 local function parseKeyString(val)
                     local v = tostring(val)
+                    
                     local ok, k = pcall(function() return Enum.KeyCode[v] end)
                     if ok and k then return k end
+                    
                     local upperVal = string.upper(v)
                     ok, k = pcall(function() return Enum.KeyCode[upperVal] end)
                     if ok and k then return k end
-                    return nil
+                    
+                    local map = {
+                        ["1"] = Enum.KeyCode.One, ["2"] = Enum.KeyCode.Two, ["3"] = Enum.KeyCode.Three,
+                        ["4"] = Enum.KeyCode.Four, ["5"] = Enum.KeyCode.Five, ["6"] = Enum.KeyCode.Six,
+                        ["7"] = Enum.KeyCode.Seven, ["8"] = Enum.KeyCode.Eight, ["9"] = Enum.KeyCode.Nine,
+                        ["0"] = Enum.KeyCode.Zero, ["-"] = Enum.KeyCode.Minus, ["="] = Enum.KeyCode.Equals,
+                        ["["] = Enum.KeyCode.LeftBracket, ["]"] = Enum.KeyCode.RightBracket,
+                        ["\\"] = Enum.KeyCode.BackSlash, [";"] = Enum.KeyCode.Semicolon,
+                        ["'"] = Enum.KeyCode.Quote, [","] = Enum.KeyCode.Comma, ["."] = Enum.KeyCode.Period,
+                        ["/"] = Enum.KeyCode.Slash, ["`"] = Enum.KeyCode.Backquote,
+                        ["SPACE"] = Enum.KeyCode.Space, ["TAB"] = Enum.KeyCode.Tab,
+                        ["LSHIFT"] = Enum.KeyCode.LeftShift, ["RSHIFT"] = Enum.KeyCode.RightShift,
+                        ["LCTRL"] = Enum.KeyCode.LeftControl, ["RCTRL"] = Enum.KeyCode.RightControl,
+                        ["LALT"] = Enum.KeyCode.LeftAlt, ["RALT"] = Enum.KeyCode.RightAlt,
+                    }
+                    return map[upperVal] or map[v]
                 end
 
                 return self:AddBind({
                     Title = title,
                     Default = default,
                     Callback = function(val)
-                        if tostring(val) == L("none") then return end
+                        if tostring(val) == "None" then return end
                         local k = parseKeyString(val)
                         if k then
                             local hotkeyStr = string.upper(tostring(val))
+                            if hotkeyStr == "LEFTSHIFT" then hotkeyStr = "LSHIFT" end
+                            if hotkeyStr == "RIGHTSHIFT" then hotkeyStr = "RSHIFT" end
+                            if hotkeyStr == "LEFTCONTROL" then hotkeyStr = "LCTRL" end
+                            if hotkeyStr == "RIGHTCONTROL" then hotkeyStr = "RCTRL" end
+                            if hotkeyStr == "LEFTALT" then hotkeyStr = "LALT" end
+                            if hotkeyStr == "RIGHTALT" then hotkeyStr = "RALT" end
+                            
                             if callback then callback(k, hotkeyStr) end
                         else
                             Library:MakeNotify({
@@ -3038,8 +2970,8 @@ function Library:Window(config)
 
             function SectionObject:AddParagraph(paragraphConfig)
                 paragraphConfig = paragraphConfig or {}
-                local title   = formatRichText(tostring(paragraphConfig.Title or ""))
-                local content = formatRichText(tostring(paragraphConfig.Content or ""))
+                local title   = formatRichText(paragraphConfig.Title or "")
+                local content = formatRichText(paragraphConfig.Content or "")
                 local useRich = paragraphConfig.RichText ~= false
 
                 local PADDING_V = 20
@@ -3142,13 +3074,13 @@ function Library:Window(config)
                     _contentLabel = contentLabel,
                     SetTitle = function(self, newTitle)
                         if self._titleLabel then
-                            self._titleLabel.Text = formatRichText(tostring(newTitle or ""))
-                            self._titleLabel.Visible = (tostring(newTitle or "")) ~= ""
+                            self._titleLabel.Text = formatRichText(newTitle or "")
+                            self._titleLabel.Visible = (newTitle or "") ~= ""
                         end
                     end,
                     SetContent = function(self, newContent)
                         if self._contentLabel then
-                            self._contentLabel.Text = formatRichText(tostring(newContent or ""))
+                            self._contentLabel.Text = formatRichText(newContent or "")
                         end
                     end,
                     GetTitle = function(self)
@@ -3164,7 +3096,7 @@ function Library:Window(config)
             return SectionObject
         end
         if self._tabOrder == 1 then
-            self._library:SetFirstPage(resolvedTabName)
+            self._library:SetFirstPage(tabName)
         end
         table.insert(self._tabs, TabObject)
         return TabObject
@@ -3172,7 +3104,6 @@ function Library:Window(config)
     return WindowObject
 end
 
--- Feature HUD Manager
 Library.FeatureHUDManager = {}
 Library.FeatureHUDManager.Buttons = {}
 Library.FeatureHUDManager.Rows = {}
@@ -3273,16 +3204,15 @@ function Library.FeatureHUDManager:GetRow()
 end
 
 function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
-    local resolvedText = tostring(text or "")
     if not isMobile then
-        return self:AddPCIndicator(resolvedText, hotkeyString)
+        return self:AddPCIndicator(text, hotkeyString)
     end
     
     local row = self:GetRow()
     
     local container = new("Frame", {
         Parent = row,
-        Name = "HUDButton_" .. resolvedText,
+        Name = "HUDButton_" .. text,
         Size = UDim2.new(0, 0, 0, 56),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = Color3.fromRGB(20, 20, 0),
@@ -3323,7 +3253,7 @@ function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
         TextSize = 20,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         RichText = true,
-        Text = "<b>" .. resolvedText .. "</b>"
+        Text = "<b>" .. text .. "</b>"
     })
     
     local btn = new("TextButton", {
@@ -3356,7 +3286,7 @@ function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
         container = container,
         UpdateHotkey = function(self, newHotkey) end,
         UpdateText = function(self, newText)
-            if label then label.Text = "<b>" .. tostring(newText or "") .. "</b>" end
+            if label then label.Text = "<b>" .. tostring(newText) .. "</b>" end
         end
     }
     table.insert(self.Buttons, ref)
@@ -3364,10 +3294,9 @@ function Library.FeatureHUDManager:AddButton(text, clickCallback, hotkeyString)
 end
 
 function Library.FeatureHUDManager:AddPCIndicator(text, hotkeyString)
-    local resolvedText = tostring(text or "")
     local container = new("Frame", {
         Parent = PCContainer,
-        Name = "PCIndicator_" .. resolvedText,
+        Name = "PCIndicator_" .. text,
         Size = UDim2.new(0, 0, 0, 24),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = colors.bg1,
@@ -3428,7 +3357,7 @@ function Library.FeatureHUDManager:AddPCIndicator(text, hotkeyString)
     local ref = {
         isPC = true,
         container = container,
-        text = resolvedText,
+        text = text,
         label = label,
         hotkey = hotkeyString or "None"
     }
@@ -3439,12 +3368,12 @@ function Library.FeatureHUDManager:AddPCIndicator(text, hotkeyString)
             math.floor(colors.primary.G*255), 
             math.floor(colors.primary.B*255))
         
-        self.hotkey = (newHotkey and tostring(newHotkey) ~= "") and tostring(newHotkey) or L("none")
+        self.hotkey = (newHotkey and tostring(newHotkey) ~= "") and tostring(newHotkey) or "None"
         self.label.Text = string.format("<font color='#%s'>[%s]</font>  %s", hexColor, self.hotkey, self.text)
     end
     
     function ref:UpdateText(newText)
-        self.text = tostring(newText or "")
+        self.text = tostring(newText)
         self:UpdateHotkey(self.hotkey)
     end
     

@@ -504,7 +504,7 @@ function Library:CreateWindow(config)
 
         new("TextLabel", {
             Parent = dialog,
-            Text = "Konfirmasi Keluar",
+            Text = "Close",
             Size = UDim2.new(1, -20, 0, 24),
             Position = UDim2.new(0, 10, 0, 12),
             BackgroundTransparency = 1,
@@ -517,7 +517,7 @@ function Library:CreateWindow(config)
 
         new("TextLabel", {
             Parent = dialog,
-            Text = "Apakah kamu yakin ingin menutup UI ini?",
+            Text = "Are you sure you want to close Suki Hub?",
             Size = UDim2.new(1, -30, 0, 36),
             Position = UDim2.new(0, 15, 0, 42),
             BackgroundTransparency = 1,
@@ -536,7 +536,7 @@ function Library:CreateWindow(config)
             BackgroundColor3 = Color3.fromRGB(220, 40, 40),
             BackgroundTransparency = 0.1,
             BorderSizePixel = 0,
-            Text = "Iya",
+            Text = "Yes",
             Font = Enum.Font.GothamBold,
             TextSize = 12,
             TextColor3 = colors.text,
@@ -552,7 +552,7 @@ function Library:CreateWindow(config)
             BackgroundColor3 = colors.bg3,
             BackgroundTransparency = 0.1,
             BorderSizePixel = 0,
-            Text = "Tidak",
+            Text = "No",
             Font = Enum.Font.GothamBold,
             TextSize = 12,
             TextColor3 = colors.text,

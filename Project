@@ -272,7 +272,7 @@ function Library:CreateWindow(config)
     local name = config.Name or "SukiGUI"
     local title = config.Title or "Suki"
     local subtitle = config.Subtitle or ""
-    local discordText = (config.Discord ~= nil and tostring(config.Discord) ~= "") and tostring(config.Discord) or "Discord"
+    local discordText = (config.Discord ~= nil and tostring(config.Discord) ~= "") and tostring(config.Discord) or ""
     local defaultLogo = config.Logo or "rbxassetid://6031091004"
 
     table.clear(CallbackRegistry)

@@ -189,7 +189,6 @@ function Library.ConfigSystem.Save()
 end
 function Library.ConfigSystem.Load()
     EnsureFolderExists()
-    -- Hapus config lama setiap kali script dieksekute ulang agar data tereset bersih
     if isfile(CONFIG_FILE) then
         pcall(function() delfile(CONFIG_FILE) end)
     end
@@ -238,9 +237,8 @@ end
 
 local function ExecuteConfigCallbacks()
     for _, entry in pairs(CallbackRegistry) do
+        local defVal = (entry.default == true)
         if entry.updateVisual then
-            -- Paksa nilai ke default (false/off) saat inisialisasi ulang
-            local defVal = entry.type == "toggle" and false or entry.default
             Library.ConfigSystem.Set(entry.path, defVal)
             pcall(entry.updateVisual, defVal)
         end
@@ -249,7 +247,7 @@ local function ExecuteConfigCallbacks()
         for _, entry in pairs(CallbackRegistry) do
             local isToggle = entry.type == "toggle"
             if entry.callback and isToggle == wantToggle then
-                local defVal = entry.type == "toggle" and false or entry.default
+                local defVal = (entry.default == true)
                 pcall(entry.callback, defVal)
             end
         end
@@ -274,7 +272,7 @@ function Library:CreateWindow(config)
     local name = config.Name or "SukiGUI"
     local title = config.Title or "Suki"
     local subtitle = config.Subtitle or ""
-    local discordText = config.Discord or "Discord"
+    local discordText = (config.Discord ~= nil and tostring(config.Discord) ~= "") and tostring(config.Discord) or "Discord"
     local defaultLogo = config.Logo or "rbxassetid://6031091004"
 
     table.clear(CallbackRegistry)
@@ -389,7 +387,6 @@ function Library:CreateWindow(config)
         Name = "HubLogo"
     })
     
-    -- Nama Hub di bagian atas
     local titleLabel = new("TextLabel", {
         Parent = scriptHeader,
         Text = title,
@@ -406,7 +403,6 @@ function Library:CreateWindow(config)
         Name = "HubTitle"
     })
 
-    -- Nama / teks di bawah nama Hub berwarna putih
     local belowHubLabel = new("TextLabel", {
         Parent = scriptHeader,
         Text = subtitle,
@@ -423,7 +419,6 @@ function Library:CreateWindow(config)
         Name = "HubBelowName"
     })
     
-    -- Pemisah & tulisan Discord di samping hub
     new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 1, 0, 16),
@@ -437,7 +432,7 @@ function Library:CreateWindow(config)
     local discordLabel = new("TextLabel", {
         Parent = scriptHeader,
         Text = discordText,
-        Size = UDim2.new(0, 155, 1, 0),
+        Size = UDim2.new(0, 165, 1, 0),
         Position = UDim2.new(0, 146, 0, 1),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
@@ -917,10 +912,18 @@ function Library:CreateWindow(config)
         end
     end
 
-    function WindowObject:SetDiscordText(text)
+    function WindowObject:SetDiscord(text)
         if discordLabel then
-            discordLabel.Text = tostring(text or "")
+            discordLabel.Text = (text ~= nil and tostring(text) ~= "") and tostring(text) or "Discord"
         end
+    end
+
+    function WindowObject:SetDiscordText(text)
+        self:SetDiscord(text)
+    end
+
+    function WindowObject:GetDiscord()
+        return discordLabel and discordLabel.Text or ""
     end
 
     return WindowObject
@@ -1508,7 +1511,7 @@ function Library:CreateCategory(parent, title, startOpen, isLocked)
     return returnedContainer, expand
 end
 
-function Library:CreateToggle(parent, label, configPath, callback, disableSave, defaultValue)
+function Library:CreateToggle(parent, label, configPath, callback, disableSave, allowStartOn)
     local frame = new("Frame", {Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 7})
     new("TextLabel", {
         Parent = frame,
@@ -1540,12 +1543,13 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     })
     new("UICorner", {Parent = toggleCircle, CornerRadius = UDim.new(1, 0)})
     local btn = new("TextButton", {Parent = toggleBg, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "", ZIndex = 10})
-    -- Paksa default selalu false saat dieksekusi ulang
-    local on = false
+
+    -- Menyala (true) HANYA jika diizinkan oleh script; jika tidak ada / false maka mati (false)
+    local on = (allowStartOn == true)
     if configPath and not disableSave then
-        Library.ConfigSystem.Set(configPath, false)
-        on = false
+        Library.ConfigSystem.Set(configPath, on)
     end
+
     local function updateVisual(instant)
         local targetColor = on and colors.primary or colors.bg3
         local targetPos = on and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
@@ -1561,6 +1565,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         end
     end
     updateVisual(true)
+
     self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
         on = not on
         updateVisual(false)
@@ -1570,18 +1575,20 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
         self.flags[configPath or label] = on
         if callback then callback(on) end
     end))
+
     if configPath and not disableSave then
-        RegisterCallback(configPath, callback, "toggle", false, function(val)
-            on = val
+        RegisterCallback(configPath, callback, "toggle", on, function(val)
+            on = (val == true)
             updateVisual(true)
             self.flags[configPath or label] = on
         end)
     end
+
     self.flags[configPath or label] = on
     local toggleController = {
         frame = frame,
         set = function(val)
-            on = val
+            on = (val == true)
             updateVisual(false)
             if configPath and not disableSave then
                 Library.ConfigSystem.Set(configPath, on)
@@ -2807,25 +2814,30 @@ function Library:Window(config)
             function SectionObject:AddToggle(toggleConfig)
                 toggleConfig = toggleConfig or {}
                 local title      = toggleConfig.Title or "Toggle"
-                local default    = toggleConfig.Default or false
                 local callback   = toggleConfig.Callback
                 local noSave     = toggleConfig.NoSave or false
                 local configPath = noSave and nil or ("Toggles." .. title:gsub("%s+", "_"))
-                local toggleObj = { _value = false }
+
+                -- Hanya menyala jika script mengizinkan (AllowStartOn / StartOn / Default bernilai true)
+                local allowStartOn = (toggleConfig.AllowStartOn == true)
+                    or (toggleConfig.StartOn == true)
+                    or (toggleConfig.Default == true)
+
+                local toggleObj = { _value = allowStartOn }
                 local wrappedCallback = function(val)
                     toggleObj._value = val
                     if callback then callback(val) end
                 end
-                local toggleResult = self._library:CreateToggle(self._container, title, configPath, wrappedCallback, noSave, default)
+                local toggleResult = self._library:CreateToggle(self._container, title, configPath, wrappedCallback, noSave, allowStartOn)
                 local frame = toggleResult and toggleResult.frame or toggleResult
                 if frame then frame.LayoutOrder = getNextLayoutOrder() end
                 registerFeature(title, frame, "Toggle")
                 function toggleObj:SetValue(val)
-                    self._value = val
+                    self._value = (val == true)
                     if toggleResult and toggleResult.set then
-                        toggleResult.set(val)
+                        toggleResult.set(self._value)
                     end
-                    if callback then callback(val) end
+                    if callback then callback(self._value) end
                 end
                 function toggleObj:GetValue()
                     return self._value

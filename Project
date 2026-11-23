@@ -68,7 +68,7 @@ else
 end
 
 local sidebarWidth = 132
-local headerHeight = 40
+local headerHeight = 42
 local topBarHeight = 32
 local sectionHeaderHeight = 34
 local panelTransparency = 0.03
@@ -274,6 +274,7 @@ function Library:CreateWindow(config)
     local name = config.Name or "SukiGUI"
     local title = config.Title or "Suki"
     local subtitle = config.Subtitle or ""
+    local discordText = config.Discord or "Discord"
     local defaultLogo = config.Logo or "rbxassetid://6031091004"
 
     table.clear(CallbackRegistry)
@@ -368,7 +369,7 @@ function Library:CreateWindow(config)
     local headerDragHandle = new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 32, 0, 3),
-        Position = UDim2.new(0.5, -16, 0, 4),
+        Position = UDim2.new(0.5, -16, 0, 3),
         BackgroundColor3 = colors.primary,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
@@ -380,7 +381,7 @@ function Library:CreateWindow(config)
         Parent = scriptHeader,
         Image = defaultLogo,
         Size = UDim2.new(0, 20, 0, 20),
-        Position = UDim2.new(0, 10, 0.5, 0),
+        Position = UDim2.new(0, 10, 0.5, 1),
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundTransparency = 1,
         ImageColor3 = colors.primary,
@@ -388,43 +389,65 @@ function Library:CreateWindow(config)
         Name = "HubLogo"
     })
     
+    -- Nama Hub di bagian atas
     local titleLabel = new("TextLabel", {
         Parent = scriptHeader,
         Text = title,
-        Size = UDim2.new(0, 95, 1, 0),
-        Position = UDim2.new(0, 34, 0, 0),
+        Size = UDim2.new(0, 100, 0, 16),
+        Position = UDim2.new(0, 34, 0, 6),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.title,
         TextColor3 = colors.primary,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextYAlignment = Enum.TextYAlignment.Center,
+        TextTruncate = Enum.TextTruncate.AtEnd,
         ZIndex = 6,
         Name = "HubTitle"
     })
+
+    -- Nama / teks di bawah nama Hub berwarna putih
+    local belowHubLabel = new("TextLabel", {
+        Parent = scriptHeader,
+        Text = subtitle,
+        Size = UDim2.new(0, 100, 0, 13),
+        Position = UDim2.new(0, 34, 0, 22),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.GothamBold,
+        TextSize = fontSize.small,
+        TextColor3 = colors.text,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+        ZIndex = 6,
+        Name = "HubBelowName"
+    })
     
+    -- Pemisah & tulisan Discord di samping hub
     new("Frame", {
         Parent = scriptHeader,
-        Size = UDim2.new(0, 1, 0, 14),
-        Position = UDim2.new(0, 134, 0.5, 0),
+        Size = UDim2.new(0, 1, 0, 16),
+        Position = UDim2.new(0, 138, 0.5, 1),
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = colors.border,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ZIndex = 6
     })
-    new("TextLabel", {
+    local discordLabel = new("TextLabel", {
         Parent = scriptHeader,
-        Text = subtitle,
-        Size = UDim2.new(0, 145, 1, 0),
-        Position = UDim2.new(0, 142, 0, 0),
+        Text = discordText,
+        Size = UDim2.new(0, 155, 1, 0),
+        Position = UDim2.new(0, 146, 0, 1),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
         TextColor3 = colors.textDim,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextYAlignment = Enum.TextYAlignment.Center,
-        ZIndex = 6
+        TextTruncate = Enum.TextTruncate.AtEnd,
+        ZIndex = 6,
+        Name = "HubDiscord"
     })
 
     local btnCloseHeader = new("TextButton", {
@@ -885,6 +908,19 @@ function Library:CreateWindow(config)
 
     function WindowObject:SetFloatingButtonImage(assetId)
         self:SetLogo(assetId)
+    end
+
+    function WindowObject:SetBelowHubText(text)
+        if belowHubLabel then
+            belowHubLabel.Text = tostring(text or "")
+            belowHubLabel.TextColor3 = colors.text
+        end
+    end
+
+    function WindowObject:SetDiscordText(text)
+        if discordLabel then
+            discordLabel.Text = tostring(text or "")
+        end
     end
 
     return WindowObject
@@ -2670,7 +2706,8 @@ function Library:Window(config)
     local winObj = self:CreateWindow({
         Name     = "SukiGui",
         Title    = config.Title or "Suki",
-        Subtitle = config.Footer or "",
+        Subtitle = config.Subtitle or config.Footer or "",
+        Discord  = config.Discord or "Discord",
         Logo     = config.Logo or "rbxassetid://6031091004"
     })
     Library.ConfigSystem.Load()

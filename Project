@@ -128,6 +128,26 @@ function Library:AddConnection(name, connection)
 end
 
 function Library:Cleanup()
+    -- Matikan seluruh fitur toggle yang sedang aktif sebelum membersihkan koneksi & state
+    if self._activeToggleSetters then
+        for _, fn in ipairs(self._activeToggleSetters) do
+            pcall(function() fn(false) end)
+        end
+        table.clear(self._activeToggleSetters)
+    end
+    if self.flags then
+        for k, v in pairs(self.flags) do
+            if type(v) == "table" and type(v.SetValue) == "function" and type(v.GetValue) == "function" then
+                if v:GetValue() == true then
+                    pcall(function() v:SetValue(false) end)
+                end
+            elseif type(v) == "table" and type(v.set) == "function" and type(v.get) == "function" then
+                if v:get() == true then
+                    pcall(function() v:set(false) end)
+                end
+            end
+        end
+    end
     if self._connections then
         for _, conn in pairs(self._connections) do
             pcall(function() conn:Disconnect() end)
@@ -275,6 +295,12 @@ function Library:CreateWindow(config)
     local discordText = (config.Discord ~= nil and tostring(config.Discord) ~= "") and tostring(config.Discord) or ""
     local defaultLogo = config.Logo or "rbxassetid://6031091004"
 
+    -- Matikan fitur aktif & bersihkan state lama saat di-execute ulang
+    if self._initialized or self._gui or (self._activeToggleSetters and #self._activeToggleSetters > 0) then
+        self:Cleanup()
+    end
+    self._activeToggleSetters = {}
+
     table.clear(CallbackRegistry)
     table.clear(self.flags)
     table.clear(self.pages)
@@ -411,15 +437,21 @@ function Library:CreateWindow(config)
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextSize = fontSize.small,
+        TextScaled = true,
         TextColor3 = colors.text,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextYAlignment = Enum.TextYAlignment.Center,
-        TextTruncate = Enum.TextTruncate.AtEnd,
         ZIndex = 6,
         Name = "HubBelowName"
     })
+    new("UITextSizeConstraint", {
+        Parent = belowHubLabel,
+        MaxTextSize = fontSize.small,
+        MinTextSize = 6
+    })
     
-    new("Frame", {
+    local hasDiscord = discordText ~= ""
+    local discordDivider = new("Frame", {
         Parent = scriptHeader,
         Size = UDim2.new(0, 1, 0, 16),
         Position = UDim2.new(0, 138, 0.5, 1),
@@ -427,7 +459,9 @@ function Library:CreateWindow(config)
         BackgroundColor3 = colors.border,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        ZIndex = 6
+        Visible = hasDiscord,
+        ZIndex = 6,
+        Name = "HubDiscordDivider"
     })
     local discordLabel = new("TextLabel", {
         Parent = scriptHeader,
@@ -441,9 +475,22 @@ function Library:CreateWindow(config)
         TextXAlignment = Enum.TextXAlignment.Left,
         TextYAlignment = Enum.TextYAlignment.Center,
         TextTruncate = Enum.TextTruncate.AtEnd,
+        Visible = hasDiscord,
         ZIndex = 6,
         Name = "HubDiscord"
     })
+
+    local function applyDiscordState(val)
+        local str = (val ~= nil and tostring(val) ~= "") and tostring(val) or ""
+        local active = str ~= ""
+        if discordLabel then
+            discordLabel.Text = str
+            discordLabel.Visible = active
+        end
+        if discordDivider then
+            discordDivider.Visible = active
+        end
+    end
 
     local btnCloseHeader = new("TextButton", {
         Parent = scriptHeader,
@@ -913,17 +960,15 @@ function Library:CreateWindow(config)
     end
 
     function WindowObject:SetDiscord(text)
-        if discordLabel then
-            discordLabel.Text = (text ~= nil and tostring(text) ~= "") and tostring(text) or "Discord"
-        end
+        applyDiscordState(text)
     end
 
     function WindowObject:SetDiscordText(text)
-        self:SetDiscord(text)
+        applyDiscordState(text)
     end
 
     function WindowObject:GetDiscord()
-        return discordLabel and discordLabel.Text or ""
+        return (discordLabel and discordLabel.Visible) and discordLabel.Text or ""
     end
 
     return WindowObject
@@ -1566,14 +1611,24 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     end
     updateVisual(true)
 
-    self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
-        on = not on
+    local function setToggleState(val, fireCb)
+        local nextVal = (val == true)
+        on = nextVal
         updateVisual(false)
         if configPath and not disableSave then
             Library.ConfigSystem.Set(configPath, on)
         end
         self.flags[configPath or label] = on
-        if callback then callback(on) end
+        if fireCb and callback then callback(on) end
+    end
+
+    self._activeToggleSetters = self._activeToggleSetters or {}
+    table.insert(self._activeToggleSetters, function(val)
+        setToggleState(val, true)
+    end)
+
+    self:AddConnection("toggle_" .. label .. tostring(btn), btn.MouseButton1Click:Connect(function()
+        setToggleState(not on, true)
     end))
 
     if configPath and not disableSave then
@@ -1588,12 +1643,7 @@ function Library:CreateToggle(parent, label, configPath, callback, disableSave, 
     local toggleController = {
         frame = frame,
         set = function(val)
-            on = (val == true)
-            updateVisual(false)
-            if configPath and not disableSave then
-                Library.ConfigSystem.Set(configPath, on)
-            end
-            Library.flags[configPath or label] = on
+            setToggleState(val, false)
         end,
         get = function() return on end
     }
@@ -2710,11 +2760,12 @@ end
 
 function Library:Window(config)
     config = config or {}
+    local discordVal = (config.Discord ~= nil and tostring(config.Discord) ~= "") and tostring(config.Discord) or ""
     local winObj = self:CreateWindow({
         Name     = "SukiGui",
         Title    = config.Title or "Suki",
         Subtitle = config.Subtitle or config.Footer or "",
-        Discord  = config.Discord or "Discord",
+        Discord  = discordVal,
         Logo     = config.Logo or "rbxassetid://6031091004"
     })
     Library.ConfigSystem.Load()
